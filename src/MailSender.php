@@ -26,7 +26,7 @@ abstract class MailSender{
 	// instancier une classe fille pour implémenter la stratégie
 	static function factory($concreteSenderName, $params = NULL)
 	{
-		$cname = "\\Ppast\\Mailing\\MailSenders\\$concreteSenderName";
+		$cname = "\\Nettools\\Mailing\\MailSenders\\$concreteSenderName";
 		return new $cname($params);
 	}
 

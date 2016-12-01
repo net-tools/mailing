@@ -55,7 +55,7 @@ class SMTP_MailSender extends MailSender
 		
 		// tester existence librairie composer ; si inexistante, ne pas initialiser
 		if ( 
-				(strpos(get_include_path(), 'ppast/auth_sasl') === FALSE)
+				(strpos(get_include_path(), 'net-tools/auth_sasl') === FALSE)
 				||
 				(strpos(get_include_path(), 'pear/mail') === FALSE)
 				||
@@ -63,7 +63,7 @@ class SMTP_MailSender extends MailSender
 			)
 		{
 			$this->smtp = null;
-			$this->initerror = "Librairies Composer manquantes : pear/mail ou pear/net_smtp ou ppast/auth_sasl";
+			$this->initerror = "Composer libraries missing : pear/mail or pear/net_smtp or net-tools/auth_sasl";
 		}
 		else
 			// créer la classe de connexion SMTP

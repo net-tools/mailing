@@ -3,22 +3,22 @@
 // namespace
 namespace Nettools\Mailing\MailSenders;
 
-// clauses use
+
 use \Nettools\Mailing\MailSender;
 
 
 
-// stratégie pour envoi du mail sur fichier temporaire dans un dossier spécifique PARAMS['path']
+// strategy to send emails to an array (useful for unit testing)
 class Virtual_MailSender extends MailSender
 {
-	// [----- MEMBRES PROTEGES -----
+	// [----- PROTECTED -----
 	
 	protected $_sent = array();
 	
-	// ----- MEMBRES PROTEGES -----]
+	// ----- PROTECTED -----]
 	
 	
-	// envoyer un mail
+	// send the email
 	function doSend($to, $subject, $mail, $headers)
 	{
 		$m = $headers;
@@ -27,20 +27,20 @@ class Virtual_MailSender extends MailSender
 		$m .= "\r\n\r\n";
 		$m .= $mail;
 			
-		// ajouter cet envoi
+
 		$this->_sent[] = $m;
 		return FALSE; // ok
 	}
 	
 	
-	// nettoyer
+	// destroy instance
 	function destruct()
 	{
 		$this->_sent = array();
 	}
 	
 	
-	// obtenir liste des envois
+	// get array for emails sent
 	function getSent()
 	{
 		return $this->_sent;

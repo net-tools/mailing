@@ -3,38 +3,34 @@
 // namespace
 namespace Nettools\Mailing\MailPieces;
 
-// clauses use
-use \Nettools\Mailing\MailPieces\MailContent;
 
 
-
-
-// classe de base : pièce-jointe ou image incorporée
+// base class for embeddings and attachments
 abstract class MailMixedContent extends MailContent {
 
-// [----- MEMBRES PROTEGES -----
+// [----- PROTECTED -----
 
 	protected $_file = NULL;
 	protected $_ignoreCache = NULL;
 
 
-	// obtenir le cache spécifique
+	// get cache
 	abstract protected function _getCache();
 
-	// clef pour cache
+	// get the key for this item in the cache
 	protected function _getCacheID()
 	{
 		return $this->_file;
 	}
 	
 	
-// ----- MEMBRES PROTEGES -----]
+// ----- PROTECTED -----]
 
 
 
-// [----- METHODES PUBLIQUES -----
+// [----- PUBLIC -----
 
-	// constructeur
+	// constructor
 	public function __construct($file, $file_type, $ignoreCache = false)
 	{
 		parent::__construct($file_type);
@@ -44,22 +40,22 @@ abstract class MailMixedContent extends MailContent {
 	}
 	
 	
-	// accesseurs
+	// accessors
 	public function getFile() { return $this->_file; }
 	public function setFile($f) { $this->_file = $f; }
 	public function getIgnoreCache() { return $this->_ignoreCache; }
 	public function setIgnoreCache($i) { $this->_ignoreCache = $i; }
 	
 	
-	// contenu
+	// get content for this part
 	public function getContent()
 	{
-		// regarder si ce fichier est dans le cache
+		// see if the content is already cached (if we send many emails with the same attachment, this is the case !)
 		if ( !$this->_ignoreCache && ($content = $this->_getCache()->get($this->_getCacheID())) )
 			return $content;
 
 
-		// sinon, on va chercher le contenu du fichier, on l'encode, et on le stocke dans le cache (sauf ordre contraire)
+		// if not, read the file, base64encode it, and store it in the cache (unless instructed not to do so)
 		$content = trim(chunk_split(base64_encode(file_get_contents($this->_file)))) /*. "\r\n\r\n"*/;
 		
 		if( !$this->_ignoreCache )

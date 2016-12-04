@@ -3,34 +3,35 @@
 // namespace
 namespace Nettools\Mailing\MailSenders;
 
-// clauses use
+
 use \Nettools\Mailing\MailSender;
 
 
 
-// stratégie pour envoi par PHP mail()
+// strategy to send emails with PHP built-in mail function
 class PHPMail_MailSender extends MailSender
 {
-	// analyser les en-têtes, les modifier éventuellement ; contrairement aux autres stratégies d'envois, on ne rajoute pas To et Subject, 
-	// puisque c'est phpmail qui s'en charge
+	// analyse headers and maybe modify some. For PHPMail strategy, we do not have to
+	// set To and Subject headers, as this is php Mail() function that sets them internally
 	function handleHeaders_ToSubject($to, $subject, $mail, &$headers)
 	{
 	}
 	
 
-	// on ne traite pas Bcc, contrairement aux autres stratégies d'envois, car c'est phpmail qui s'en charge
+	// handle Bcc case. For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes
+	// Bcc headers and send bcc emails accordingly
 	function handleBcc($to, $subject, $mail, &$headers)
 	{
 	}
 	
 	
-	// envoyer un mail
+	// concrete implemntation to send the email
 	function doSend($to, $subject, $mail, $headers)
 	{
 		if ( mail($to, $subject, $mail, $headers) )
 			return FALSE;
 		else
-			return "Erreur inconnue PHP:mail()";
+			return "Unknown error with PHP:mail()";
 	}
 }
 ?>

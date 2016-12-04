@@ -3,26 +3,25 @@
 // namespace
 namespace Nettools\Mailing\MailSenders;
 
-// clauses use
+
 use \Nettools\Mailing\MailSender;
 use \Nettools\Mailing\Mailer;
 
 
 
-// stratégie pour envoi par SMTP mail()
-// paramètres attendus : host, port, auth, username, password, persist
+// strategy to send emails with SMTP protocol
+// expected constructor parameters : host, port, auth, username, password, persist
 class SMTP_MailSender extends MailSender
 {
-	// [----- MEMBRES PROTEGES -----
+	// [----- PROTECTED -----
 	
 	protected $smtp = NULL;
 	protected $initerror = NULL;
 	
 	
-	// envoyer le mail ; headers est un tableau
+	// send the email through smtp (headers is an array)
 	protected function _doSend($to, $mail, $headers)
 	{
-		// envoyer
 		$ret = $this->smtp->send($to, $headers, $mail);
 		if ( $ret === TRUE )
 			return FALSE;
@@ -31,29 +30,29 @@ class SMTP_MailSender extends MailSender
 	}
 	
 	
-	// ----- MEMBRES PROTEGES -----]
+	// ----- PROTECTED -----]
 
-	// constructeur
+	// constructor
 	function __construct($params = NULL)
 	{
-		// appel constructeur parent
+		// parent constructor call
 		parent::__construct($params);
 		
 
-		// vérifier qu'on a au moins l'hote
+		// we must at least have the host
 		if ( !isset($this->params['host']) )
 		{
-			$this->initerror = "Parametres SMTP non fournis, HOST manquant";
+			$this->initerror = "SMTP Host parameter missing";
 			return;
 		}
 
-		// valeurs par défaut
+		// default values
 		$this->params['port'] or $this->params['port'] = '25';
 		$this->params['auth'] or $this->params['auth'] = FALSE;
 		$this->params['persist'] or $this->params['persist'] = FALSE;
 		
 		
-		// tester existence librairie composer ; si inexistante, ne pas initialiser
+		// test that required libraries are available
 		if ( 
 				(strpos(get_include_path(), 'net-tools/auth_sasl') === FALSE)
 				||
@@ -66,7 +65,7 @@ class SMTP_MailSender extends MailSender
 			$this->initerror = "Composer libraries missing : pear/mail or pear/net_smtp or net-tools/auth_sasl";
 		}
 		else
-			// créer la classe de connexion SMTP
+			// create connection
 			$this->smtp = \Mail::factory('smtp', 
 				array(
 						  'host'         	=> $this->params['host'],
@@ -80,7 +79,7 @@ class SMTP_MailSender extends MailSender
 	}
 	
 	
-	// le gestionnaire est-il prêt ?
+	// is the SMTP connection ready ?
 	function ready()
 	{
 		// tester 
@@ -88,19 +87,19 @@ class SMTP_MailSender extends MailSender
 	}
 	
 	
-	// destruction de la stratégie
+	// destruct object, and disconnet SMTP 
 	function destruct()
 	{
 		if ( $this->params['persist'] && $this->ready() )
 		{
-			$level = error_reporting(E_ERROR);		// incompatibilité php 5.4
+			$level = error_reporting(E_ERROR);		// incompatibility php 5.4
 			$this->smtp->disconnect();
-			error_reporting($level);				// incompatibilité php 5.4
+			error_reporting($level);				// incompatibility php 5.4
 		}
 	}
 	
 	
-	// obtenir des infos sur l'erreur
+	// get info for last error
 	function getMessage()
 	{
 		if ( $this->smtp && $this->smtp instanceof \PEARError )
@@ -113,10 +112,10 @@ class SMTP_MailSender extends MailSender
 	}
 	
 		
-	// envoyer un mail
+	// implement sending
 	function doSend($to, $subject, $mail, $headers)
 	{
-		// PEAR SMTP::send attend les en-tete sous forme de tableau associatif !
+		// PEAR SMTP::send expects headers to be an associative array
 		return $this->_doSend($to, $mail, Mailer::headersToArray($headers));
 	}
 }

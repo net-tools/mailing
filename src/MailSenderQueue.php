@@ -3,14 +3,13 @@
 // namespace
 namespace Nettools\Mailing;
 
-// clauses use
-use \Nettools\Mailing\Mailer;
+
 use \Nettools\Mailing\MailPieces\MailContent;
 
 
 
 
-// classe pour gérer des envois de mails en nombre
+// class to handle mailing queues
 class MailSenderQueue 
 {
 	// *** DECL. PRIVEES ***

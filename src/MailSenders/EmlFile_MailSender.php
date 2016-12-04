@@ -3,36 +3,36 @@
 // namespace
 namespace Nettools\Mailing\MailSenders;
 
-// clauses use
+
 use \Nettools\Mailing\MailSender;
 
 
 
-// stratégie pour envoi du mail sur fichier temporaire dans un dossier spécifique PARAMS['path']
+// strategy to output the email in a folder (EML file)
 class EmlFile_MailSender extends MailSender
 {
-	// [----- MEMBRES PROTEGES -----
+	// [----- PROTECTED -----
 	
 	protected $_emlSent = array();
 	
-	// ----- MEMBRES PROTEGES -----]
+	// ----- PROTECTED -----]
 	
 	
 	const PATH = 'path';
 	
 	
-	// envoyer un mail
+	// send an email
 	function doSend($to, $subject, $mail, $headers)
 	{
 		if ( $this->params[self::PATH] )
 		{
-			// ajouter slash terminal
+			// add slash
 			$path = $this->params[self::PATH];
 			if ( substr($path, -1) != '/' )
 				$path = $path . '/';
 			
 			
-			// créer le fichier temporaire en le nommant avec le nom du destinataire (@ interdit, remplacé par "AT")
+			// create temp file named with the recipient, @ replaced by '_AT_'
 			$fname = $this->params[self::PATH] . str_replace('@', '_AT_', $to) . ".eml";
 			$f = fopen($fname, 'w');
 			fputs($f, $headers);
@@ -42,17 +42,16 @@ class EmlFile_MailSender extends MailSender
 			fputs($f, $mail);
 			fclose($f);
 			
-			// ajouter ce fichier dans la liste des envois
 			$this->_emlSent[] = $fname;
 			
 			return FALSE; // ok
 		}
 		else
-			return "Dossier temporaire inaccessible '" . $this->params[self::PATH] . "'";
+			return "Folder not available : '" . $this->params[self::PATH] . "'";
 	}
 	
 	
-	// obtenir liste des fichiers EML
+	// get a list of emails sent during this session
 	function getEmlFiles()
 	{
 		return $this->_emlSent;

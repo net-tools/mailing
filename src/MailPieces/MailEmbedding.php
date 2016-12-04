@@ -3,49 +3,48 @@
 // namespace
 namespace Nettools\Mailing\MailPieces;
 
-// clauses use
+
 use \Nettools\Core\Helpers\FileHelper;
-use \Nettools\Mailing\MailPieces\MailMixedContent;
 use \Nettools\Mailing\Mailer;
 
 
 
 
-// classe de base : fichier incorporé
+// class to deal with embeddings
 class MailEmbedding extends MailMixedContent {
 
-// [----- MEMBRES PROTEGES -----
+// [----- PROTECTED -----
 
 	protected $_cid = NULL;
 
 
-	// obtenir le cache spécifique
+	// get embeddings cache
 	protected function _getCache()
 	{
 		return Mailer::getEmbeddingsCache();
 	}
 
-// ----- MEMBRES PROTEGES -----]
+// ----- PROTECTED -----]
 
 
 
-// [----- METHODES PUBLIQUES -----
+// [----- PUBLIC -----
 
-	// constructeur
+	// constructor
 	public function __construct($file, $file_type, $cid, $ignoreCache = false)
 	{
-		// si type non précisé, on le devine avec le nom du fichier
+		// if file_type not provided, guess it from the filename
 		parent::__construct($file, is_null($file_type) ? FileHelper::guessMimeType($file, "image/jpeg") : $file_type, $ignoreCache);
 		$this->_cid = $cid;
 	}
 	
 	
-	// accesseurs
+	// accessors
 	public function getCid() { return $this->_cid; }
 	public function setCid($c) { $this->_cid = $c; }
 	
 	
-	// en-tete
+	// get headers for this part
 	public function getHeaders()
 	{
 		return 	"Content-Type: " . $this->getContentType() . "\r\n" .

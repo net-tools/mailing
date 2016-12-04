@@ -3,78 +3,78 @@
 // namespace
 namespace Nettools\Mailing\MailPieces;
 
-// clauses use
+
 use \Nettools\Mailing\Mailer;
 
 
 
 
-// classe de base : un contenu avec un Content/Type
+// base class for defining a mail part : a content with a Content/Type
 abstract class MailContent {
 
-// [----- MEMBRES PROTEGES -----
+// [----- PROTECTED -----
 
 	protected $_content_type = NULL;
 	protected $_custom_headers = "";
 
-// ----- MEMBRES PROTEGES -----]
+// ----- PROTECTED -----]
 
 
 
-// [----- METHODES PUBLIQUES -----
+// [----- PUBLIC -----
 
-	// constructeur
+	// constructor
 	public function __construct($content_type)
 	{
 		$this->_content_type = $content_type;
 	}
 	
 	
-	// accesseur
+	// accessors
 	public function getContentType() { return $this->_content_type; }
 	public function setContentType($c) { $this->_content_type = $c; }
 	
 	
-	// équivalent textuel ; utilisé dans MailMultipart::getContent()
+	// get text for this part : headers and contents are merged ; used in MailMultipart::getContent()
 	public function toString()
 	{
 		return $this->getFullHeaders() . "\r\n\r\n" . $this->getContent() . "\r\n\r\n";
 	}
 	
 	
-	// rajouter des en-têtes perso
+	// set custom headers
 	public function setCustomHeaders($h)
 	{
 		$this->_custom_headers = $h;
 	}
 
 
-	// ajouter un en-tête perso
+	// add a custom header
 	public function addCustomHeader($h)
 	{
 		$this->_custom_headers = Mailer::addHeader($this->_custom_headers, $h);
 	}
 
 
-	// obtenir les en-têtes perso
+	// get custom headers
 	public function getCustomHeaders()
 	{
 		return $this->_custom_headers;
 	}
 
 
-	// obtenir les en-têtes du contenu ; à implémenter dans les classes filles
+	// get headers for this part ; abstract method to implemented in child classes
 	abstract public function getHeaders();
 	
 	
-	// obtenir les en-têtes du contenu + en-tetes perso
+	// get headers (headers for this part and also custom headers defined by user)
 	public function getFullHeaders()
 	{
 		return Mailer::addHeader($this->getHeaders(), $this->getCustomHeaders());
 	}
 	
 	
-	// obtenir le contenu lui-même ; à implémenter dans les classes filles
+	// get the text content of this part (to implement in child classes)
 	abstract public function getContent();
 }
 

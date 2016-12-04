@@ -3,33 +3,32 @@
 // namespace
 namespace Nettools\Mailing\MailPieces;
 
-// clauses use
-use \Nettools\Mailing\MailPieces\MailMixedContent;
+
 use \Nettools\Mailing\Mailer;
 
 
 
-// classe de base : pièce-jointe
+// class to deal with attachments
 class MailAttachment extends MailMixedContent {
 
-// [----- MEMBRES PROTEGES -----
+// [----- PROTECTED -----
 
 	protected $_filename = NULL;
 
 
-	// obtenir le cache spécifique
+	// get attachments cache
 	protected function _getCache()
 	{
 		return Mailer::getAttachmentsCache();
 	}
 
-// ----- MEMBRES PROTEGES -----]
+// ----- PROTECTED -----]
 
 
 
-// [----- METHODES PUBLIQUES -----
+// [----- PUBLIC -----
 
-	// constructeur
+	// constructor
 	public function __construct($file, $filename, $file_type, $ignoreCache = false)
 	{
 		parent::__construct($file, $file_type, $ignoreCache);
@@ -37,12 +36,12 @@ class MailAttachment extends MailMixedContent {
 	}
 	
 	
-	// accesseurs
+	// accessors
 	public function getFileName() { return $this->_filename; }
 	public function setFileName($f) { $this->_filename = $f; }
 	
 
-	// en-tete
+	// get headers for this part
 	public function getHeaders()
 	{
 		return 	"Content-Type: " . $this->getContentType() . ";\r\n   name=\"" . $this->_filename . "\"\r\n" .

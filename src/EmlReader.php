@@ -4,8 +4,6 @@
 namespace Nettools\Mailing;
 
 
-// clauses use
-use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\MailPieces\MailMultipart;
@@ -16,14 +14,14 @@ use \Nettools\Mailing\MailPieces\MailEmbedding;
 
 
 
-// classe pour convertir un fichier EML en MailPieces
+// class to parse an EML file et get a MailContent object
 class EmlReader
 {
-	// dernière erreur de décryptage rencontrée
+	// last error encountered
 	static public $lastError = NULL;
 	
 	
-	// consigner erreur
+	// set error message
 	static protected function _error($msg)
 	{
 		self::$lastError = $msg;
@@ -31,7 +29,7 @@ class EmlReader
 	}
 	
 	
-	// nettoyer les fichiers temporaires utilisés pour les pj et embeddings
+	// clear temp files used for embeddings and attachments
 	static function destroy(MailContent $mail)
 	{
 		// traiter par récursion
@@ -43,7 +41,7 @@ class EmlReader
 		}
 		
 		
-		// si nettoyage nécessaire
+		// if cleaning required
 		if ( in_array(get_class($mail), array('Nettools\Mailing\MailPieces\MailAttachment', 'Nettools\Mailing\MailPieces\MailEmbedding')) )
 		{
 			$f = $mail->getFile();
@@ -53,28 +51,28 @@ class EmlReader
 	}
 	
 	
-	// décoder un en-tête ; si value = NULL, on renvoie la première valeur (avant ';') ; si value est une chaîne
-	// on renvoie la valeur de ce paramètre (ex. charset)
+	// decode a header ; if VALUE is null, we return the first value (the value before ';') ; if value is a string we return the parameter named $value
+    // for example : (text/plain; charset="UTF-8"; format=flowed), we have the first value (text/plain) and two parameters (charset and format)
 	static function decodeHeader($header, $value = NULL)
 	{
 		if ( !$header )
 			return NULL;
 			
-		// obtenir parties d'un en-tete (text/plain; charset="UTF-8"; format=flowed)
+		// split header parts (e.g. text/plain; charset="UTF-8"; format=flowed)
 		$regs = preg_split('/;[\s]+/', $header);
 		
-		// vérifier découpage
+		// check splitting ok
 		if ( count($regs) == 0 )
 			return NULL;
 			
-		// si on veut la première valeur
+		// if we want the first part
 		if ( is_null($value) )
 			return trim($regs[0]);
 		
-		// si on veut une valeur en particulier
+		// if we want a parameter
 		foreach ( $regs as $part )
 		{
-			// si trouvé valeur ; renvoyer le reste de la chaine, éventuellement expurgée des "
+			// if found, returning the parameter value, with no enclosing quotes
 			$p = strpos($part, $value . '=');
 			if ( $p === 0 )
 				return str_replace('"', '', substr(strstr($part, '='),1));
@@ -84,17 +82,16 @@ class EmlReader
 	}
 	
 	
-	// décoder un body
+	// decode body with content-transfer-encoding (usually, quoted printable or base64)
 	static function decodeBody($body, $encoding)
 	{
-		// si aucune info Content-Transfer-Encoding, renvoyer tel quel le body
+		// if encoding not specified, do nothing
 		if ( !$encoding )
 			return $body;
 			
 		switch ( $encoding )
 		{
-			// les encoding 7bit ou 8bit n'encodent rien, c'est juste pour préciser au SMTP le type de données qui va suivre, et garantir
-			// éventuellement l'absence d'un caractère avec un 8eme bit activé
+            // if 7bit or 8bit encoding, do nothing ; this is just to tell the SMTP server how to handle the charset
 			case '7bit':
 			case '8bit':
 				return $body;
@@ -107,22 +104,22 @@ class EmlReader
 				return base64_decode(/*str_replace('_', '/', str_replace('-', '+', */$body);
 		}
 		
-		return self::_error('Content-Transfer-Encoding non pris en charge');
+		return self::_error("Content-Transfer-Encoding '$encoding' not supported");
 	}
 	
 	
-	// décoder charset
+	// decode charset
 	static function decodeCharset($body, $charset)
 	{
 		if ( !$charset ) 
 			return $body;
 
-		// convertir
+		// convert to utf8
 		if ( strtolower($charset) != 'utf-8' ) 		
 		{	
 			$s = iconv(strtolower($charset), 'utf-8', $body);
 			if ( $s === FALSE )
-				return self::_error("Décodage de '$charset' impossible.");
+				return self::_error("Decoding from charset '$charset' to UTF-8 error.");
 			else
 				return $s;
 		}
@@ -131,29 +128,29 @@ class EmlReader
 	}
 	
 	
-	// décoder le body en fonciton du charset indiqué dans le content-type
+	// decode body content according to it's content-type
 	static function decodeCharsetFromContentTypeHeader($body, $ct)
 	{
-		// obtenir charset depuis le content-type
+		// get charset from content-type header
 		$charset = self::decodeHeader($ct, 'charset');				
 
-		// décoder
+		// decode
 		return self::decodeCharset($body, $charset);
 	}
 	
 	
-	// décoder le body et en fournir un MailTextPlainContent, MailHtmlPlainContent, MailAttachment, MailEmbedding, selon content-disposition
+	// decode part content and we get a MailTextPlainContent, MailHtmlPlainContent, MailAttachment or MailEmbedding (choice based on the content-disposition)
 	static function decodeContent($body, $headers, $contentType)
 	{
-		// prendre le header content-disposition (première partie seulement, avant ';' éventuel)
+		// get content-disposition header
 		$contentDisposition = self::decodeHeader($headers['Content-Disposition']);
 		
-		// si content-id, forcer content-disposition à inline (cas où content-disposition:inline non présent)
+		// if content-id, force content-disposition to 'inline' (case when content-disposition:inline header missing)
 		if ( self::decodeHeader($headers['Content-ID']) )
 			$contentDisposition = 'inline';
 			
 				
-		// si pas de content-disposition, ce n'est pas une pj, mais une partie text/plain ou text/html
+		// if no content-disposition, we don't have an attachment/embdedding, but we have a text/plain or text/html content
 		if ( !$contentDisposition )
 		{
 			switch ( $contentType )
@@ -164,13 +161,13 @@ class EmlReader
 					return new MailTextHtmlContent($body);
 			}
 			
-			return self::_error("Content-type '$contentType' non pris en charge.");
+			return self::_error("Content-type '$contentType' not supported.");
 		}
 		else
-			// si PJ ou image incorporée
+			// if attachment or embedding
 			if ( in_array($contentDisposition, ['attachment', 'inline']) )
 			{
-				// créer un fichier temporaire et écrire dedans le body
+				// create a temp file and write the attachment/embedding
 				$fname = tempnam(/*$_SERVER['DOCUMENT_ROOT']*/sys_get_temp_dir(), $contentDisposition);
 				$f = fopen($fname, 'w');
 				fwrite($f, $body);
@@ -180,44 +177,42 @@ class EmlReader
 					return new MailAttachment($fname, basename($fname), $contentType, true);
 				else
 				{
-					// si image incorporée, extraire Content-ID
+					// if embedding, extract content-ID
 					$cid = self::decodeHeader($headers['Content-ID']);
 					if ( !$cid )
-						return self::_error('Content-ID introuvable.');
+						return self::_error('Content-ID not found.');
 						
 					return new MailEmbedding($fname, $contentType, trim(str_replace(array('<', '>', '"'), '', $cid)), true);
 				}
 			}
 			else
-				return self::_error("Body avec Content-Disposition '$contentDisposition' non pris en charge");
+				return self::_error("Body with Content-Disposition '$contentDisposition' not supported.");
 	}
 	
 	
-	// construire d'après content-type
+	// decode email from it's top level content-type
 	static function fromContentType($ct, $headers, $body)
 	{
-		// text/plain; charset="utf-8"; format=flowed
-		// obtenir content-type (text/plain)
-		// prendre avant spécification éventuelle charset ou boundary (text/plain) ; par construction, le content-type est tj le premier
+		// get content-type (text/plain, text/html, multipart/*, etc.)
 		$contentType = self::decodeHeader($ct);
 		
 		
-		// traiter selon content-type
+		// handle recursively depending on content-type
 		switch ( $contentType )
 		{
 			case 'text/plain' : 
 			case 'text/html' : 
-				// décoder transfer-encoding
+				// decode body text content depending on its transfer-encoding header
 				$decodedBody = self::decodeBody($body, self::decodeHeader($headers['Content-Transfer-Encoding']));
 				if (!$decodedBody )
 					return NULL;
 					
-				// décoder vers utf-8 si nécessaire, en fonction du charset indiqué
+				// maybe we need to decode the charset to utf-8
 				$decodedBody = self::decodeCharsetFromContentTypeHeader($decodedBody, $ct);
 				if (!$decodedBody )
 					return NULL;
 
-				// obtenir objet
+				// get the MailContent object with extracted/converted body, headers and contenttype
 				return self::decodeContent($decodedBody, $headers, $contentType);
 
 
@@ -225,35 +220,34 @@ class EmlReader
 			case 'multipart/mixed' : 
 			case 'multipart/related' : 
 				
-				// lire boundary
+				// if multipart, we must read the boundary parameter
 				$boundary = self::decodeHeader($ct, 'boundary');
 				if ( !$boundary )
-					return self::_error("Décodage boundary de '$contentType' impossible.");
+					return self::_error("Error when extracting boundary from '$contentType'.");
 				
 				
-				// découper les 2 parties ; on obtient 3 valeurs, car le body commence direct par le séparateur ; on ignore cette valeur vide
-				// on tient compte du fait que le dernier séparateur se termine par '--', et qu'à la fin de chaque
-				// ligne de séparation, il y a un retour à la ligne ; on n'enlève que celui-là qui est par construction
-				// toujours présent (sauf si dernier séparateur --) ; on tient compte du fait qu'il peut s'agir de 
-				// CRLF ou LF
+                // decoding the multipart ; when splitting, we get 3 values (even if the multipart has 2 parts, a content and a attachment, for example), because
+                // the body of the multipart begin with the boundary (=separator for splitting). We ignore this empty value.
+                // we know that the last boundary separator ends with '--', and that after each separator line, there's a carriage return. We delete only this
+                // newline (except if last separator ending with --). We know that the newline can be \n or \r\n
 				$parts = preg_split("/--${boundary}(--)?[\\r]?[\\n]?/", $body);
 				if ( count($parts) < 3 )
-					return self::_error("Décodage '$contentType' impossible lié au nombre de parties (1).");
+					return self::_error("Decoding of '$contentType' is impossible because of the unsupported parts number (1).");
 
-				// oublier la première partie vide
+				// skip first empty
 				$parts = array_slice($parts, 1);
 				
-				// pour toutes les parties : décoder (cas où plusieurs PJ, par exemple)
+				// for all parts (may be 2 or more, for example if we have several attachments)
 				foreach ( $parts as $k=>$part )
 				{
-					// si partie pas viable, on a fini l'exploitation, c'est la ligne vierge après dernier séparateur
+					// if part empty, we are done (we are dealing with the empty line after last separator)
 					if ( trim($part) == '' )
 					{
 						unset($parts[$k]);
 						break;
 					}
 						
-					// décoder cette partie ; détecter erreur pour arrêter prématurément
+					// decode this part ; detect an error and break process if an error occured
 					$partObject = EmlReader::fromString($part);
 					if ( !$partObject )
 						return NULL;
@@ -262,85 +256,81 @@ class EmlReader
 				}
 
 				if ( count($parts) < 2 )
-					return self::_error("Décodage '$contentType' impossible lié au nombre de parties (2).");
+					return self::_error("Decoding of '$contentType' is impossible because of the unsupported parts number (2).");
 					
 				return MailMultipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
 					
 					
-			// autre cas : décoder selon transfer encoding
+			// default case, decode with the transfer-encoding
 			default:
 				$decodedBody = self::decodeBody($body, self::decodeHeader($headers['Content-Transfer-Encoding']));
 				if ( !$decodedBody )
 					return NULL;
 					
-				// puis créer le contenu souhaité (text/plain, text/html ou PJ/inline)
+				// decoding content
 				return self::decodeContent($decodedBody, $headers, $contentType);
 		}
 	}
 	
 	
-	// obtenir en-têtes sous forme de chaine et indiquer le caractère séparateur CRLF ou LF
+	// get headers to a string, and set the linefeed (parameter by reference), by detecting linefeed characters in headers
 	static function getHeaders($eml, &$linefeed)
 	{
-		// obtenir en-têtes du mail ; par définition, 2 sauts de lignes consécutifs séparent ces en-têtes du reste.
-		// au cas où il y ait CRLFCRLF dans le corps du mail, mais LFLF pour les en-têtes, il faut prendre le premier
-		// séparateur trouvé en lisant le fichier ; on ne peut donc pas faire un strstr(CRLFCRLF) et strstr(LFLF)
-		// et prendre l'un d'eux
+		// get headers lines ; 2 consecutive newlines separate the headers from the mail content. Detect type of newline
+        // we try to detect the presence of \r\n and \n (both types mixed), but we take the first matching
 		$p_crlf = strpos($eml, "\r\n\r\n");
 		$p_lf = strpos($eml, "\n\n");
 		
 		
-		// cas simples : pas trouvé l'un des séparateurs, c'est forcément l'autre
+		// simple cases : one of the newlines characters found
 		if ( $p_crlf === FALSE )
 			$linefeed = "\n";
 		else
 		if ( $p_lf === FALSE )
 			$linefeed = "\r\n";
 		
-		// cas où les deux séparateurs sont trouvés, prendre le premier
+		// case where the two newlines characters have been found, we take the first one which occur in the email
 		else
 			$linefeed = ($p_crlf < $p_lf ) ? "\r\n" : "\n";
 			
 		
 		$sep = $linefeed . $linefeed;
 		
-		// découper headers et body
+		// returing only headers, breaking on the two newlines separation between headers and content
 		return strstr($eml, $sep, true);
 	}
 	
 	
-	// construire d'après une chaine	
+	// parse a string
 	static function fromString($data)
 	{
-		// décoder en-tête et obtenir caractère linefeed
+		// decode headers and linefeed
 		$linefeed = NULL;
 		$headers = self::getHeaders($data, $linefeed);
 		$body = substr($data, strlen($headers . $linefeed . $linefeed));
 		$headers = trim($headers);
 		if ( !$headers )
-			return self::_error('En-têtes indéchiffrables.');
+			return self::_error('Headers cannot be extracted.');
 		
-		// en-tête en tableau
+		// convert headers string to array
 		$headers = Mailer::headersToArray($headers);
 
 		
-		// traiter différemment le body en fonction de l'en-tete Content-Type
+		// handle content according to it's content-type
 		if ( !$headers['Content-Type'] )
-			return self::_error('En-tête \'Content-Type\' pas trouvé');
+			return self::_error('Header \'Content-Type\' missing.');
 	
-
-		// lire content-type
 		return self::fromContentType($headers['Content-Type'], $headers, $body);
 	}
 	
 	
-	// construire d'après un fichier
+	// parse from a file
 	static function fromFile($file)
 	{
 		if ( file_exists($file) )
 			return self::fromString(file_get_contents($file));
 		else
-			return self::_error('Fichier inexistant');
+			return self::_error('File not found.');
 	}
 }
 

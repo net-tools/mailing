@@ -36,7 +36,7 @@ final class Mailer {
 	protected static $cacheAttachments = NULL;
 	protected static $cacheEmbeddings = NULL;
 	
-	// singleton instance
+	// default mailer (singleton pattern)
 	protected static $defaultMailer = NULL;
 	
 	

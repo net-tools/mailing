@@ -12,7 +12,7 @@ use \Nettools\Mailing\MailPieces\MailContent;
 // class to handle mailing queues
 class MailSenderQueue 
 {
-	// *** DECL. PRIVEES ***
+	// *** PRIVATE ***
 	
 	private $_directory;
 	private $_data;
@@ -30,7 +30,7 @@ class MailSenderQueue
 	const STATUS_ERROR = 1;
 	
 	
-	// lire la configuration (sérialisée)
+	// read queues config
 	private function _readData()
 	{
 		if ( file_exists($this->_directory . "MailSender.dat") )
@@ -42,7 +42,7 @@ class MailSenderQueue
 	}
 	
 
-	// écrire la configuration sérialisée
+	// write queues config
 	private function _writeData()
 	{
 		$f = fopen($this->_directory . "MailSender.dat", "w");
@@ -51,7 +51,7 @@ class MailSenderQueue
 	}
 	
 	
-	// lire les infos pour un mail donné
+	// get an email from the queue
 	private function _mailFromQueue($qid, $index)
 	{
 		if ( file_exists($this->_directory . "$qid/$qid.$index.data")
@@ -59,7 +59,7 @@ class MailSenderQueue
 			file_exists($this->_directory . "$qid/$qid.$index.headers")
 			&&
 			file_exists($this->_directory . "$qid/$qid.$index.mail")	)
-			// lire le fichier de données
+			// read data files 
 		{
 			$ret = array(
 							'data' => file_get_contents($this->_directory . "$qid/$qid.$index.data"),
@@ -67,7 +67,7 @@ class MailSenderQueue
 							'email' => file_get_contents($this->_directory . "$qid/$qid.$index.mail")
 						);
 
-			// vérifier qu'on a toutes les données
+			// check all required data are set
 			if ( $ret['data'] && $ret['headers'] && $ret['email'] )
 				return $ret;
 			else
@@ -78,37 +78,36 @@ class MailSenderQueue
 	}
 	
 	
-	// envoyer un mail donné ; éventuellement, modifier à qui on l'envoie, par rapport à ce qui est indiqué dans le mail
+	// send an email from the queue ; we may modify the recipient, bcc, and headers
 	private function _sendFromQueue(Mailer $mailer, $q, $qid, $index, $bcc = NULL, $to = NULL, $suppl_headers = "")
 	{
-		// lire les infos du mail (fichiers de données)
+		// read mail from the queue
 		if ( $mail = $this->_mailFromQueue($qid, $index) )
 		{
-			// traiter BCC
+			// handle bcc 
 			if ( !is_null($bcc) )
 				$mail['headers'] = Mailer::addHeader($mail['headers'], "Bcc: $bcc");
 				
-			// si headers supplémentaires
+			// if supplementary headers
 			if ( $suppl_headers )
 				$mail['headers'] = Mailer::addHeaders($mail['headers'], $suppl_headers);
 
-			// désérialiser les données de ce mail
+			// unserialize data about the email (recipient, subject, etc.)
 			$data = unserialize($mail['data']);
 			
-			// déterminer destinataire ; soit fourni en paramètre (pour outrepasser l'indication actuelle) ou dans les DATA
+			// how is the recipient ? either the TO recipient in the email or the $TO parameter here (if we want to override the recipient)
 			$to or $to = $data['to'];
 			if ( $data === FALSE )
-				return "Erreur &agrave; l'exploitation des donn&eacute;es pour le mail '$index' de la file '" . $q['title'] . "'";
+				return "Can't read data about email '$index' from queue '" . $q['title'] . "'";
 			else
-				// envoyer le mail ; FALSE si OK, chaine si erreur
+				// send the email ; false is returned if OK, an error string if something is wrong
 				$ret = $mailer->sendmail_raw($to, $data['subject'], $mail['email'], $mail['headers']);
 		}
 		else
-			return "Fichiers de donn&eacute;es absents (tout ou partie) pour le mail '$i' de la file '" . $q['title'] . "'";
+			return "Missing data files for the email '$i' from queue '" . $q['title'] . "'";
 
 
-		// si on arrive ici, c'est qu'on a tenté l'envoi ; $RET = FALSE si ok, chaine si erreur
-		// consigner l'envoi
+		// set sending status and write config
 		$data['status'] = $ret ? self::STATUS_ERROR : self::STATUS_SENT;
 
 		$f = fopen($this->_directory . "$qid/$qid.$index.data", "w");
@@ -116,13 +115,13 @@ class MailSenderQueue
 		fclose($f);
 			
 		if ( $ret )
-			return "Echec envoi pour '$to' (" . $q['title'] .") : $ret";
+			return "Can't send email to '$to' (" . $q['title'] .") : $ret";
 		else
 			return FALSE;
 	}
 	
 	
-	// créer une file
+	// create a queue
 	private function _createQueue($qtitle, $qbatchcount = 50)
 	{
 		$id = uniqid();
@@ -140,7 +139,7 @@ class MailSenderQueue
 				
 		$this->_data['queues'][$id] = $q;
 		
-		// créer sous-dossier pour la file
+		// create a sub-folder for this queue
 		if ( !file_exists($this->_directory . $id) )
 			mkdir($this->_directory . $id);
 		
@@ -148,40 +147,40 @@ class MailSenderQueue
 	}
 	
 	
-	// ajouter un mail brut à la file
+	// add new email to the queue
 	private function _push($qid, $rawmail, $headers, $data)
 	{
-		// obtenir l'ID du mail (compteur incrémenté)
+		// get ID for this email
 		$mid = $this->_data['queues'][$qid]['count'];
 		
-		// écrire le contenu du mail
+		// write email raw content
 		$f = fopen($this->_directory . "$qid/$qid.$mid.mail", "w");
 		fwrite($f, $rawmail);
 		fclose($f);
 
-		// incrémenter volume file			
+		// increment queue size stats
 		$this->_data['queues'][$qid]['volume'] += filesize($this->_directory . "$qid/$qid.$mid.mail");
 		
-		// écrire dans un fichier séparé les en-têtes, et ajouter un champ perso pour identifier la file
+		// write headers
 		$f = fopen($this->_directory . "$qid/$qid.$mid.headers", "w");
 		fwrite($f, Mailer::addHeader($headers, "X-ComIncludeMailer-MailSenderQueue: $qid"));
 		fclose($f);
 		
-		// écrire dans un fichier séparé et sérialisé les données d'envoi (sujet, destinataire)
+		// write data about the recipient, subject
 		$f = fopen($this->_directory . "$qid/$qid.$mid.data", "w");
 		fwrite($f, $data);
 		fclose($f);
 		
-		// incrémenter le compteur
+		// increment queue count
 		$this->_data['queues'][$qid]['count']++;
-		return false; // pas d'erreur
+		return false; // no error
 	}
 	
 	
-	// *** /DECL. PRIVEES ***
+	// *** /PRIVATE ***
 
 
-	// initialiser le gestionnaire avec le dossier de stockage des mails
+	// initialize queue with a root folder for all queues (each queue will have a subfolder)
 	function __construct($directory)
 	{
 		if ( substr($directory, -1) != '/' )
@@ -192,58 +191,55 @@ class MailSenderQueue
 	}
 	
 	
-	// créer une nouvelle file de mails
+	// create a new queue
 	function createQueue($qtitle, $qbatchcount = 50)
 	{
 		$id = $this->_createQueue($qtitle, $qbatchcount);
-		
-		// ecrire la configuration
 		$this->_writeData();
 		
 		return $id;
 	}
 	
 	
-	// obtenir une file d'envoi
+	// get info about a queue id
 	function getQueue($qid)
 	{
 		return $this->_data['queues'][$qid];
 	}
 	
 	
-	// obtenir les files d'envoi
+	// get data about all queues
 	function getQueues($sort, $sortorder = self::SORTORDER_ASC)
 	{
 		$ret = $this->_data['queues'];
 		
-		// créer fonction callback de tri
 		$inf = ($sortorder == self::SORTORDER_ASC ) ? '-1':'1';
 		$sup = ($sortorder == self::SORTORDER_ASC ) ? '1':'-1';
 		
-		// si tri selon un champ existant réellement tel quel
+		// if sorting on an existing property
 		if ( $sort != self::SORT_STATUS )
 			$fun = create_function('$a, $b',"if ( \$a['$sort'] < \$b['$sort'] ) return $inf; " .
 											"else if ( \$a['$sort'] == \$b['$sort'] ) return 0;  " .
 											"else return $sup;");
 		else
-			// cas particulier du tri sur le statut, déterminé en comparant count=sendOffset
+			// if sorting on the status
 			$fun = create_function('$a, $b',"\$st_a = \$a['count'] - \$a['sendOffset']; " .
 											"\$st_b = \$b['count'] - \$b['sendOffset']; " .
 											"if ( \$st_a > \$st_b ) return $inf; " .
 											"else if ( \$st_a == \$st_b ) return 0; " .
 											"else return $sup;");
 		
-		// trier le tableau (passé par référence)
+		// sort array
 		uasort($ret, $fun);
 		
 		return $ret;
 	}
 	
 	
-	// ajouter un mail à la file
+	// push an email to the queue
 	function push($qid, MailContent $mail, $from, $to, $subject)
 	{
-		// ajouter les en-têtes techniques obligatoires
+		// add required headers to the email (importance, etc.)
 		Mailer::render($mail);
 		
 		return $this->_push(
@@ -259,30 +255,28 @@ class MailSenderQueue
 	}
 	
 	
-	// renommer une file d'envoi (sauvegarde config de la file sur disque)
+	// rename a queue
 	function renameQueue($qid, $value)
 	{
-		// ecrire la configuration après avoir renommé
 		$this->_data['queues'][$qid]['title'] = $value;
 		$this->_writeData();
 	}
 	
 	
-	// déverrouiller une file d'envoi (sauvegarde config de la file sur disque)
+	// unlock a queue (a queue is locked when all email have been sent)
 	function unlockQueue($qid)
 	{
-		// ecrire la configuration après avoir modifié
 		$this->_data['queues'][$qid]['locked'] = false;
 		$this->_writeData();
 	}
 	
 	
-	// rechercher un envoi
+	// search an email recipient in the queue
 	function searchQueue($qid, $mail)
 	{
 		$q = $this->_data['queues'][$qid];
 
-		// vérifier existence file
+		// if queue exists
 		if ( is_null($q) )
 			return FALSE;
 			
@@ -291,7 +285,7 @@ class MailSenderQueue
 			{
 				$data = unserialize($data);
 
-				// si trouvé mail demandé
+				// si recipient is found
 				if ( $data['to'] == $mail )
 					return $i;
 			}
@@ -300,16 +294,16 @@ class MailSenderQueue
 	}
 	
 	
-	// télécharger un fichier EML pour un envoi
+	// extract an email from the queue
 	function emlFromQueue($qid, $index)
 	{
 		$q = $this->_data['queues'][$qid];
 
-		// vérifier existence file
+		// check queue exists
 		if ( is_null($q) )
 			return FALSE;
 
-		// lire le mail
+		// read email from queue et get a string for an EML file
 		if ( $mail = $this->_mailFromQueue($qid, $index) )
 		{
 			$data = unserialize($mail['data']);
@@ -325,40 +319,37 @@ class MailSenderQueue
 	}
 	
 	
-	// achever une file d'envoi (sauvegarde config de la file sur disque)
+	// close a queue (all emails have been pushed in the queue)
 	function closeQueue($qid)
 	{
-		// ecrire la configuration
 		$this->_writeData();
 	}
 	
 	
-	// renvoyer un mail donné d'une file
+	// resend an email from the queue
 	function resendFromQueue(Mailer $mailer, $qid, $index, $bcc = NULL, $to = NULL)
 	{
 		$q = $this->_data['queues'][$qid];
 
-		// vérifier existence file
 		if ( is_null($q) )
-			return "La file '$qid' n'existe pas";
+			return "Queue '$qid' does not exist";
 			
 		return $this->_sendFromQueue($mailer, $q, $qid, $index, $bcc, $to);
 	}
 	
 	
-	// constituer une nouvelle file avec les envois en erreur d'une file
+	// create a new queue with email whose status is error
 	function newQueueFromErrors($qid, $title)
 	{
-		// créer nouvelle file
 		$q = $this->_data['queues'][$qid];
 		$nid = $this->_createQueue($title, $q['batchCount']);
 		
-		// parcourir les mails de l'ancienne file
+		// check all emails from the queue
 		for ( $i = 0 ; $i < $q['count'] ; $i++ )
 		{
 			if ( $mail = $this->_mailFromQueue($qid, $i) )
 			{
-				// si courrier en erreur, le considérer
+				// if email was not sent, pushing it to the new queue
 				$data = unserialize($mail['data']);
 				if ( $data['status'] == self::STATUS_ERROR )
 				{
@@ -368,29 +359,28 @@ class MailSenderQueue
 			}
 		}
 		
-		// ecrire la configuration
 		$this->_writeData();
 		
 		return $nid;
 	}
 	
 	
-	// envoyer un lot de courriers, et rajouter éventuellement des en-têtes sur chaque envoi (par ex. pour identifier campagne)
+	// send a batch of email through a Mailer instance, and optionnally add headers
 	function sendQueue(Mailer $mailer, $qid, $suppl_headers = "")
 	{
 		$q = $this->_data['queues'][$qid];
 		
-		// vérifier existence file
+		// check file exists
 		if ( is_null($q) )
 			return "La file '$qid' n'existe pas";
 		
 		
-		// y-a-t-il encore des mails à envoyer ?
+		// are the emails to sent ?
 		if ( $q['sendOffset'] < $q['count'] )
 		{
 			$ret = array();
 			
-			// traiter un lot complet ou jusqu'à arriver au bout de la file
+			// handle a batch of emails, until queue end is reached
 			$max = min(array($q['sendOffset'] + $q['batchCount'], $q['count']));
 			for ( $i = $q['sendOffset'] ; $i < $max ; $i++ )
 			{
@@ -400,36 +390,35 @@ class MailSenderQueue
 			}
 			
 			
-			// quand fini de traiter un lot, incrémenter offset directement dans propriétés, car $q est une copie !!!
+			// increment offset
 			$this->_data['queues'][$qid]['sendOffset'] += min($q['batchCount'], $q['count'] - $q['sendOffset']);
 			
-			// mémoriser log
+			// save log
 			$this->_data['queues'][$qid]['sendLog'] = array_merge($this->_data['queues'][$qid]['sendLog'], $ret);
 			
-			// écrire la date d'aujourd'hui pour tracer la date du dernier lot traité
+			// write timestamp for last sent batch
 			$this->_data['queues'][$qid]['lastBatchDate'] = time();
 			
-			// verrouiller si terminé
+			// if all emails in queue have been sent, locking the queue
 			if ( $this->_data['queues'][$qid]['sendOffset'] == $this->_data['queues'][$qid]['count'] )
 				$this->_data['queues'][$qid]['locked'] = true;
 
-			// ecrire la configuration
+			// write config
 			$this->_writeData();
 
-			// pas d'erreur ?
-			return count($ret) ? "Il y a eu des erreurs pendant le traitement de la file '" . $q['title'] . "'" : false;
+			// check errors
+			return count($ret) ? "Errors occured during queue processing '" . $q['title'] . "'" : false;
 		}
 		else
-			return "La file '" . $q['title'] . "' est vide";
+			return "Queue '" . $q['title'] . "' is empty";
 	}
 	
 	
-	// obtenir la liste des destinataires d'une file
+	// get recipients for a queue
 	function recipientsFromQueue($qid)
 	{
 		$q = $this->_data['queues'][$qid];
 		
-		// vérifier existence file
 		if ( is_null($q) )
 			return FALSE;
 		
@@ -447,50 +436,49 @@ class MailSenderQueue
 	}
 	
 	
-	// indiquer un mail en erreur, a posteriori
+	// set an email to error (after it has been sent) ; useful when the email recipient is later reported to be wrong
 	function recipientError($qid, $index)
 	{
 		$q = $this->_data['queues'][$qid];
 
-		// vérifier existence file
+		// check queue exists
 		if ( is_null($q) )
-			return "La file '$qid' n'existe pas";
+			return "Queue '$qid' does not exist";
 
 
-		// lire les infos du mail (fichiers de données)
+		// get email info
 		$mail = $this->_mailFromQueue($qid, $index);
 		if ( !$mail) 
-			return "Fichiers de donn&eacute;es absents (tout ou partie) pour le mail '$index' de la file '" . $q['title'] . "'";
+			return "Missing data files for email '$index' from the queue '" . $q['title'] . "'";
 
-		// décoder les données liées au mail
+		// unserialize email data
 		$data = unserialize($mail['data']);
 		if ( $data === FALSE )
-			return "Erreur &agrave; l'exploitation des donn&eacute;es pour le mail '$index' de la file '" . $q['title'] . "'";
+			return "Can't read data about email '$index' from the queue '" . $q['title'] . "'";
 
-		$data['status'] = self::STATUS_ERROR;
 	
-		// réécrire les données avec le statut modifié
+		// modify status and write config
+		$data['status'] = self::STATUS_ERROR;
 		$f = fopen($this->_directory . "$qid/$qid.$index.data", "w");
 		fwrite($f, serialize($data));
 		fclose($f);
 		
-		// consigner mise en erreur dans le log de la file
-		$this->_data['queues'][$qid]['sendLog'] = array_merge($this->_data['queues'][$qid]['sendLog'], array("Echec pour '" . $data['to'] . "' (" . $q['title'] . ") : envoi mis en erreur manuellement"));
+		// update log
+		$this->_data['queues'][$qid]['sendLog'] = array_merge($this->_data['queues'][$qid]['sendLog'], array("Error for '" . $data['to'] . "' (" . $q['title'] . ") : set to Error by user"));
 		$this->_writeData();
 		
-		// pas d'erreur
+		// no error
 		return FALSE;
 	}
 	
 	
-	// effacer le log d'une file
+	// erase log for a queue
 	function clearLog($qid)
 	{
 		$q = $this->_data['queues'][$qid];
 
-		// vérifier existence file
 		if ( is_null($q) )
-			return "La file '$qid' n'existe pas";
+			return "Queue '$qid' does not exist";
 			
 		$this->_data['queues'][$qid]['sendLog'] = array();
 		$this->_writeData();
@@ -499,7 +487,7 @@ class MailSenderQueue
 	}
 	
 	
-	// purger une file d'envoi
+	// erase a queue from disk
 	function purgeQueue($qid)
 	{
 		$files = glob($this->_directory . "$qid/$qid.*");
@@ -512,15 +500,14 @@ class MailSenderQueue
 		if ( file_exists($this->_directory . $qid) )
 			rmdir($this->_directory . $qid);
 
-		// ecrire la configuration
-		$this->_writeData();
+		
+        $this->_writeData();
 	}
 	
 	
-	// purger toutes les files d'envoi
+	// erase all queues
 	function purgeAllQueues()
 	{
-		// prendre la liste des files
 		foreach ( $this->_data['queues'] as $qid => $q )
 		{
 			$files = glob($this->_directory . "$qid/*");
@@ -534,7 +521,6 @@ class MailSenderQueue
 				
 		$this->_data['queues'] = array();
 
-		// ecrire la configuration
 		$this->_writeData();
 	}
 }

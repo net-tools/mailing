@@ -12,35 +12,35 @@ use \Nettools\Mailing\MailPieces\MailMixedContent;
 use \Nettools\Mailing\MailPieces\MailMultipart;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
-use \Nettools\Mailing\MailSender;
 use \Nettools\Core\Helpers\EncodingHelper;
 use \Nettools\Core\Containers\Cache;
 use \Nettools\Core\Helpers\FileHelper;
 
 
 
-// classe pour préparation d'un mail et envoi
-final class Mailer {
-// [----- MEMBRES PROTEGES -----
 
-	// stratégie pour envoi des mails
+// class to prepare an email and send it through a sending strategy (PHP Mail function, SMTP protocol, eml files stored in a folder)
+final class Mailer {
+// [----- PROTECTED -----
+
+	// email sending strategy
 	protected $mailsender = NULL;
 	
-// ----- MEMBRES PROTEGES -----]
+// ----- PROTECTED -----]
 
 
 
-// [----- MEMBRES STATIQUES -----
+// [----- STATIC -----
 	
-	// cache pour PJ et images incorporées
+	// caches for attachments and embeddings
 	protected static $cacheAttachments = NULL;
 	protected static $cacheEmbeddings = NULL;
 	
-	// instance singleton
+	// singleton instance
 	protected static $defaultMailer = NULL;
 	
 	
-	// obtenir un mailer par défaut
+	// get the default mailer (PHP Mail function) ; may be overriden by creating a instance of Mailer instead of using getDefault static method
 	public static function getDefault()
 	{
 		if ( is_null(self::$defaultMailer) )
@@ -50,7 +50,7 @@ final class Mailer {
 	}
 
 
-	// obtenir le cache des PJ
+	// get cache for attachments
 	public static function getAttachmentsCache()
 	{
 		if ( is_null(self::$cacheAttachments) )
@@ -60,7 +60,7 @@ final class Mailer {
 	}
 	
 	
-	// obtenir le cache des images incorporées
+	// get cache for embeddings
 	public static function getEmbeddingsCache()
 	{
 		if ( is_null(self::$cacheEmbeddings) )
@@ -70,14 +70,14 @@ final class Mailer {
 	}
 	
 	
-	// ajouter un mail standard text/plain avec alternative html
+	// create a email with a text/plain part and a text/html part
 	public static function addTextHtml ($plain, $html)
 	{
 		return self::addAlternativeObject(self::createText($plain), self::createHtml($html));
 	}
 	
 	
-	// ajouter un mail standard text/plain avec alternative html ; la partie text/plain est convertie de la partie html
+	// create an email with a text/plain part and a text/html part ; we provide the html part, and the plain text part is converted from the html (tags stripped)
 	public static function addTextHtmlFromHtml ($html, $htmltemplate = "%content%")
 	{
 		$html = str_replace("%content%", $html, $htmltemplate);
@@ -95,42 +95,42 @@ final class Mailer {
 	}
 	
 	
-	// ajouter un mail standard text/plain avec alternative html
+	// create a multipart/alternative part : the text/plain and text/html part are in fact "childs" of a multipart/alternative part
 	public static function addAlternativeObject (MailContent $alt1, MailContent $alt2)
 	{
 		return MailMultipart::from("alternative", $alt1, $alt2);
 	}
 	
 	
-	// créer un text/plain
+	// create a text/plain part
 	public static function createText ($text)
 	{
 		return new MailTextPlainContent($text);
 	}
 	
 	
-	// créer un text/html
+	// create a text/html part
 	public static function createHtml ($html)
 	{
 		return new MailTextHtmlContent($html);
 	}
 	
 	
-	// créer objet incorporé
+	// create an embedding object (file, filetype, CID)
 	public static function createEmbedding($embed, $embedtype, $cid)
 	{
 		return new MailEmbedding($embed, $embedtype, $cid);
 	}
 	
 	
-	// créer piece jointe
+	// create an attachment (file to attach, filename of the attachment in the email, filetype)
 	public static function createAttachment($file, $filename, $filetype)
 	{
 		return new MailAttachment($file, $filename, $filetype);
 	}
 	
 	
-	// ajouter des pièce-jointes
+	// add several attachments (associative 2 dimensions array containing file, filename and filetype columns for each row)
 	public static function addAttachments (MailContent $mail, $files)
 	{
 		$att = array();
@@ -141,42 +141,42 @@ final class Mailer {
 	}
 	
 	
-	// ajouter pièce-jointe
+	// add an attachment to an email part
 	public static function addAttachment (MailContent $mail, $file, $filename, $filetype)
 	{
 		return self::addAttachmentObject($mail, self::createAttachment($file, $filename, $filetype));
 	}
 
 	
-	// ajouter pièce-jointe
+	// add an attachment object to an email part
 	public static function addAttachmentObject (MailContent $mail, MailAttachment $obj)
 	{
 		return MailMultipart::from("mixed", $mail, $obj);
 	}
 
 	
-	// ajouter des pièces-jointes, déjà construites sous forme d'AttachmentObjet
+	// add several attachments objects to en email part
 	public static function addAttachmentObjects (MailContent $mail, $objs)
 	{
 		return MailMultipart::fromArray("mixed", $mail, $objs);
 	}
 
 	
-	// ajouter un objet incorporé
+	// add an embedding to an email part
 	public static function addEmbedding (MailContent $mail, $embed, $embedtype, $cid)
 	{
 		return self::addEmbeddingObject($mail, self::createEmbedding($embed, $embedtype, $cid));
 	}
 
 	
-	// ajouter un objet incorporé
+	// add an embedding object to an email part
 	public static function addEmbeddingObject (MailContent $mail, MailEmbedding $obj)
 	{
 		return MailMultipart::from("related", $mail, $obj);
 	}
 
 	
-	// ajouter des objets incorporés
+	// add embedding objects to an email part (associative 2 dimensions array containing file, filetype and CID columns for each row)
 	public static function addEmbeddings (MailContent $mail, $embeds)
 	{
 		$emb = array();
@@ -187,35 +187,33 @@ final class Mailer {
 	}
 
 	
-	// ajouter des pièces-jointes, déjà construites sous forme d'AttachmentObjet
+	// add several embedding objects to an email part
 	public static function addEmbeddingObjects (MailContent $mail, $objs)
 	{
 		return MailMultipart::fromArray("related", $mail, $objs);
 	}
 	
 	
-	// transformer chaine d'en-têtes en tableau associatif
+	// transform a headers string to an associative array
 	public static function headersToArray($headers)
 	{
-		// si chaine vide, renvoyer tableau vide
+		// if no header, return empty array
 		if ( !$headers )
 			return array();
 			
 			
-		// opérer le unfolding des en-têtes ; en effet, certains en-têtes peuvent être sur plusieurs lignes. Dans ce cas, les lignes suivantes
-		// débutent obligatoirement par au moins un espace/tabulation
+        // unfolding of headers : some headers may span over multiple lines ; in that case, following lines of the header spanned begin with at least a space or tab
 		$pheaders = array();
 		$headers = explode("\n", str_replace("\r\n", "\n", $headers));
 		$last = NULL;
 		foreach ( $headers as $line )
 		{
-			// si pas trouvé de séparateur en-tete: valeur, alors on est sur une ligne à rajouter à l'en-tete précédent
-			// (cas où pour ne pas dépasser 78 caractères par ligne d'en-tete, on fait un CRLF + espace (folding)
+			// if begin of line is a space or tab, this is a folded header ; concatenate it to the previous header line read
 			if ( preg_match("/^[ ]|\t/", $line) && $last )
-				$pheaders[$last] .= "\r\n" . $line; // conserver le folding dans la valeur, afin de l'obtenir à nouveau lors de l'aplatissement
+				$pheaders[$last] .= "\r\n" . $line;
 			else
 			{
-				// créer un nouvel en-tete clef=valeur
+				// default case : explode header name/value
 				$line = explode(':', $line, 2);
 				$last = trim($line[0]);
 				$pheaders[$last] = trim($line[1]);
@@ -227,10 +225,10 @@ final class Mailer {
 	}
 	
 	
-	// aplatir un tableau d'en-tête en chaine
+	// transform an array of headers to a string
 	public static function arrayToHeaders($headers)
 	{
-		// si tableau vide, renvoyer chaine vide
+		// empty array : empty string returned
 		if ( count($headers) == 0 )
 			return "";
 			
@@ -241,7 +239,7 @@ final class Mailer {
 	}
 	
 	
-	// obtenir un en-tête 
+	// get header value
 	public static function getHeader($headers, $hkey)
 	{
 		$pheaders = self::headersToArray($headers);
@@ -249,14 +247,12 @@ final class Mailer {
 	}
 	
 	
-	// supprimer un en-tête
+	// remove a header
 	public static function removeHeader($headers, $hkey)
 	{
-		// si chaine vide, renvoyer à l'identique
 		if ( !$headers )
 			return "";
 		
-		// si clef fournie	
 		if ( $hkey )
 		{
 			$pheaders = self::headersToArray($headers);
@@ -266,7 +262,7 @@ final class Mailer {
 				return self::arrayToHeaders($pheaders);
 			}
 			else
-				// si clef n'existe pas, renvoyer à l'identique
+				// if key(header name) does not exists, return unchanged headers
 				return $headers;
 		}
 		else
@@ -274,27 +270,27 @@ final class Mailer {
 	}
 
 	
-	// rajouter un en-tête à des en-tetes déjà existants 
+	// add a new header
 	public static function addHeader($headers, $h)
 	{
 		if ( $h )
 			if ( $headers )
 			{
-				// en-têtes en tableau associatif
+				// get headers to an associative array
 				$pheaders = self::headersToArray($headers);
 								
-				// prendre clef nouvel en-tête
+				// key/value for header
 				$hkey = trim(strstr($h, ':', true));
 				$hvalue = trim(substr(strstr($h, ':'), 1));
 				
-				// indexer et ajouter
+				// register header
 				$pheaders[$hkey] = $hvalue;
 				
-				// aplatir le tableau
+				// array to string
 				foreach ( $pheaders as $hk=>$h )
 					$pheaders[$hk] = "$hk: $h";
 		
-				// renvoyer sous forme de chaine
+				// return string of headers
 				return implode("\r\n", array_values($pheaders));
 			}
 			else
@@ -304,7 +300,7 @@ final class Mailer {
 	}
 
 
-	// rajouter des en-têtes à des en-tetes déjà existants (gestion du saut de ligne)
+	// add several headers to existing headers string
 	public static function addHeaders($headers, $hs)
 	{
 		$hsarray = self::headersToArray($hs);
@@ -316,27 +312,28 @@ final class Mailer {
 	}
 
 
-	// encore un objet de mail en UTF8 + BASE64
+	// encode a subject to UTF8 + BASE64
 	public static function encodeSubject($sub)
 	{
 		return '=?utf-8?B?'.base64_encode($sub).'?=';
 	}
 	
 	
-	// traiter a posteriori le contenu des emails ; utiles pour rajouter un tracking dans les liens, par exemple
-	// fun doit etre une fonction avec la signature ($code, $ctype, $data), avec $code = texte, $ctype = encoding type
+	// patch the email after it has been constructed ; may be used to add tracking data to links after building process
+    // callback $FUN should have the following signature ($code, $ctype, $data), where $CODE will contain the email part 
+    // content, $CTYPE will be set with the email part content-type, and $DATA is the $DATA parameter of patch
 	public static function patch(MailContent $mail, $fun, $data)
 	{
 		if ( $mail instanceof MailMultipart )
 			switch ( $mail->getType() )
 			{
-				// si partie pieces-jointes ou images incorporées, la partie éventuellement textuelle est dans partie n°0
+				// if embeddings or attachements part, the text part which may be patch is in the part at index 0
 				case 'mixed':
 				case 'related':
 					self::patch($mail->getPart(0), $fun, $data);
 					break;
 				
-				// si partie alternative, ce qui nous intéresse est dans la partie text ET html (n°0 et 1)
+				// if alternative part, we may patch either part at index 0 or 1
 				case 'alternative':
 					self::patch($mail->getPart(0), $fun, $data);
 					self::patch($mail->getPart(1), $fun, $data);
@@ -354,7 +351,7 @@ final class Mailer {
 	}
 	
 	
-	// minifier le code HTML
+	// minfy html code
 	public static function htmlMinify($html)
 	{
 		$p = preg_replace('#\r\n#', ' ', $html);
@@ -366,18 +363,18 @@ final class Mailer {
 	}
 	
 				
-	// convertir un mail formaté en HTML en texte 
+	// convert an html string to plain text
 	public static function html2plain($html)
 	{
-		// décoder les accents
+		// decode html entities
 		$p = EncodingHelper::fr_entities_decode($html);
 		
-		// traiter titre
+		// extract H1 titles : will be transformed to uppercased titles with 2 empty lines
 		$p =  preg_replace_callback(
-				/* considérer l'intérieur des tags H1 (? = not greedy) */
+				/* ungreedy regexp */
 				'~<h1[^>]*>([^<]*)</h1>~', 
 		
-				/* fonction de remplacement : mise en majuscules du contenu du tag H1*/
+				/* replacement callback */
 				create_function(
 					'$matches',
 					'return "\r\n" . strtoupper($matches[1]) ."\r\n\r\n";'
@@ -387,21 +384,20 @@ final class Mailer {
 			);
 		
 		
-		// traiter saut de lignes après certains tags
+		// handle newlines after some block level tags
 		$p = preg_replace(array("~</div>~", "~</p>~", "~</ul>~"), "$0\r\n\r\n", $p);
 		$p = preg_replace(array("~</li>~"), "$0\r\n", $p);
 		
 		
-		// traiter énumérations avec "- " en préfixe ; on rajoute un - au début de la ligne ; striptags enlèvera le tag
+		// handle lists by adding - at the start of lines
 		$p = preg_replace("~<li[^>]*>~", "<li>- ", $p);
 		
-		// supprimer les liens autour d'images
+		// remove links around images
 		$p = preg_replace("~<a[^>]*>[ \r\n\t]*<img[^>]*>[ \r\n\t]*</a>~", '', $p);		
 		
-		// préserver url (car sinon, on fait sauter les tags, et donc le HREF est perdu !)
-		// ".*" ne considère pas les sauts de ligne, on utilise donc (.|[\r\n])*?
-		// le "?", placé après un quantificateur, rend l'expression régulière NOT GREEDY, donc on ne va bien 
-		// que jusqu'au prochain "</a>"
+		// handle links : text and href are preserved 
+		// ".*" in regexp does not match newlines, so we use (.|[\r\n])*?
+		// "?", after a quantifier makes the regexp NOT GREEDY
 		$p = preg_replace( 
 				'~<a[^>]*href="([^"]*)"[^>]*>((.|[\r\n])*?)</a>~',
 
@@ -411,49 +407,46 @@ final class Mailer {
 			);
 			
 			
-		// traiter sauts de lignes BR
+		// BR handling
 		$p = str_replace(array("<br>", "<br/>", "<br />"), "\r\n", $p);
 		
 		
-		// enlever les tags
+		// remove all tags
 		$p = strip_tags($p);
 		
-		// enlever les tabulations
+		// remove tabs (replaced by one space)
 		$p = str_replace("\t", " ", $p);
 		
-		// remplacer les espaces insécables
+		// handle unbreakable spaces characters
 		$p = str_replace("\xc2\xa0", " ", $p);
 		
-		// traiter retours à la ligne windows
-		//$p = str_replace("\r\n", "\n", $p);
-		
-		// enlever les espaces en tête de ligne
+		// remove spaces at the beginning of lines
 		$p = preg_replace("~\n[ ]+~", "\n", $p);
 		
-		// pas plus de 2 sauts de lignes consécutifs
+		// no more than 2 consecutive newlines
 		$p = preg_replace("~(\r\n){3,}~", "\r\n\r\n", $p);
 		
-		// enlever les tags
+		// remove spaces at begin/end
 		return trim($p);
 	}
 	
 	
-	// convertit un message text/plain en text/html
+	// convert a plain text string to html
 	public static function plain2html($plain)
 	{
-		// encoder les accents et plus généralement toutes les entités HTML
+		// encode entities
 		$plain = EncodingHelper::fr_entities_encode($plain);
 		
-		// traiter < et > dans le code plain
+		// handle < and > in plain text
 		$plain = str_replace("<", "&lt;", str_replace(">", "&gt;", $plain));
 		
-		// traiter mise en gras
+		// if '**' set a B tag
 		$plain = preg_replace('~\*\*([^*]*)\*\*~', '<b>$1</b>', $plain);
 		
-		// traiter mise en gras + rouge
+		// if '==' set a red color
 		$plain = preg_replace('~==([^=]*)==~', '<b style="color:#DD0000;">$1</b>', $plain);
 		
-		// traiter les liens
+		// create links
 		$plain = preg_replace(
 				'!(http(?:s)?://[a-zA-Z0-9./_%+~-]*)(\?|\#)?[a-zA-Z0-9._?#&/=%+-;]*!',
 		
@@ -463,13 +456,12 @@ final class Mailer {
 			);
 
 		
-		// traiter sauts de lignes
+		// handle newlines
 		return self::htmlMinify(str_replace("\n", "<br>", str_replace("\r\n", "\n", $plain)));
 	}	
 
 
-	// ajouter les en-tetes techniques obligatoires, tels que la version MIME, et plus généralement préparer le mail
-	// pour être envoyé (ou mis en file d'envois)
+	// add required technical headers (such as MIME version)
 	public static function render(MailContent $mail)
 	{
 		$mail->addCustomHeader("MIME-Version: 1.0");
@@ -477,21 +469,20 @@ final class Mailer {
 	}
 	
 	
-// ----- MEMBRES STATIQUES -----]
+// ----- STATIC -----]
 
 
 
-// [----- MEMBRES PUBLICS -----
+// [----- PUBLIC -----
 
-	// constructeur, avec stratégie à définir
+	// constructor, with an email sending strategy name, and an array of parameters for the strategy
 	public function __construct($mailsender_name, $params = NULL)
 	{
 		$this->setMailSender($mailsender_name, $params);
 	}
 	
 
-	// définir la stratégie ; renvoie TRUE si initialisation OK, FALSE sinon ; dans ce cas, il faut obtenir l'objet
-	// stratégie par getMailSender et interroger getMessage()
+	// set the email sending strategy ; returns TRUE if init OK, FALSE otherwise ; to know the error, get strategy object with getMailSender and call getMessage()
 	public function setMailSender($mailsender_name, $params = NULL)
 	{
 		$this->mailsender = MailSender::factory($mailsender_name, $params);
@@ -500,14 +491,14 @@ final class Mailer {
 	}
 	
 	
-	// nettoyer le processus d'envoi (utile pour fermer les connexions smtp laissées ouvertes)
+	// close email sending strategy (e.g. closing SMTP connections)
 	public function destruct()
 	{
 		return $this->getMailSender()->destruct();
 	}
 	
 
-	// obtenir la stratégie active, ou en créer une par défaut
+	// get current email sending strategy, or create a default one
 	public function getMailSender()
 	{
 		if ( is_null($this->mailsender) )
@@ -517,17 +508,17 @@ final class Mailer {
 	}
 	
 	
-	// envoyer rapidement un mail (plain ou html) et des pièces-jointes
+	// simple method call to send an email with content (either plain text or html) and optionnal attachments
 	public function expressSendmail($content, $from, $to, $subject, $attachments = array(), $destruct = false)
 	{
-		// détecter présence html
+		// detect content-type
 		if ( preg_match('<(a|strong|em|b|table|div|span|p)>', $content) )
 			$mailcontent = self::addTextHtmlFromHtml($content);
 		else
 			$mailcontent = self::addTextHtmlFromText($content);
 			
 			
-		// si pj, préparer structure
+		// if attachments, prepare attachments list
 		if ( count($attachments) )
 		{
 			$atts = array_map(
@@ -545,15 +536,15 @@ final class Mailer {
 		}
 		
 		
-		// envoyer le mail
+		// send the email
 		return $this->sendmail($mailcontent, $from, $to, $subject, $destruct);
 	}
 	
 	
-	// envoyer le mail construit
+	// send an email built with static building method of Mailer
 	public function sendmail(MailContent $mail, $from, $to, $subject, $destruct = false)
 	{
-		// ajouter les en-tête techniques obligatoires
+		// add required technical headers
 		self::render($mail);
 		
 		return $this->sendmail_raw($to, $subject, $mail->getContent(), 
@@ -561,10 +552,10 @@ final class Mailer {
 	}
 	
 	
-	// envoyer le mail sous une forme brute
+	// send raw mail
 	public function sendmail_raw($to, $subject, $mail, $headers, $destruct = false)
 	{
-		// si destinataire n'est pas sous forme de tableau, convertir
+		// if recipients is not an array, converting it to an array of recipients
 		if ( !is_array($to) )
 			$to = $to ? explode(',', $to) : array();
 						
@@ -576,11 +567,11 @@ final class Mailer {
 		if ( $destruct )
 			$this->destruct();
 
-		// send renvoie FALSE si ok, chaine si erreurs
+		// return FALSE if ok, a string if an error occured
 		return count($st) ? implode("\n", $st) : false;
 	}
 
-// ----- MEMBRES PUBLICS -----]
+// ----- PUBLIC -----]
 	
 }
 ?>

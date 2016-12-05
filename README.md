@@ -49,3 +49,26 @@ $smtpmailer->sendmail($mail);
 ```
 
 
+#### Parse an EML file/string to create a MailContent object
+
+Sometimes you have an email and you want to display it on screen. However, you can't echo the raw content. You have to parse the email content to extract the appropriate part (generally, the text/html part) and if necessary the attachments (multipart/mixed part).
+
+To parse the email, just use the EmlReader class and the `fromString` or `fromFile` static methods. They will return a `MailContent` object :
+
+```php
+// assuming that $email is a very simple email with a multipart/alternative content
+$mail = EmlReader::parseString($email);
+
+// this line prints MailMultipart (class name of the MailContent object)
+echo get_class($mail);
+
+// the following lines extract the text/plain and text/html sub-parts
+$textplain_content = $mail->getPart(0)->toString();
+$htmlpart_content = $mail->getPart(1)->toString();
+```
+
+If your email contains attachments or embeddings, don't forget to call `destroy` static method to delete temporary files created during parsing to store attachments and embeddings :
+
+```php
+EmlReader::destroy($mail);
+```

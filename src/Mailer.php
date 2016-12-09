@@ -1,4 +1,12 @@
 <?php
+/**
+ * Mailer
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
+
+
 
 // namespace
 namespace Nettools\Mailing;
@@ -19,11 +27,21 @@ use \Nettools\Core\Helpers\FileHelper;
 
 
 
-// class to prepare an email and send it through a sending strategy (PHP Mail function, SMTP protocol, eml files stored in a folder)
+/*
+ * Class to prepare an email and send it through a sending strategy.
+ *
+ * Currently, the following strategies are available (sub-namespace MailSenders) :
+ * 
+ * - PHP Mail function
+ * - SMTP protocol
+ * - eml files stored in a folder
+ * - array of strings (useful for debugging)
+ *
+ */
 final class Mailer {
 // [----- PROTECTED -----
 
-	// email sending strategy
+	/** @var MailSender Email sending strategy */
 	protected $mailsender = NULL;
 	
 // ----- PROTECTED -----]
@@ -32,15 +50,23 @@ final class Mailer {
 
 // [----- STATIC -----
 	
-	// caches for attachments and embeddings
+	/** @var \Nettools\Core\Containers\Cache Cache for attachments */
 	protected static $cacheAttachments = NULL;
+
+	/** @var \Nettools\Core\Containers\Cache Cache for embeddings */
 	protected static $cacheEmbeddings = NULL;
 	
-	// default mailer (singleton pattern)
+	/** @var Mailer Default mailer instance (singleton pattern) ; uses PHPMail_MailSender class strategy */
 	protected static $defaultMailer = NULL;
 	
 	
-	// get the default mailer (PHP Mail function) ; may be overriden by creating a instance of Mailer instead of using getDefault static method
+	/** 
+	 * Get the default mailer (using PHP Mail function strategy)
+	 * 
+	 * To create a Mailer instance with another strategy, create the instance through it's constructor, not getDefault()
+	 * 
+	 * @return Mailer Returns a default instance, using PHP mail function strategy
+	 */
 	public static function getDefault()
 	{
 		if ( is_null(self::$defaultMailer) )
@@ -50,7 +76,11 @@ final class Mailer {
 	}
 
 
-	// get cache for attachments
+	/**
+	 * Get cache for attachments
+	 *
+	 * @return \Nettools\Core\Containers\Cache Cache for attachments 
+	 */
 	public static function getAttachmentsCache()
 	{
 		if ( is_null(self::$cacheAttachments) )
@@ -60,7 +90,11 @@ final class Mailer {
 	}
 	
 	
-	// get cache for embeddings
+	/**
+	 * Get cache for embeddings
+	 *
+	 * @return \Nettools\Core\Containers\Cache Cache for embeddings 
+	 */
 	public static function getEmbeddingsCache()
 	{
 		if ( is_null(self::$cacheEmbeddings) )
@@ -70,14 +104,26 @@ final class Mailer {
 	}
 	
 	
-	// create a email with a text/plain part and a text/html part
+	/**
+	 * Create a email with a text/plain part and a text/html part
+	 *
+	 * @param string $plain Plain text part
+	 * @param string $html HTML text part
+	 * @return MailPieces\MailMultipart Returns a multipart/alternative part
+	 */
 	public static function addTextHtml ($plain, $html)
 	{
 		return self::addAlternativeObject(self::createText($plain), self::createHtml($html));
 	}
 	
 	
-	// create an email with a text/plain part and a text/html part ; we provide the html part, and the plain text part is converted from the html (tags stripped)
+	/**
+	 * Create a email with a text/html part ; the text/plain part is built from the text/html part
+	 *
+	 * @param string $html HTML text part
+	 * @param string $htmltemplate Template for html part ; use `%content%` in the template to set the placeholder for content
+	 * @return MailPieces\MailMultipart Returns a multipart/alternative part
+	 */
 	public static function addTextHtmlFromHtml ($html, $htmltemplate = "%content%")
 	{
 		$html = str_replace("%content%", $html, $htmltemplate);
@@ -85,7 +131,13 @@ final class Mailer {
 	}
 	
 	
-	// ajouter un mail standard text/plain avec alternative html ; la partie text/html est convertie de la partie plain
+	/**
+	 * Create a email with a text/plain part ; the text/html  part is built from the text/plain part
+	 *
+	 * @param string $plain Plain text part
+	 * @param string $htmltemplate Template for html part ; use `%content%` in the template to set the placeholder for content
+	 * @return MailPieces\MailMultipart Returns a multipart/alternative part
+	 */
 	public static function addTextHtmlFromText ($plain, $htmltemplate = "%content%")
 	{
 		return self::addTextHtml(
@@ -95,42 +147,78 @@ final class Mailer {
 	}
 	
 	
-	// create a multipart/alternative part : the text/plain and text/html part are in fact "childs" of a multipart/alternative part
+	/**
+	 * Create a multipart/alternative part
+	 * 
+	 * The text/plain and text/html part are in fact "childs" of a multipart/alternative part
+	 *
+	 * @param MailPieces\MailContent $alt1 Part 1
+	 * @param MailPieces\MailContent $alt2 Part 2
+	 * @return MailPieces\MailMultipart Returns a multipart/alternative part
+	 */
 	public static function addAlternativeObject (MailContent $alt1, MailContent $alt2)
 	{
 		return MailMultipart::from("alternative", $alt1, $alt2);
 	}
 	
 	
-	// create a text/plain part
+	/**
+	 * Create a text/plain part
+	 * 
+	 * @return MailPieces\MailTextPlainContent The plain text part
+	 */
 	public static function createText ($text)
 	{
 		return new MailTextPlainContent($text);
 	}
 	
 	
-	// create a text/html part
+	/**
+	 * Create a text/html part
+	 * 
+	 * @return MailPieces\MailTextHtmlContent The HTML part
+	 */
 	public static function createHtml ($html)
 	{
 		return new MailTextHtmlContent($html);
 	}
 	
 	
-	// create an embedding object (file, filetype, CID)
+	/**
+	 * Create an embedding object
+	 * 
+	 * @param string $embed File path to the file to embed
+	 * @param string $embedtype Mime type of the embedding
+	 * @param string $cid Content-ID for embedding
+	 * @return MailPieces\MailEmbedding Returns a embedding part
+	 */
 	public static function createEmbedding($embed, $embedtype, $cid)
 	{
 		return new MailEmbedding($embed, $embedtype, $cid);
 	}
 	
 	
-	// create an attachment (file to attach, filename of the attachment in the email, filetype)
+	/**
+	 * Create an attachment object
+	 * 
+	 * @param string $file File path to the file to attach
+	 * @param string $filename File name used in the email (will appear in the email client of the recipient)
+	 * @param string $filetype Mime type of the attachment
+	 * @return MailPieces\MailAttachment Returns a embedding part
+	 */
 	public static function createAttachment($file, $filename, $filetype)
 	{
 		return new MailAttachment($file, $filename, $filetype);
 	}
 	
 	
-	// add several attachments (associative 2 dimensions array containing file, filename and filetype columns for each row)
+	/**
+	 * Adds several attachments to an email
+	 * 
+	 * @param MailPieces\MailContent $mail Email object
+	 * @param string[][] $files Array of array about files to attach ; provide `file`, `filename` and `filetype` values for each file
+	 * @return MailPieces\MailMultipart Returns a multipart
+	 */
 	public static function addAttachments (MailContent $mail, $files)
 	{
 		$att = array();
@@ -141,42 +229,82 @@ final class Mailer {
 	}
 	
 	
-	// add an attachment to an email part
+	/**
+	 * Add an attachment to an email
+	 * 
+	 * @param MailPieces\MailContent $mail Email object
+	 * @param string $file Filepath to file to attach
+	 * @param string $filename Filename to display to the user
+	 * @param string $filetype Mime type of the attachment
+	 * @return MailPieces\MailMultipart Returns a multipart
+	 */
 	public static function addAttachment (MailContent $mail, $file, $filename, $filetype)
 	{
 		return self::addAttachmentObject($mail, self::createAttachment($file, $filename, $filetype));
 	}
 
 	
-	// add an attachment object to an email part
+	/**
+	 * Add an attachment object to an email
+	 * 
+	 * @param MailPieces\MailContent $mail Email object
+	 * @param MailPieces\MailAttachment $obj Attachment object
+	 * @return MailPieces\MailMultipart Returns a multipart
+	 */
 	public static function addAttachmentObject (MailContent $mail, MailAttachment $obj)
 	{
 		return MailMultipart::from("mixed", $mail, $obj);
 	}
 
 	
-	// add several attachments objects to en email part
+	/**
+	 * Add several attachment objects to an email
+	 * 
+	 * @param MailPieces\MailContent $mail Email object
+	 * @param MailPieces\MailAttachment[] $objs Attachment objects
+	 * @return MailPieces\MailMultipart Returns a multipart
+	 */
 	public static function addAttachmentObjects (MailContent $mail, $objs)
 	{
 		return MailMultipart::fromArray("mixed", $mail, $objs);
 	}
 
 	
-	// add an embedding to an email part
+	/**
+	 * Add an embedding to an email
+	 * 
+	 * @param MailPieces\MailContent $mail Email object
+	 * @param string $embed Filepath to file to embed
+	 * @param string $embedtype Mime type of the embedding
+	 * @param string $cid Embedding CID
+	 * @return MailPieces\MailMultipart Returns a multipart
+	 */
 	public static function addEmbedding (MailContent $mail, $embed, $embedtype, $cid)
 	{
 		return self::addEmbeddingObject($mail, self::createEmbedding($embed, $embedtype, $cid));
 	}
 
 	
-	// add an embedding object to an email part
+	/**
+	 * Add an embedding object to an email
+	 * 
+	 * @param MailPieces\MailContent $mail Email object
+	 * @param MailPieces\MailEmbedding $obj Embedding object
+	 * @return MailPieces\MailMultipart Returns a multipart
+	 */
 	public static function addEmbeddingObject (MailContent $mail, MailEmbedding $obj)
 	{
 		return MailMultipart::from("related", $mail, $obj);
 	}
 
 	
-	// add embedding objects to an email part (associative 2 dimensions array containing file, filetype and CID columns for each row)
+	/**
+	 * Adds several embeddings to an email
+	 * 
+	 * @param MailPieces\MailContent $mail Email object
+	 * @param string[][] $files Array of array about files to embed ; provide `file`, `cid` and `filetype` values for each file
+	 * @return MailPieces\MailMultipart Returns a multipart
+	 */
 	public static function addEmbeddings (MailContent $mail, $embeds)
 	{
 		$emb = array();
@@ -187,14 +315,25 @@ final class Mailer {
 	}
 
 	
-	// add several embedding objects to an email part
+	/**
+	 * Add several embedding objects to an email
+	 * 
+	 * @param MailPieces\MailContent $mail Email object
+	 * @param MailPieces\MailEmbedding[] $objs Embedding objects
+	 * @return MailPieces\MailMultipart Returns a multipart
+	 */
 	public static function addEmbeddingObjects (MailContent $mail, $objs)
 	{
 		return MailMultipart::fromArray("related", $mail, $objs);
 	}
 	
 	
-	// transform a headers string to an associative array
+	/**
+	 * Transform a headers string to an associative array
+	 * 
+	 * @param string $headers String of headers
+	 * @return string[] Return an array of headers
+	 */
 	public static function headersToArray($headers)
 	{
 		// if no header, return empty array

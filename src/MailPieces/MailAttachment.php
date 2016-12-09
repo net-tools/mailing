@@ -1,4 +1,10 @@
 <?php
+/**
+ * MailAttachment
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
 
 // namespace
 namespace Nettools\Mailing\MailPieces;
@@ -8,15 +14,24 @@ use \Nettools\Mailing\Mailer;
 
 
 
-// class to deal with attachments
+/** 
+ * Class to deal with attachments
+ */
 class MailAttachment extends MailMixedContent {
 
 // [----- PROTECTED -----
 
+    /** @var string Filename to display (not to be misunderstanded with the path to the file attached) */
 	protected $_filename = NULL;
 
 
-	// get attachments cache
+	/**
+     * Get attachments cache
+     *
+     * @see \Nettools\Mailing\Mailer::getAttachmentsCache
+     *
+     * @return \Nettools\Core\Containers\Cache Cache used for attachments
+     */
 	protected function _getCache()
 	{
 		return Mailer::getAttachmentsCache();
@@ -28,7 +43,14 @@ class MailAttachment extends MailMixedContent {
 
 // [----- PUBLIC -----
 
-	// constructor
+	/**
+     * Constructor
+     *
+     * @param string $file Path to file
+     * @param string $filename Name of file (used to display a filename for the attachement in the client mail application)
+     * @param string $file_type Mime type of file
+     * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
+     */
 	public function __construct($file, $filename, $file_type, $ignoreCache = false)
 	{
 		parent::__construct($file, $file_type, $ignoreCache);
@@ -36,12 +58,23 @@ class MailAttachment extends MailMixedContent {
 	}
 	
 	
-	// accessors
+	/** 
+     * Get Filename accessor
+     * 
+     * @return string Filename to display
+     */
+	public function getFileName() { return $this->_filename; }
+
+    
+    /** 
+     * Set Filename accessor
+     * 
+     * @param string $f Filename to display
+     */
 	public function getFileName() { return $this->_filename; }
 	public function setFileName($f) { $this->_filename = $f; }
 	
 
-	// get headers for this part
 	public function getHeaders()
 	{
 		return 	"Content-Type: " . $this->getContentType() . ";\r\n   name=\"" . $this->_filename . "\"\r\n" .

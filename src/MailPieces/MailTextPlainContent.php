@@ -1,15 +1,28 @@
 <?php
+/**
+ * MailMixedContent
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
+
+
 
 // namespace
 namespace Nettools\Mailing\MailPieces;
 
 
 
-// base class for text/plain ; output will be in utf8 charset, QP encoded
+/**
+ * Base class for text/plain
+ * 
+ * Output will be in utf8 charset, QP encoded
+ */
 class MailTextPlainContent extends MailContent {
 
 // [----- PROTECTED -----
 
+    /** @var string Raw text data */
 	protected $_text;
 
 // ----- PROTECTED -----]
@@ -18,7 +31,11 @@ class MailTextPlainContent extends MailContent {
 
 // [----- PUBLIC -----
 
-	// constructor
+	/** 
+     * Constructor
+     * 
+     * @param string $text Raw text data
+     */
 	public function __construct($text)
 	{
 		parent::__construct("text/plain");
@@ -26,9 +43,20 @@ class MailTextPlainContent extends MailContent {
 	}
 	
 	
-	// accessors
+	/** 
+     * Get text accessor
+     *
+     * @return string Text data
+     */
 	public function getText() { return $this->_text; }
-	public function setText($t) { $this->_text = $t; }
+
+    
+	/** 
+     * Set text accessor
+     *
+     * @param string $t Text data
+     */
+    public function setText($t) { $this->_text = $t; }
 	
 	
 	// get headers

@@ -78,7 +78,7 @@ abstract class MailContent {
 	/**
      * Set custom headers 
      *
-     * To add one header at a time, call {@see MaiContent::addCustomHeader}.
+     * To add one header at a time, call {@see MailContent::addCustomHeader}.
      * 
      * @param string $h String of headers to set
      */

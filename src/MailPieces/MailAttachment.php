@@ -71,7 +71,6 @@ class MailAttachment extends MailMixedContent {
      * 
      * @param string $f Filename to display
      */
-	public function getFileName() { return $this->_filename; }
 	public function setFileName($f) { $this->_filename = $f; }
 	
 

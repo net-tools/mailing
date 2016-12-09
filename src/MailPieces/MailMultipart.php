@@ -38,9 +38,10 @@ class MailMultipart extends MailContent {
      * Static factory to create a Multipart from two parts
      *
      * Allowed types are :
-     * - mixed (attachments)
-     * - alternative (text/plain or text/html)
-     * - related (embeddings)
+     * 
+     *     - mixed (attachments)
+     *     - alternative (text/plain or text/html)
+     *     - related (embeddings)
      * 
      * @param string $type Type of the multipart
      * @param MailContent $p1 First part
@@ -57,9 +58,10 @@ class MailMultipart extends MailContent {
      * Static factory to create a Multipart from an array of parts merged with one first part (case for text/html and attachments)
      *
      * Allowed types are :
-     * - mixed (attachments)
-     * - alternative (text/plain or text/html)
-     * - related (embeddings)
+     *
+     *     - mixed (attachments)
+     *     - alternative (text/plain or text/html)
+     *     - related (embeddings)
      * 
      * @param string $type Type of the multipart
      * @param MailContent $p1 First part
@@ -76,10 +78,11 @@ class MailMultipart extends MailContent {
      * Static factory to create a Multipart from an array of parts
      *
      * Allowed types are :
-     * - mixed (attachments)
-     * - alternative (text/plain or text/html)
-     * - related (embeddings)
-     * 
+     *
+     *     - mixed (attachments)
+     *     - alternative (text/plain or text/html)
+     *     - related (embeddings)
+     *
      * @param string $type Type of the multipart
      * @param MailContent[] $parts Array of parts
      * @return MailMultipart New object created from parameters
@@ -140,10 +143,11 @@ class MailMultipart extends MailContent {
      * Constructor
      *
      * Allowed types are :
-     * - mixed (attachments)
-     * - alternative (text/plain or text/html)
-     * - related (embeddings)
-     * 
+     *
+     *     - mixed (attachments)
+     *     - alternative (text/plain or text/html)
+     *     - related (embeddings)
+     *
      * @param string $type Type of the multipart
      * @param MailContent[] $parts Array of parts
      */

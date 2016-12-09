@@ -65,8 +65,9 @@ abstract class MailContent {
 	/**
      * Get text value for this part
      * 
-     * Headers and contents are merged ; used in {@see MailMultipart::getContent}
+     * Headers and contents are merged
      *
+     * @see MailMultipart::getContent
      * @return string The text representation of this part (headers and content merged)
      */
 	public function toString()
@@ -78,8 +79,9 @@ abstract class MailContent {
 	/**
      * Set custom headers 
      *
-     * To add one header at a time, call {@see MailContent::addCustomHeader}.
+     * To add one header at a time call setCustomHeader()
      * 
+     * @see MailContent::addCustomHeader
      * @param string $h String of headers to set
      */
 	public function setCustomHeaders($h)

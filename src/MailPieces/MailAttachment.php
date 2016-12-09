@@ -29,7 +29,6 @@ class MailAttachment extends MailMixedContent {
      * Get attachments cache
      *
      * @see \Nettools\Mailing\Mailer::getAttachmentsCache
-     *
      * @return \Nettools\Core\Containers\Cache Cache used for attachments
      */
 	protected function _getCache()

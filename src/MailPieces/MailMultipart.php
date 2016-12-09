@@ -20,7 +20,7 @@ class MailMultipart extends MailContent {
 
 // [----- PROTECTED -----
 
-    /** @var string Boundary separator (please refer to email RFC {@see https://tools.ietf.org/html/rfc2822}) */
+    /** @var string Boundary separator (please refer to email RFC https://tools.ietf.org/html/rfc2822) */
 	protected $_separator = NULL;
     
     /** @var MailContent[] Array of parts */

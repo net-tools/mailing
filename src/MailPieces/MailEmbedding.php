@@ -32,7 +32,6 @@ class MailEmbedding extends MailMixedContent {
      * Get embeddings cache
      *
      * @see Mailer::getEmbeddingsCache
-     *
      * @return \Nettools\Core\Containers\Cache The cache used for embeddings
      */ 
 	protected function _getCache()

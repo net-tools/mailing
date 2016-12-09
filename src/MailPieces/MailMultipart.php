@@ -39,9 +39,9 @@ class MailMultipart extends MailContent {
      *
      * Allowed types are :
      * 
-     *     - mixed (attachments)
-     *     - alternative (text/plain or text/html)
-     *     - related (embeddings)
+     * - mixed (attachments)
+     * - alternative (text/plain or text/html)
+     * - related (embeddings)
      * 
      * @param string $type Type of the multipart
      * @param MailContent $p1 First part
@@ -59,9 +59,9 @@ class MailMultipart extends MailContent {
      *
      * Allowed types are :
      *
-     *     - mixed (attachments)
-     *     - alternative (text/plain or text/html)
-     *     - related (embeddings)
+     * - mixed (attachments)
+     * - alternative (text/plain or text/html)
+     * - related (embeddings)
      * 
      * @param string $type Type of the multipart
      * @param MailContent $p1 First part
@@ -79,9 +79,9 @@ class MailMultipart extends MailContent {
      *
      * Allowed types are :
      *
-     *     - mixed (attachments)
-     *     - alternative (text/plain or text/html)
-     *     - related (embeddings)
+     * - mixed (attachments)
+     * - alternative (text/plain or text/html)
+     * - related (embeddings)
      *
      * @param string $type Type of the multipart
      * @param MailContent[] $parts Array of parts
@@ -144,9 +144,9 @@ class MailMultipart extends MailContent {
      *
      * Allowed types are :
      *
-     *     - mixed (attachments)
-     *     - alternative (text/plain or text/html)
-     *     - related (embeddings)
+     * - mixed (attachments)
+     * - alternative (text/plain or text/html)
+     * - related (embeddings)
      *
      * @param string $type Type of the multipart
      * @param MailContent[] $parts Array of parts

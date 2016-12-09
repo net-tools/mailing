@@ -1,6 +1,6 @@
 <?php
 /**
- * MailMixedContent
+ * MailMultipart
  *
  * @author Pierre - dev@net-tools.ovh
  * @license MIT

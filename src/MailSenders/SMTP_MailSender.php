@@ -1,4 +1,13 @@
 <?php
+/**
+ * SMTP_MailSender
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
+
+
+
 
 // namespace
 namespace Nettools\Mailing\MailSenders;
@@ -9,17 +18,37 @@ use \Nettools\Mailing\Mailer;
 
 
 
-// strategy to send emails with SMTP protocol
-// expected constructor parameters : host, port, auth, username, password, persist
+/**
+ * Strategy to send emails with SMTP protocol
+ *
+ * We expect that the constructor receives the following parameters :
+ *
+ * - host
+ * - port
+ * - auth (true or false)
+ * - username
+ * - password
+ * - persist (true to let the connection open or false to close it)
+ * 
+ */
 class SMTP_MailSender extends MailSender
 {
 	// [----- PROTECTED -----
 	
+    /** @var object SMTP object used (from PEAR lib) */
 	protected $smtp = NULL;
+    
+    /** @var string Last error message */
 	protected $initerror = NULL;
 	
 	
-	// send the email through smtp (headers is an array)
+	/**
+     * Send the email through smtp
+     *
+     * @param string $to Recipient
+     * @param string $mail Email to send, as text
+     * @param string[] $headers Email headers array
+     */
 	protected function _doSend($to, $mail, $headers)
 	{
 		$ret = $this->smtp->send($to, $headers, $mail);
@@ -32,8 +61,8 @@ class SMTP_MailSender extends MailSender
 	
 	// ----- PROTECTED -----]
 
-	// constructor
-	function __construct($params = NULL)
+    // constructor
+    function __construct($params = NULL)
 	{
 		// parent constructor call
 		parent::__construct($params);

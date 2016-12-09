@@ -1,26 +1,51 @@
 <?php
+/**
+ * MailSender
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
+
+
 
 // namespace
 namespace Nettools\Mailing;
 
 
 
-
-// base class for an email sending strategy (PHP Mail function, SMTP, etc.)
+/**
+ * Base class for an email sending strategy (PHP Mail function, SMTP, etc.)
+ */
 abstract class MailSender{
 
 	// [----- STATIC -----
 	
+    /** @var string Class name of a sending strategy which produces EML files */
 	const EMLFILE = "EmlFile_MailSender";
+    
+    /** @var string Class name of a sending strategy which uses PHP buil-in mail() function */
 	const PHPMAIL = "PHPMail_MailSender";
+    
+    /** @var string Class name of a sending strategy which connects to a SMTP server */
 	const SMTP = "SMTP_MailSender";
+    
+    /** @var string Class name of a sending strategy which stores sent emails in an array (useful for debugging or unit tests) */
 	const VIRTUAL = "Virtual_MailSender";
 	
+    /** @var string Parameter name for the log callback ; to be used in the `$params` parameter in constructor of `factory` method */
 	const CALLBACK_LOG = "callback_log";
-	const CALLBACK_LOG_DATA = "callback_log_data";
+
+    /** @var string Parameter name for the log callback data ; to be used in the `$params` parameter in constructor of `factory` method */
+    const CALLBACK_LOG_DATA = "callback_log_data";
 
 	
-	// create an object instance for the strategy
+	/**
+     * Create an object instance for the strategy
+     *
+     * @param string $concreteSenderName Set this parameter to one of the constants declared in MailSender : `EMLFILE, PHPMAIL, SMTP or VIRTUAL`
+     * @param string[] $params Array of parameters to pass to the strategy constructor
+     * @return MailSender Returns a sending strategy
+     */
 	static function factory($concreteSenderName, $params = NULL)
 	{
 		$cname = "\\Nettools\\Mailing\\MailSenders\\$concreteSenderName";
@@ -32,10 +57,13 @@ abstract class MailSender{
 
 	// [----- PROTECTED -----
 	
+    /** @var string[] Array of strategy parameters */
 	protected $params = NULL;
 	
 	
-	// callback to the caller when email sent (if needed)
+	/** 
+     * Callback to the caller when email sent (if needed)
+     */
 	protected function _acknowledgeMailSent()
 	{
 		if ( $this->params[self::CALLBACK_LOG] )
@@ -44,7 +72,11 @@ abstract class MailSender{
 
 	// ----- PROTECTED -----]
 	
-	// constructor
+	/** 
+     * Constructor
+     * 
+     * @param string[] $params Array of parameters for the sending strategy 
+     */
 	function __construct($params = NULL)
 	{
 		if ( is_null($params) )
@@ -54,16 +86,33 @@ abstract class MailSender{
 	}
 	
 
-	// implement email sending in child classes
+	/**
+     * Send the email (to be implemented in child classes)
+     *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+     * @return bool|string Returns FALSE if sending is done (no error), or an error string if an error occured
+     */
 	abstract function doSend($to, $subject, $mail, $headers);
 	
 
-	// handle Bcc case
+	/**
+     * Handle Bcc 
+     *
+     * With a BCC header, we must do specific things. SMTP does not handle Bcc. When having a Bcc header, we must send 
+	 * a 'normal' email to this Bcc recipient (and removing Bcc header, which the recipient must not see). If multiple
+	 * recipients, we must send as many emails. When using Php Mail function, it processes Bcc headers that way.
+     *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+     * @return bool Always returns FALSE (no error)
+     */
 	function handleBcc($to, $subject, $mail, &$headers)
 	{
-		// if BCC header, we must do specific things. SMTP does not handle Bcc. When having a Bcc header, we must send 
-		// an 'normal' email to this Bcc recipient (and removing Bcc header, which the recipient must not see). If multiple
-		// recipients, we must send as many emails. When using Php Mail function, it processes Bcc headers that way.
 		if ( $bcc = Mailer::getHeader($headers, 'Bcc') )
 		{
 			// remove Bcc header
@@ -80,7 +129,15 @@ abstract class MailSender{
 	}
 
 	
-	// prepare for sending the email (handle Bcc case)
+	/**
+     * Prepare for sending the email (we handle here the Bcc case)
+     *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+     * @return bool|string Returns FALSE if sending is done (no error), or an error string if an error occured
+     */
 	function handleSend($to, $subject, $mail, $headers)
 	{
 		// handle Bcc ; headers array may be modified after the call (Bcc line removed)
@@ -91,7 +148,14 @@ abstract class MailSender{
 	}
 	
 	
-	// handle the To and Subject headers
+	/**
+     * Add the To and Subject headers to the headers string
+     * 
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+     */
 	function handleHeaders_ToSubject($to, $subject, $mail, &$headers)
 	{
 		$headers = Mailer::addHeader($headers, "To: $to");
@@ -99,7 +163,14 @@ abstract class MailSender{
 	}
 	
 	
-	// Handle priority ; we always set high priorty at the moment
+	/**
+     * Handle priority ; we always set high priorty at the moment
+     * 
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+     */
 	function handleHeaders_Priority($to, $subject, $mail, &$headers)
 	{
 		$headers = Mailer::addHeader($headers, "X-Priority: 1");
@@ -108,7 +179,14 @@ abstract class MailSender{
 	}
 	
 	
-	// handle headers modifications (to/subject/priority)
+	/**
+     * Handle headers modifications (to/subject/priority)
+     * 
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+     */
 	function handleHeaders($to, $subject, $mail, &$headers)
 	{
 		$this->handleHeaders_ToSubject($to, $subject, $mail, $headers);
@@ -116,7 +194,15 @@ abstract class MailSender{
 	}
 	
 	
-	// send the email ; return FALSE if OK, an error string otherwise
+	/**
+     * Send the email
+     *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+     * @return bool|string Returns FALSE if sending is done (no error), or an error string if an error occured
+     */
 	function send($to, $subject, $mail, $headers)
 	{
 		// if init OK
@@ -139,15 +225,25 @@ abstract class MailSender{
 	}	
 
 
-	// are we ready ?
+	/**
+     * Is the sending strategy ready (all required parameters set) ?
+     *
+     * @return bool Returns TRUE if strategy if ready
+     */
 	function ready() { return true; }
 	
 	
-	// destruct strategy
+	/**
+     * Destruct strategy (do housecleaning stuff such as closing SMTP connections)
+     */
 	function destruct() {}
 	
 	
-	// get error
+	/**
+     * Get an error message explaining why the strategy is not ready
+     *
+     * @return string Error message
+     */
 	function getMessage() { return NULL; }
 }
 

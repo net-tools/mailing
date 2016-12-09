@@ -1,4 +1,12 @@
 <?php
+/**
+ * Virtual_MailSender
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
+
+
 
 // namespace
 namespace Nettools\Mailing\MailSenders;
@@ -8,11 +16,14 @@ use \Nettools\Mailing\MailSender;
 
 
 
-// strategy to send emails to an array (useful for unit testing)
+/** 
+ * Strategy to send emails to an array (useful for unit testing)
+ */
 class Virtual_MailSender extends MailSender
 {
 	// [----- PROTECTED -----
 	
+    /** @var string[] Emails sent (as an array of strings) */
 	protected $_sent = array();
 	
 	// ----- PROTECTED -----]
@@ -40,7 +51,11 @@ class Virtual_MailSender extends MailSender
 	}
 	
 	
-	// get array for emails sent
+	/**
+     * Get array for emails sent
+     *
+     * @return string[] An array of emails as strings
+     */
 	function getSent()
 	{
 		return $this->_sent;

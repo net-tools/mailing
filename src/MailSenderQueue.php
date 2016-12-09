@@ -1,4 +1,14 @@
 <?php
+/**
+ * MailSenderQueue
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
+
+
+
+
 
 // namespace
 namespace Nettools\Mailing;
@@ -9,7 +19,9 @@ use \Nettools\Mailing\MailPieces\MailContent;
 
 
 
-// class to handle mailing queues
+/** 
+ * Class to handle mailing queues
+ */
 class MailSenderQueue 
 {
 	// *** PRIVATE ***
@@ -180,7 +192,11 @@ class MailSenderQueue
 	// *** /PRIVATE ***
 
 
-	// initialize queue with a root folder for all queues (each queue will have a subfolder)
+	/**
+     * Initialize queue with a root folder for all queues (each queue will have a subfolder)
+     *
+     * @param string $directory Root folder for queues storage
+     */
 	function __construct($directory)
 	{
 		if ( substr($directory, -1) != '/' )
@@ -191,7 +207,13 @@ class MailSenderQueue
 	}
 	
 	
-	// create a new queue
+	/**
+     * Create a new queue
+     * 
+     * @param string $qtitle Name of queue to create
+     * @param int $qbatchcount Number of emails to send at a time (batch sending)
+     * @return string The unique ID of the queue
+     */
 	function createQueue($qtitle, $qbatchcount = 50)
 	{
 		$id = $this->_createQueue($qtitle, $qbatchcount);
@@ -201,14 +223,25 @@ class MailSenderQueue
 	}
 	
 	
-	// get info about a queue id
+	/**
+    * Get info about a queue
+    *
+    * @param string $qid ID of the queue
+    * @return string[] Array of data about the queue
+    */
 	function getQueue($qid)
 	{
 		return $this->_data['queues'][$qid];
 	}
 	
 	
-	// get data about all queues
+	/**
+     * Get data about all queues
+     *
+     * @param string $sort One of the SORT_xxx constant defined here 
+     * @param string $sortorder One of the SORTORDER_xxx constant defined here
+     * @return string[][] Returns an array of queues structs
+     */
 	function getQueues($sort, $sortorder = self::SORTORDER_ASC)
 	{
 		$ret = $this->_data['queues'];
@@ -236,7 +269,16 @@ class MailSenderQueue
 	}
 	
 	
-	// push an email to the queue
+	/**
+     * Push an email to the queue
+     * 
+     * @param string $qid ID of the queue
+     * @param MailPieces\MailContent $mail Email object
+     * @param string $from Email address of the sender
+     * @param string $to Email recipient
+     * @param string $subject Email subject
+     * @return bool Always return FALSE (meaning no error)
+     */
 	function push($qid, MailContent $mail, $from, $to, $subject)
 	{
 		// add required headers to the email (importance, etc.)
@@ -255,7 +297,12 @@ class MailSenderQueue
 	}
 	
 	
-	// rename a queue
+	/**
+     * Rename a queue
+     * 
+     * @param string $qid ID of the queue
+     * @param string $value New name
+     */
 	function renameQueue($qid, $value)
 	{
 		$this->_data['queues'][$qid]['title'] = $value;
@@ -263,7 +310,11 @@ class MailSenderQueue
 	}
 	
 	
-	// unlock a queue (a queue is locked when all email have been sent)
+	/**
+     * Unlock a queue (a queue is locked when all email have been sent)
+     * 
+     * @param string $qid ID of the queue
+     */
 	function unlockQueue($qid)
 	{
 		$this->_data['queues'][$qid]['locked'] = false;
@@ -271,7 +322,13 @@ class MailSenderQueue
 	}
 	
 	
-	// search an email recipient in the queue
+	/**
+     * Search an email recipient in the queue
+     * 
+     * @param string $qid ID of the queue
+     * @param string $mail Email of recipient
+     * @return int 0-index of email found in the queue
+     */
 	function searchQueue($qid, $mail)
 	{
 		$q = $this->_data['queues'][$qid];
@@ -294,7 +351,13 @@ class MailSenderQueue
 	}
 	
 	
-	// extract an email from the queue
+	/**
+     * Extract an email from the queue
+     * 
+     * @param string $qid ID of the queue
+     * @param int 0-index of email in the queue
+     * @return string Email raw text (headers and content)
+     */
 	function emlFromQueue($qid, $index)
 	{
 		$q = $this->_data['queues'][$qid];
@@ -319,14 +382,27 @@ class MailSenderQueue
 	}
 	
 	
-	// close a queue (all emails have been pushed in the queue)
+	/** 
+     * Close a queue (all emails have been pushed in the queue)
+     * 
+     * @param string $qid ID of the queue
+     */
 	function closeQueue($qid)
 	{
 		$this->_writeData();
 	}
 	
 	
-	// resend an email from the queue
+	/** 
+     * Resend an email from the queue
+     * 
+     * @param Mailer $mailer Mailer used for sending the email again
+     * @param string $qid ID of the queue
+     * @param int $index 0-index of the email to send in the queue
+     * @param string|NULL $bcc Recipient in bcc, if necessary
+     * @param string|NULL $to Recipient to send the email to, if we want to override the previous recipient
+     * @return bool|string Return FALSE if email was sent (meaning no error), or a string with an error message
+     */
 	function resendFromQueue(Mailer $mailer, $qid, $index, $bcc = NULL, $to = NULL)
 	{
 		$q = $this->_data['queues'][$qid];
@@ -338,7 +414,13 @@ class MailSenderQueue
 	}
 	
 	
-	// create a new queue with email whose status is error
+	/**
+    * Create a new queue with email whose status is error
+    * 
+    * @param string $qid ID of the queue to extract emails in error from
+    * @param string $title Name of the new queue
+    * @return string Returns the ID of the new queue created
+    */
 	function newQueueFromErrors($qid, $title)
 	{
 		$q = $this->_data['queues'][$qid];
@@ -365,7 +447,14 @@ class MailSenderQueue
 	}
 	
 	
-	// send a batch of email through a Mailer instance, and optionnally add headers
+	/** 
+     * Send a batch of email through a Mailer instance, and optionnally add headers
+     *
+     * @param Mailer $mailer Mailer instance to send email through
+     * @param string $qid ID of the queue to process
+     * @param string $suppl_headers Optionnal supplementary headers
+     * @return bool|string Returns FALSE if the process was OK, an string with an error message otherwise 
+     */
 	function sendQueue(Mailer $mailer, $qid, $suppl_headers = "")
 	{
 		$q = $this->_data['queues'][$qid];
@@ -414,7 +503,12 @@ class MailSenderQueue
 	}
 	
 	
-	// get recipients for a queue
+	/**
+     * Get recipients for a queue
+     * 
+     * @param string $qid ID of the queue to extract recipients from
+     * @return string[][] Return an array of data about recipients (defining 'to', 'id' and 'status' keys)
+     */
 	function recipientsFromQueue($qid)
 	{
 		$q = $this->_data['queues'][$qid];
@@ -436,7 +530,14 @@ class MailSenderQueue
 	}
 	
 	
-	// set an email to error (after it has been sent) ; useful when the email recipient is later reported to be wrong
+	/**
+     * Set an email to error (after it has been sent)
+     * 
+     * Useful when the email recipient is later reported to be wrong
+     *
+     * @param string $qid ID of the queue
+     * @param int 0-index of the email to set to error status
+     */
 	function recipientError($qid, $index)
 	{
 		$q = $this->_data['queues'][$qid];
@@ -472,7 +573,11 @@ class MailSenderQueue
 	}
 	
 	
-	// erase log for a queue
+	/**
+     * Erase log for a queue
+     *
+     * @param string $qid ID of the queue
+     */
 	function clearLog($qid)
 	{
 		$q = $this->_data['queues'][$qid];
@@ -487,7 +592,12 @@ class MailSenderQueue
 	}
 	
 	
-	// erase a queue from disk
+	/**
+     * Erase a queue from disk
+     *
+     * @param string $qid ID of the queue
+     */
+
 	function purgeQueue($qid)
 	{
 		$files = glob($this->_directory . "$qid/$qid.*");
@@ -505,7 +615,9 @@ class MailSenderQueue
 	}
 	
 	
-	// erase all queues
+	/**
+     * Erase all queues on disk
+     */
 	function purgeAllQueues()
 	{
 		foreach ( $this->_data['queues'] as $qid => $q )

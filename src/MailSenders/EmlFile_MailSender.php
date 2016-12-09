@@ -1,4 +1,13 @@
 <?php
+/**
+ * EmlFile_MailSender
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
+
+
+
 
 // namespace
 namespace Nettools\Mailing\MailSenders;
@@ -8,16 +17,22 @@ use \Nettools\Mailing\MailSender;
 
 
 
-// strategy to output the email in a folder (EML file)
+/** 
+ * Strategy to output the email in a folder (EML file)
+ * 
+ * We expect that the constructor receive a 'path' option containing a path to the working storage folder for sent emails.
+ */
 class EmlFile_MailSender extends MailSender
 {
 	// [----- PROTECTED -----
 	
+    /** @var string[] Array of path to emails sent (path to storage folder) */
 	protected $_emlSent = array();
 	
 	// ----- PROTECTED -----]
 	
 	
+    /** @var string Constant for parameter name for the path to the storage folder */
 	const PATH = 'path';
 	
 	
@@ -51,7 +66,11 @@ class EmlFile_MailSender extends MailSender
 	}
 	
 	
-	// get a list of emails sent during this session
+	/**
+     * Get a list of emails sent during this session
+     *
+     * @return string[] Array of file paths
+     */
 	function getEmlFiles()
 	{
 		return $this->_emlSent;

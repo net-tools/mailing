@@ -27,7 +27,7 @@ use \Nettools\Core\Helpers\FileHelper;
 
 
 
-/*
+/**
  * Class to prepare an email and send it through a sending strategy.
  *
  * Currently, the following strategies are available (sub-namespace MailSenders) :
@@ -500,7 +500,7 @@ final class Mailer {
 	 *
 	 * - $code : will contain the email part 
 	 * - $ctype : will be set with the email part content-type
-	 * - $data : `$data` parameter of patch method ; useful to transmitt work data to callback
+	 * - $data : `$data` parameter of patch method ; useful to transmit work data to callback
 	 * 
 	 * @param MailPieces\MailContent $mail Email to process
 	 * @param callable $fun Callback (see method summary for it's parameters)

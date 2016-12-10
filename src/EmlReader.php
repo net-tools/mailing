@@ -1,4 +1,12 @@
 <?php
+/**
+ * Mailer
+ *
+ * @author Pierre - dev@net-tools.ovh
+ * @license MIT
+ */
+
+
 
 // namespace
 namespace Nettools\Mailing;
@@ -14,14 +22,20 @@ use \Nettools\Mailing\MailPieces\MailEmbedding;
 
 
 
-// class to parse an EML file et get a MailContent object
+/**
+ * Class to parse an EML file et get a MailContent object
+ */
 class EmlReader
 {
-	// last error encountered
+	/** @var string Last error encountered **/
 	static public $lastError = NULL;
 	
 	
-	// set error message
+	/** 
+	 * Sets error message
+	 *
+	 * @param string $msg Error message
+	 */
 	static protected function _error($msg)
 	{
 		self::$lastError = $msg;
@@ -29,7 +43,11 @@ class EmlReader
 	}
 	
 	
-	// clear temp files used for embeddings and attachments
+	/**
+	 * Clear temp files used for embeddings and attachments
+	 * 
+	 * @param MailPieces\MailContent $mail Mail object to process
+	 */
 	static function destroy(MailContent $mail)
 	{
 		// traiter par récursion
@@ -51,8 +69,21 @@ class EmlReader
 	}
 	
 	
-	// decode a header ; if VALUE is null, we return the first value (the value before ';') ; if value is a string we return the parameter named $value
-    // for example : (text/plain; charset="UTF-8"; format=flowed), we have the first value (text/plain) and two parameters (charset and format)
+	/**
+	 * Decode a header
+	 * 
+	 * If `$value` is null, we return the first value (the value before ';') ; if `$value` is a string we return the 
+	 * parameter named according to it's value. 
+	 * For example, in : 
+	 *
+	 *    text/plain; charset="UTF-8"; format=flowed
+	 *
+	 * we have the first value (text/plain) and two parameters (charset and format)
+	 *
+	 * @param string $header Header to parse
+	 * @param string $value Parameter to return ; to get the full header value, pass NULL as value
+	 * @return string Returns the header value, or the value for the parameter named as `$value` content
+	 */
 	static function decodeHeader($header, $value = NULL)
 	{
 		if ( !$header )
@@ -82,7 +113,13 @@ class EmlReader
 	}
 	
 	
-	// decode body with content-transfer-encoding (usually, quoted printable or base64)
+	/**
+	* Decode body with content-transfer-encoding (usually, quoted printable or base64)
+	* 
+	* @param string $body Content to decode
+	* @param string $encoding Content-Transfer-Encoding for the `$body`
+	* @return string|NULL Body decoded or NULL if an error occured
+	*/
 	static function decodeBody($body, $encoding)
 	{
 		// if encoding not specified, do nothing
@@ -108,7 +145,13 @@ class EmlReader
 	}
 	
 	
-	// decode charset
+	/** 
+	 * Decode body according to a charset (may be read from Content-Type header)
+	 * 
+	 * @param string $body Body string to decode
+	 * @param string $charset Charset to use to decode
+	 * @return string|NULL Body decoded or NULL if an error occured
+	 */
 	static function decodeCharset($body, $charset)
 	{
 		if ( !$charset ) 
@@ -128,7 +171,13 @@ class EmlReader
 	}
 	
 	
-	// decode body content according to it's content-type
+	/** 
+	 * Decode body content according to it's content-type to UTF-8
+	 *
+	 * @param string $body Body to decode
+	 * @param string $ct Content-Type header from which the charset will be extracted and use for decoding
+	 * @return string|NULL The body with charset decoded to UTF-8 or NULL if an error occured
+	 */
 	static function decodeCharsetFromContentTypeHeader($body, $ct)
 	{
 		// get charset from content-type header
@@ -139,7 +188,21 @@ class EmlReader
 	}
 	
 	
-	// decode part content and we get a MailTextPlainContent, MailHtmlPlainContent, MailAttachment or MailEmbedding (choice based on the content-disposition)
+	/** 
+	 * Decode part content 
+	 * 
+	 * We get some MailPieces\MailContent classes, depending on Content-Type and Content-disposition headers :
+	 * 
+	 * - MailPieces\MailTextPlainContent
+	 * - MailPieces\MailHtmlPlainContent
+	 * - MailPieces\MailAttachment
+	 * - MailPieces\MailEmbedding
+	 *
+	 * @param string $body Body to decode
+	 * @param string[] $headers Headers array
+	 * @param string $contentType Content-Type header value
+	 * @return MailPieces\MailContent|NULL Returns the part decoded to a MailContent instance or NULL if an error occured
+	 */
 	static function decodeContent($body, $headers, $contentType)
 	{
 		// get content-disposition header
@@ -190,7 +253,14 @@ class EmlReader
 	}
 	
 	
-	// decode email from it's top level content-type
+	/**
+	 * Decode email from it's top level content-type
+	 * 
+	 * @param string $ct Content-Type header value
+	 * @param string[] $headers Headers array
+	 * @param string $body Body to decode
+	 * @return MailPieces\MailContent|NULL A MailContent object constructed or NULL if an error occured
+	 */
 	static function fromContentType($ct, $headers, $body)
 	{
 		// get content-type (text/plain, text/html, multipart/*, etc.)
@@ -273,7 +343,13 @@ class EmlReader
 	}
 	
 	
-	// get headers to a string, and set the linefeed (parameter by reference), by detecting linefeed characters in headers
+	/**
+	* Extract headers to a string, and set the linefeed (parameter by reference), by detecting linefeed characters in headers
+	*
+	* @param string $eml Email raw content
+	* @param string $linefeed Will be set with the linefeed character detected
+	* @return string Headers string extracted
+	*/
 	static function getHeaders($eml, &$linefeed)
 	{
 		// get headers lines ; 2 consecutive newlines separate the headers from the mail content. Detect type of newline
@@ -296,12 +372,17 @@ class EmlReader
 		
 		$sep = $linefeed . $linefeed;
 		
-		// returing only headers, breaking on the two newlines separation between headers and content
+		// returning only headers, breaking on the two newlines separation between headers and content
 		return strstr($eml, $sep, true);
 	}
 	
 	
-	// parse a string
+	/**
+	* Decode email from a string
+	* 
+	* @param string $data Email string to decode
+	* @return MailPieces\MailContent|NULL MailContent object constructed or NULL if an error occured
+	*/
 	static function fromString($data)
 	{
 		// decode headers and linefeed
@@ -324,7 +405,12 @@ class EmlReader
 	}
 	
 	
-	// parse from a file
+	/**
+	* Decode email from a file
+	* 
+	* @param string $file Path to email to read
+	* @return MailPieces\MailContent| MailContent object constructed or NULL if an error occured
+	*/
 	static function fromFile($file)
 	{
 		if ( file_exists($file) )

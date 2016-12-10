@@ -364,7 +364,12 @@ final class Mailer {
 	}
 	
 	
-	// transform an array of headers to a string
+	/**
+	 * Transform a array of headers to a string
+	 * 
+	 * @param string[] $headers Array of headers
+	 * @return string Return a string of headers
+	 */
 	public static function arrayToHeaders($headers)
 	{
 		// empty array : empty string returned
@@ -378,7 +383,13 @@ final class Mailer {
 	}
 	
 	
-	// get header value
+	/**
+	 * Get a specific header value
+	 *
+	 * @param string $headers Headers string
+	 * @param string $hkey Header name
+	 * @return string Returns the value of header `$hkey`
+	 */
 	public static function getHeader($headers, $hkey)
 	{
 		$pheaders = self::headersToArray($headers);
@@ -386,7 +397,13 @@ final class Mailer {
 	}
 	
 	
-	// remove a header
+	/**
+	 * Remove a header
+	 * 
+	 * @param string $headers Headers string
+	 * @param string $hkey Header name
+	 * @return string New headers string
+	 */
 	public static function removeHeader($headers, $hkey)
 	{
 		if ( !$headers )
@@ -409,7 +426,13 @@ final class Mailer {
 	}
 
 	
-	// add a new header
+	/**
+	 * Add a header to a headers string
+	 * 
+	 * @param string $headers Headers string
+	 * @param string $hkey Header `name: value`
+	 * @return string New headers string
+	 */
 	public static function addHeader($headers, $h)
 	{
 		if ( $h )
@@ -439,7 +462,13 @@ final class Mailer {
 	}
 
 
-	// add several headers to existing headers string
+	/**
+	 * Add several headers to existing headers string
+	 * 
+	 * @param string $headers Headers string
+	 * @param string[] $hs Array of headers string `name: value`
+	 * @return string New headers string
+	 */
 	public static function addHeaders($headers, $hs)
 	{
 		$hsarray = self::headersToArray($hs);
@@ -451,17 +480,34 @@ final class Mailer {
 	}
 
 
-	// encode a subject to UTF8 + BASE64
+	/**
+	 * Encode a subject to UTF8 + BASE64
+	 *
+	 * @param string $sub Subject to encode
+	 * @return string Subject encoded with UTF8 charset and BASE64 transfer-encoding
+	 */
 	public static function encodeSubject($sub)
 	{
 		return '=?utf-8?B?'.base64_encode($sub).'?=';
 	}
 	
 	
-	// patch the email after it has been constructed ; may be used to add tracking data to links after building process
-    // callback $FUN should have the following signature ($code, $ctype, $data), where $CODE will contain the email part 
-    // content, $CTYPE will be set with the email part content-type, and $DATA is the $DATA parameter of patch
-	public static function patch(MailContent $mail, $fun, $data)
+	/**
+	 * Patch the email after it has been constructed.
+	 * 
+	 * May be used to add tracking data to links after building process.
+	 * Callback `$fun` should have the following signature :
+	 *
+	 * - $code : will contain the email part 
+	 * - $ctype : will be set with the email part content-type
+	 * - $data : `$data` parameter of patch method ; useful to transmitt work data to callback
+	 * 
+	 * @param MailPieces\MailContent $mail Email to process
+	 * @param callable $fun Callback (see method summary for it's parameters)
+	 * @param mixed $data Data to pass to the callback
+	 * @return MailPieces\MailContent Returns the $mail parameters, with it's content updated
+	 */
+    public static function patch(MailContent $mail, $fun, $data)
 	{
 		if ( $mail instanceof MailMultipart )
 			switch ( $mail->getType() )
@@ -490,7 +536,12 @@ final class Mailer {
 	}
 	
 	
-	// minfy html code
+	/**
+	 * Minfy html code
+	 * 
+	 * @param string $html HTML text to minify
+	 * @return string Returns a string with no newlines, tabs and removes duplicate spaces
+	 */
 	public static function htmlMinify($html)
 	{
 		$p = preg_replace('#\r\n#', ' ', $html);
@@ -502,7 +553,12 @@ final class Mailer {
 	}
 	
 				
-	// convert an html string to plain text
+	/** 
+	 * Convert an html string to plain text, removing tags
+	 * 
+	 * @param string $html HTML string
+	 * @return string Returns plain text
+	 */
 	public static function html2plain($html)
 	{
 		// decode html entities
@@ -570,7 +626,12 @@ final class Mailer {
 	}
 	
 	
-	// convert a plain text string to html
+	/**
+	 * Convert a plain text string to html, ** replaced by B tags, == by red tags
+	 *
+	 * @param string Plain text to convert to HTML formatting
+	 * @return string HTML formatted text
+	 */
 	public static function plain2html($plain)
 	{
 		// encode entities
@@ -600,7 +661,12 @@ final class Mailer {
 	}	
 
 
-	// add required technical headers (such as MIME version)
+	/**
+	 * Add required technical headers (such as MIME version)
+	 *
+	 * @param MailPieces\MailContent $mail Mail object to process
+	 * @return MailPieces\MailContent Returns mail object modified
+	 */
 	public static function render(MailContent $mail)
 	{
 		$mail->addCustomHeader("MIME-Version: 1.0");
@@ -614,14 +680,25 @@ final class Mailer {
 
 // [----- PUBLIC -----
 
-	// constructor, with an email sending strategy name, and an array of parameters for the strategy
+	/**
+	 * Constructor
+	 * 
+	 * @param string $mailsender_name Email sending strategy name
+	 * @param string[] $params Array of parameters for the strategy
+	 */
 	public function __construct($mailsender_name, $params = NULL)
 	{
 		$this->setMailSender($mailsender_name, $params);
 	}
 	
 
-	// set the email sending strategy ; returns TRUE if init OK, FALSE otherwise ; to know the error, get strategy object with getMailSender and call getMessage()
+	/** 
+	 * Set the email sending strategy
+	 * 
+	 * @param string $mailsender_name Email sending strategy name
+	 * @param string[] $params Array of parameters for the strategy
+	 * @return bool Returns TRUE if mail sending strategy is ready after its creation, or not 
+	 */
 	public function setMailSender($mailsender_name, $params = NULL)
 	{
 		$this->mailsender = MailSender::factory($mailsender_name, $params);
@@ -630,14 +707,20 @@ final class Mailer {
 	}
 	
 	
-	// close email sending strategy (e.g. closing SMTP connections)
+	/** 
+	 * Close email sending strategy (e.g. closing SMTP connections)
+	 */
 	public function destruct()
 	{
 		return $this->getMailSender()->destruct();
 	}
 	
 
-	// get current email sending strategy, or create a default one
+	/**
+	 * Get current email sending strategy, or create a default one
+	 *
+	 * @return MailSender Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
+	 */
 	public function getMailSender()
 	{
 		if ( is_null($this->mailsender) )
@@ -647,7 +730,17 @@ final class Mailer {
 	}
 	
 	
-	// simple method call to send an email with content (either plain text or html) and optionnal attachments
+	/**
+	 * Simple method call to send an email with content (either plain text or html) and optionnal attachments
+	 *
+	 * @param string $content String with content (HTML or plain text)
+	 * @param string $from Email sender
+	 * @param string $to Email recipient
+	 * @param string $subject Email subject
+	 * @param string[] $attachments Array of filepaths
+	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
+	 * @return bool|string Returns FALSE if mail was sent, an error message if someting went wrong
+	 */
 	public function expressSendmail($content, $from, $to, $subject, $attachments = array(), $destruct = false)
 	{
 		// detect content-type
@@ -680,7 +773,16 @@ final class Mailer {
 	}
 	
 	
-	// send an email built with static building method of Mailer
+	/**
+	 * Send an email built with static building method of Mailer
+	 *
+	 * @param MailPieces\MailContent $mail Mail object to send
+	 * @param string $from Email sender
+	 * @param string $to Email recipient
+	 * @param string $subject Email subject
+	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
+	 * @return bool|string Returns FALSE if mail was sent, an error message if someting went wrong
+	 */
 	public function sendmail(MailContent $mail, $from, $to, $subject, $destruct = false)
 	{
 		// add required technical headers
@@ -691,7 +793,16 @@ final class Mailer {
 	}
 	
 	
-	// send raw mail
+	/**
+	 * Send raw mail
+	 *
+	 * @param string $to Email recipient
+	 * @param string $subject Email subject
+	 * @param string $mail Email body as text
+	 * @param string $headers Headers string
+	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
+	 * @return bool|string Returns FALSE if mail was sent, an error message if someting went wrong
+	 */
 	public function sendmail_raw($to, $subject, $mail, $headers, $destruct = false)
 	{
 		// if recipients is not an array, converting it to an array of recipients

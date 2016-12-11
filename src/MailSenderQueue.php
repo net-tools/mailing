@@ -91,7 +91,7 @@ class MailSenderQueue
 	
 	
 	// send an email from the queue ; we may modify the recipient, bcc, and headers
-	private function _sendFromQueue(Mailer $mailer, $q, $qid, $index, $bcc = NULL, $to = NULL, $suppl_headers = "")
+	private function _sendFromQueue(Mailer $mailer, object $q, $qid, $index, $bcc = NULL, $to = NULL, $suppl_headers = "")
 	{
 		// read mail from the queue
 		if ( $mail = $this->_mailFromQueue($qid, $index) )
@@ -110,13 +110,13 @@ class MailSenderQueue
 			// how is the recipient ? either the TO recipient in the email or the $TO parameter here (if we want to override the recipient)
 			$to or $to = $data['to'];
 			if ( $data === FALSE )
-				return "Can't read data about email '$index' from queue '" . $q['title'] . "'";
+				return "Can't read data about email '$index' from queue '" . $q->title . "'";
 			else
 				// send the email ; false is returned if OK, an error string if something is wrong
 				$ret = $mailer->sendmail_raw($to, $data['subject'], $mail['email'], $mail['headers']);
 		}
 		else
-			return "Missing data files for the email '$i' from queue '" . $q['title'] . "'";
+			return "Missing data files for the email '$i' from queue '" . $q->title . "'";
 
 
 		// set sending status and write config
@@ -127,7 +127,7 @@ class MailSenderQueue
 		fclose($f);
 			
 		if ( $ret )
-			return "Can't send email to '$to' (" . $q['title'] .") : $ret";
+			return "Can't send email to '$to' (" . $q->title .") : $ret";
 		else
 			return FALSE;
 	}
@@ -149,7 +149,7 @@ class MailSenderQueue
 					'volume' => 0
 				);
 				
-		$this->_data['queues'][$id] = $q;
+		$this->_data['queues'][$id] = (object) $q;
 		
 		// create a sub-folder for this queue
 		if ( !file_exists($this->_directory . $id) )
@@ -163,7 +163,7 @@ class MailSenderQueue
 	private function _push($qid, $rawmail, $headers, $data)
 	{
 		// get ID for this email
-		$mid = $this->_data['queues'][$qid]['count'];
+		$mid = $this->_data['queues'][$qid]->count;
 		
 		// write email raw content
 		$f = fopen($this->_directory . "$qid/$qid.$mid.mail", "w");
@@ -171,7 +171,7 @@ class MailSenderQueue
 		fclose($f);
 
 		// increment queue size stats
-		$this->_data['queues'][$qid]['volume'] += filesize($this->_directory . "$qid/$qid.$mid.mail");
+		$this->_data['queues'][$qid]->volume += filesize($this->_directory . "$qid/$qid.$mid.mail");
 		
 		// write headers
 		$f = fopen($this->_directory . "$qid/$qid.$mid.headers", "w");
@@ -184,7 +184,7 @@ class MailSenderQueue
 		fclose($f);
 		
 		// increment queue count
-		$this->_data['queues'][$qid]['count']++;
+		$this->_data['queues'][$qid]->count++;
 		return false; // no error
 	}
 	
@@ -224,10 +224,22 @@ class MailSenderQueue
 	
 	
 	/**
-    * Get info about a queue
+    * Get info about a queue.
+    *
+    * The litteral object returned has the following properties :
+    *
+    *    - count : number of emails in the queue
+    *    - sendOffset : the index of the next email to send (used when batching sendings)
+    *    - batchCount : the number of emails to send in one batch
+    *    - date : the timestamp of queue creation
+    *    - lastBatchDate : the timestamp of the last batch sending process
+    *    - sendLog : an array of string for log
+    *    - title : the queue title
+    *    - locked : contains TRUE if queue has been sent completely, FALSE otherwise
+    *    - volume : the size of the queue (in bytes)
     *
     * @param string $qid ID of the queue
-    * @return string[] Array of data about the queue
+    * @return object Litteral object describing the queue
     */
 	function getQueue($qid)
 	{
@@ -240,7 +252,7 @@ class MailSenderQueue
      *
      * @param string $sort One of the SORT_xxx constant defined here 
      * @param string $sortorder One of the SORTORDER_xxx constant defined here
-     * @return string[][] Returns an array of queues structs
+     * @return object[] Returns an indexed array of queues litteral objects (indexes are the queues ID)
      */
 	function getQueues($sort, $sortorder = self::SORTORDER_ASC)
 	{
@@ -251,13 +263,13 @@ class MailSenderQueue
 		
 		// if sorting on an existing property
 		if ( $sort != self::SORT_STATUS )
-			$fun = create_function('$a, $b',"if ( \$a['$sort'] < \$b['$sort'] ) return $inf; " .
-											"else if ( \$a['$sort'] == \$b['$sort'] ) return 0;  " .
+			$fun = create_function('$a, $b',"if ( \$a->$sort < \$b->$sort ) return $inf; " .
+											"else if ( \$a->$sort == \$b->$sort ) return 0;  " .
 											"else return $sup;");
 		else
 			// if sorting on the status
-			$fun = create_function('$a, $b',"\$st_a = \$a['count'] - \$a['sendOffset']; " .
-											"\$st_b = \$b['count'] - \$b['sendOffset']; " .
+			$fun = create_function('$a, $b',"\$st_a = \$a->count - \$a->sendOffset; " .
+											"\$st_b = \$b->count - \$b->sendOffset; " .
 											"if ( \$st_a > \$st_b ) return $inf; " .
 											"else if ( \$st_a == \$st_b ) return 0; " .
 											"else return $sup;");
@@ -305,7 +317,7 @@ class MailSenderQueue
      */
 	function renameQueue($qid, $value)
 	{
-		$this->_data['queues'][$qid]['title'] = $value;
+		$this->_data['queues'][$qid]->title = $value;
 		$this->_writeData();
 	}
 	
@@ -317,7 +329,7 @@ class MailSenderQueue
      */
 	function unlockQueue($qid)
 	{
-		$this->_data['queues'][$qid]['locked'] = false;
+		$this->_data['queues'][$qid]->locked = false;
 		$this->_writeData();
 	}
 	
@@ -337,7 +349,7 @@ class MailSenderQueue
 		if ( is_null($q) )
 			return FALSE;
 			
-		for ( $i = 0 ; $i < $q['count'] ; $i++ )
+		for ( $i = 0 ; $i < $q->count ; $i++ )
 			if ( file_exists($this->_directory . "$qid/$qid.$i.data") && ($data = file_get_contents($this->_directory . "$qid/$qid.$i.data")) )
 			{
 				$data = unserialize($data);
@@ -424,10 +436,10 @@ class MailSenderQueue
 	function newQueueFromErrors($qid, $title)
 	{
 		$q = $this->_data['queues'][$qid];
-		$nid = $this->_createQueue($title, $q['batchCount']);
+		$nid = $this->_createQueue($title, $q->batchCount);
 		
 		// check all emails from the queue
-		for ( $i = 0 ; $i < $q['count'] ; $i++ )
+		for ( $i = 0 ; $i < $q->count ; $i++ )
 		{
 			if ( $mail = $this->_mailFromQueue($qid, $i) )
 			{
@@ -465,13 +477,13 @@ class MailSenderQueue
 		
 		
 		// are the emails to sent ?
-		if ( $q['sendOffset'] < $q['count'] )
+		if ( $q->sendOffset < $q->count )
 		{
 			$ret = array();
 			
 			// handle a batch of emails, until queue end is reached
-			$max = min(array($q['sendOffset'] + $q['batchCount'], $q['count']));
-			for ( $i = $q['sendOffset'] ; $i < $max ; $i++ )
+			$max = min(array($q->sendOffset + $q->batchCount, $q->count));
+			for ( $i = $q->sendOffset ; $i < $max ; $i++ )
 			{
 				$r = $this->_sendFromQueue($mailer, $q, $qid, $i, NULL, NULL, $suppl_headers);
 				if ( $r )
@@ -480,26 +492,26 @@ class MailSenderQueue
 			
 			
 			// increment offset
-			$this->_data['queues'][$qid]['sendOffset'] += min($q['batchCount'], $q['count'] - $q['sendOffset']);
+			$this->_data['queues'][$qid]->sendOffset += min($q->batchCount, $q->count - $q->sendOffset);
 			
 			// save log
-			$this->_data['queues'][$qid]['sendLog'] = array_merge($this->_data['queues'][$qid]['sendLog'], $ret);
+			$this->_data['queues'][$qid]->sendLog = array_merge($this->_data['queues'][$qid]->sendLog, $ret);
 			
 			// write timestamp for last sent batch
-			$this->_data['queues'][$qid]['lastBatchDate'] = time();
+			$this->_data['queues'][$qid]->lastBatchDate = time();
 			
 			// if all emails in queue have been sent, locking the queue
-			if ( $this->_data['queues'][$qid]['sendOffset'] == $this->_data['queues'][$qid]['count'] )
-				$this->_data['queues'][$qid]['locked'] = true;
+			if ( $this->_data['queues'][$qid]->sendOffset == $this->_data['queues'][$qid]->count )
+				$this->_data['queues'][$qid]->locked = true;
 
 			// write config
 			$this->_writeData();
 
 			// check errors
-			return count($ret) ? "Errors occured during queue processing '" . $q['title'] . "'" : false;
+			return count($ret) ? "Errors occured during queue processing '" . $q->title . "'" : false;
 		}
 		else
-			return "Queue '" . $q['title'] . "' is empty";
+			return "Queue '" . $q->title . "' is empty";
 	}
 	
 	
@@ -518,7 +530,7 @@ class MailSenderQueue
 		
 		$ret = array();
 			
-		for ( $i = 0 ; $i < $q['count'] ; $i++ )
+		for ( $i = 0 ; $i < $q->count ; $i++ )
 			if ( file_exists($this->_directory . "$qid/$qid.$i.data") && ($data = file_get_contents($this->_directory . "$qid/$qid.$i.data")) )
 			{
 				$data = unserialize($data);
@@ -550,12 +562,12 @@ class MailSenderQueue
 		// get email info
 		$mail = $this->_mailFromQueue($qid, $index);
 		if ( !$mail) 
-			return "Missing data files for email '$index' from the queue '" . $q['title'] . "'";
+			return "Missing data files for email '$index' from the queue '" . $q->title . "'";
 
 		// unserialize email data
 		$data = unserialize($mail['data']);
 		if ( $data === FALSE )
-			return "Can't read data about email '$index' from the queue '" . $q['title'] . "'";
+			return "Can't read data about email '$index' from the queue '" . $q->title . "'";
 
 	
 		// modify status and write config
@@ -565,7 +577,7 @@ class MailSenderQueue
 		fclose($f);
 		
 		// update log
-		$this->_data['queues'][$qid]['sendLog'] = array_merge($this->_data['queues'][$qid]['sendLog'], array("Error for '" . $data['to'] . "' (" . $q['title'] . ") : set to Error by user"));
+		$this->_data['queues'][$qid]->sendLog = array_merge($this->_data['queues'][$qid]->sendLog, array("Error for '" . $data['to'] . "' (" . $q->title . ") : set to Error by user"));
 		$this->_writeData();
 		
 		// no error
@@ -585,7 +597,7 @@ class MailSenderQueue
 		if ( is_null($q) )
 			return "Queue '$qid' does not exist";
 			
-		$this->_data['queues'][$qid]['sendLog'] = array();
+		$this->_data['queues'][$qid]->sendLog = array();
 		$this->_writeData();
 		
 		return FALSE;

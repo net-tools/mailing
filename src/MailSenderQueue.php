@@ -46,7 +46,16 @@ class MailSenderQueue
 	private function _readData()
 	{
 		if ( file_exists($this->_directory . "MailSender.dat") )
-			return unserialize(file_get_contents($this->_directory . "MailSender.dat"));
+        {
+            $data = unserialize(file_get_contents($this->_directory . "MailSender.dat"));
+            $firstqueue = reset($data['queues']);
+            
+            // if a queue exists, verify we have a object litteral and not an associative array
+            if ( $firstqueue )
+                // if we must convert associative arrays to litteral objects
+                if ( gettype($firstqueue) == 'array' )
+                    $data['queues'] = array_map(function ($q){return (object) $q;}, $data['queues']);
+        }
 		else
 			return array(
 							'queues' => array()

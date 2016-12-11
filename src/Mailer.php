@@ -684,7 +684,7 @@ final class Mailer {
 	 * Constructor
 	 * 
 	 * @param string $mailsender_name Email sending strategy name
-	 * @param string[] $params Array of parameters for the strategy
+	 * @param string[]|NULL $params Array of parameters for the strategy
 	 */
 	public function __construct($mailsender_name, $params = NULL)
 	{
@@ -696,7 +696,7 @@ final class Mailer {
 	 * Set the email sending strategy
 	 * 
 	 * @param string $mailsender_name Email sending strategy name
-	 * @param string[] $params Array of parameters for the strategy
+	 * @param string[]|NULL $params Array of parameters for the strategy
 	 * @return bool Returns TRUE if mail sending strategy is ready after its creation, or not 
 	 */
 	public function setMailSender($mailsender_name, $params = NULL)

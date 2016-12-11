@@ -81,7 +81,7 @@ class EmlReader
 	 * we have the first value (text/plain) and two parameters (charset and format)
 	 *
 	 * @param string $header Header to parse
-	 * @param string $value Parameter to return ; to get the full header value, pass NULL as value
+	 * @param string|NULL $value Parameter to return ; to get the full header value, pass NULL as value
 	 * @return string Returns the header value, or the value for the parameter named as `$value` content
 	 */
 	static function decodeHeader($header, $value = NULL)

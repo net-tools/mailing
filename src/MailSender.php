@@ -43,7 +43,7 @@ abstract class MailSender{
      * Create an object instance for the strategy
      *
      * @param string $concreteSenderName Set this parameter to one of the constants declared in MailSender : `EMLFILE, PHPMAIL, SMTP or VIRTUAL`
-     * @param string[] $params Array of parameters to pass to the strategy constructor
+     * @param string[]|NULL $params Array of parameters to pass to the strategy constructor
      * @return MailSender Returns a sending strategy
      */
 	static function factory($concreteSenderName, $params = NULL)
@@ -75,7 +75,7 @@ abstract class MailSender{
 	/** 
      * Constructor
      * 
-     * @param string[] $params Array of parameters for the sending strategy 
+     * @param string[]|NULL $params Array of parameters for the sending strategy 
      */
 	function __construct($params = NULL)
 	{

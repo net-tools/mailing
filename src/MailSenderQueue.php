@@ -55,6 +55,8 @@ class MailSenderQueue
                 // if we must convert associative arrays to litteral objects
                 if ( gettype($firstqueue) == 'array' )
                     $data['queues'] = array_map(function ($q){return (object) $q;}, $data['queues']);
+            
+            return $data;
         }
 		else
 			return array(

@@ -226,7 +226,7 @@ class MailSenderQueue
 	/**
     * Get info about a queue.
     *
-    * The litteral object returned has the following properties :
+    * The litteral object returned have the following properties :
     *
     *    - count : number of emails in the queue
     *    - sendOffset : the index of the next email to send (used when batching sendings)
@@ -253,6 +253,7 @@ class MailSenderQueue
      * @param string $sort One of the SORT_xxx constant defined here 
      * @param string $sortorder One of the SORTORDER_xxx constant defined here
      * @return object[] Returns an indexed array of queues litteral objects (indexes are the queues ID)
+     * @see MailSenderQueue::getQueue
      */
 	function getQueues($sort, $sortorder = self::SORTORDER_ASC)
 	{
@@ -517,9 +518,15 @@ class MailSenderQueue
 	
 	/**
      * Get recipients for a queue
+     *
+     * The litteral objects returned in the array have the following properties :
+     *
+     * - to : recipient
+     * - id : 0-index of the email in the source queue
+     * - status : one of the STATUS constants
      * 
      * @param string $qid ID of the queue to extract recipients from
-     * @return string[][] Return an array of data about recipients (defining 'to', 'id' and 'status' keys)
+     * @return object[] Return an array of litteral objects about recipients 
      */
 	function recipientsFromQueue($qid)
 	{
@@ -534,7 +541,7 @@ class MailSenderQueue
 			if ( file_exists($this->_directory . "$qid/$qid.$i.data") && ($data = file_get_contents($this->_directory . "$qid/$qid.$i.data")) )
 			{
 				$data = unserialize($data);
-				$ret[] = array('to'=>$data['to'], 'id'=>$i, 'status'=>$data['status']);
+				$ret[] = (object) array('to'=>$data['to'], 'id'=>$i, 'status'=>$data['status']);
 			}
 		
 		

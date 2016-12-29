@@ -13,6 +13,10 @@
 		"net-tools/core" : "^1.0.0"
     },
 	
+    "require-dev" : {
+        "phpunit/phpunit":"^5.7.0"
+    },
+	
 	"autoload": {
 		"psr-4": {
 			"Nettools\\Mailing\\": "src/"

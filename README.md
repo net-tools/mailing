@@ -7,14 +7,15 @@ This package contains all classes required to easily build e-mails with PHP, in 
 Attachments and embeddings are supported.
 
 
-### Setup instructions
+
+## Setup instructions
 
 To install net-tools/mailing package, just require it through composer : `require net-tools/mailing:^1.0.0`.
 
 
-### How to use ?
+## How to use ?
 
-#### Quick email sending 
+### Quick email sending 
 
 To send an email in an easy way, just get an instance of `Mailer` with default email sending strategy, and call `expressSendmail` method. If no attachments to send, omit the last parameter.
 
@@ -31,7 +32,7 @@ Mailer::getDefault()->expressSendmail(
 Email technical parts (text/plain, text/html, multipart/alternative, multipart/mixed) will be created automatically ; the default email sending strategy send emails through PHP built-in Mail() function.
 
 
-#### Build emails 
+### Build emails 
 
 If you want to have more control when sending emails, you may build them with Mailer :
 
@@ -49,7 +50,7 @@ $smtpmailer->sendmail($mail);
 ```
 
 
-#### Parse an EML file/string to create a MailContent object
+### Parse an EML file/string to create a MailContent object
 
 Sometimes you have an email and you want to display it on screen. However, you can't echo the raw content. You have to parse the email content to extract the appropriate part (generally, the text/html part) and if necessary the attachments (multipart/mixed part).
 
@@ -78,3 +79,10 @@ EmlReader::destroy($mail);
 
 To read the entire API reference, please refer to the PHPDoc here :
 http://net-tools.ovh/api-reference/net-tools/Nettools/Mailing.html
+
+
+
+## PHPUnit
+
+To test with PHPUnit, point the -c configuration option to the /phpunit.xml configuration file.
+

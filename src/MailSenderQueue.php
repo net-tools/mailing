@@ -102,7 +102,7 @@ class MailSenderQueue
 	
 	
 	// send an email from the queue ; we may modify the recipient, bcc, and headers
-	private function _sendFromQueue(Mailer $mailer, object $q, $qid, $index, $bcc = NULL, $to = NULL, $suppl_headers = "")
+	private function _sendFromQueue(Mailer $mailer, \object $q, $qid, $index, $bcc = NULL, $to = NULL, $suppl_headers = "")
 	{
 		// read mail from the queue
 		if ( $mail = $this->_mailFromQueue($qid, $index) )

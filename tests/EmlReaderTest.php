@@ -28,7 +28,7 @@ class EmlReaderTest extends PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextHtmlContent', $mail->getPart(1));		
 		$this->assertStringStartsWith( 
 							"<html><head><title></title><head><body>\n" .
-							"At your request, please find below the information you requested<br/>",
+							"At your request, please find below the information you requested :<br/>",
             
                             $mail->getPart(1)->getHtml()
 						);

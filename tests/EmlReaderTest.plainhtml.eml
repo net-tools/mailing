@@ -1,0 +1,24 @@
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_13585_2454228.1420641166034"
+
+------=_Part_13585_2454228.1420641166034
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+At your request, please find below the information you requested :
+- xxxx
+Test with french accents : =E9=E0
+
+Line in bold red in the text/html part
+------=_Part_13585_2454228.1420641166034
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><title></title><head><body>
+At your request, please find below the information you requested :<br/>
+- xxxx<br/>
+Test with french accents : =E9=E0<br/>
+<br/>
+<font color=3D"red"><b>Line in bold red in the text/html part</b></font>
+</body></html>
+------=_Part_13585_2454228.1420641166034--

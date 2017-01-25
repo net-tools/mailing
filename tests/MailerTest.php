@@ -46,7 +46,7 @@ class MailerTest extends PHPUnit_Framework_TestCase
 	}
     
     
-    public function test()
+    public function testMethods()
     {
         // getDefault
 		$this->assertInstanceOf('Nettools\Mailing\Mailer', Mailer::getDefault());

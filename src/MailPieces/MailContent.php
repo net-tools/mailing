@@ -1,6 +1,6 @@
 <?php
 /**
- * MailAttachment
+ * MailContent
  *
  * @author Pierre - dev@net-tools.ovh
  * @license MIT

@@ -4,7 +4,7 @@ use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 
 
 
-class MailTextPlainContentTest extends PHPUnit_Framework_TestCase
+class MailTextPlainContentTest extends PHPUnit\Framework\TestCase
 {
     public function test()
     {

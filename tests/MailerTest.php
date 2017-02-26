@@ -11,7 +11,7 @@ use \Nettools\Core\Containers\Cache;
 
 
 
-class MailerTest extends PHPUnit_Framework_TestCase
+class MailerTest extends PHPUnit\Framework\TestCase
 {
 	protected static $_fatt = NULL;
 	protected static $_fatt2 = NULL;

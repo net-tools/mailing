@@ -5,7 +5,7 @@ use \Nettools\Mailing\MailPieces\MailEmbedding;
 
 
 
-class MailMixedContentTest extends PHPUnit_Framework_TestCase
+class MailMixedContentTest extends PHPUnit\Framework\TestCase
 {
     protected static $_fatt = NULL;
 	protected static $_fatt_ignorecache = NULL;

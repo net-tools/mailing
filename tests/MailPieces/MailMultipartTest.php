@@ -6,7 +6,7 @@ use \Nettools\Mailing\MailPieces\MailMultipart;
 
 
 
-class MailMultipartTest extends PHPUnit_Framework_TestCase
+class MailMultipartTest extends PHPUnit\Framework\TestCase
 {
     public function test()
     {

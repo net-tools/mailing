@@ -5,7 +5,7 @@ use \Nettools\Mailing\EmlReader;
 
 
 
-class EmlReaderTest extends PHPUnit_Framework_TestCase
+class EmlReaderTest extends PHPUnit\Framework\TestCase
 {
     public function testPlainHtml()
 	{

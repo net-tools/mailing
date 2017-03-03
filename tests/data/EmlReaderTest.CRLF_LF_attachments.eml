@@ -1,0 +1,30 @@
+From - Sat Apr 16 17:36:21 2016
+Date: Sat, 16 Apr 2016 17:36:21 +0200
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------070009000805060603080805"
+
+This is a multi-part message in MIME format.
+--------------070009000805060603080805
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+two attachments
+
+--------------070009000805060603080805
+Content-Type: text/plain; charset=UTF-8;
+ name="attachment.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="attachment.txt"
+
+YWJjDQrDqQ0KZGVm
+--------------070009000805060603080805
+Content-Type: text/plain; charset=UTF-8;
+ name="attachmentLF.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="attachmentLF.txt"
+
+YWJjCsOpCmRlZg==
+--------------070009000805060603080805--

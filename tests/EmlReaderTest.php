@@ -36,100 +36,89 @@ class EmlReaderTest extends PHPUnit\Framework\TestCase
 
 
 
-		// multipart/related
+		// multipart/related (embedding)
 		// content-disposition is not present, we guess it thanks to the content-id attribute
         $mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.inline.eml');
 		$this->assertNotNull($mail);
-		$this->assertObject($mail);
-		$this->assertObjectInstanceOf($mail, '\Ppast\Mailing\MailPieces\MailMultipart');		
-		$this->assertObjectInstanceOf($mail->getPart(0), '\Ppast\Mailing\MailPieces\MailMultipart');		
-		$this->assertEquals($mail->getPart(0)->getType(), 'alternative');
-		$this->assertObjectInstanceOf($mail->getPart(0)->getPart(0), '\Ppast\Mailing\MailPieces\MailTextPlainContent');		
-		$this->assertStringStartsWith($mail->getPart(0)->getPart(0)->getText(), 
-							"Bonjour, \n" .
-							"\n" .
-							" \n" .
-							"\n" . 
-							"Nous sommes une entreprise nationale de service à la personne "
-						);
-		$this->assertObjectInstanceOf($mail->getPart(1), '\Ppast\Mailing\MailPieces\MailEmbedding');
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->getPart(0));		
+		$this->assertEquals('alternative', $mail->getPart(0)->getType());
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->getPart(0)->getPart(0));		
+		$this->assertStringStartsWith("this is a *unit test* with inline attachment", $mail->getPart(0)->getPart(0)->getText());
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailEmbedding', $mail->getPart(1));
 		$fname = $mail->getPart(1)->getFile();
-		$this->assertFileEquals($fname, file_get_contents($this->getRoot() . '_data/inline.jpg'));
-		EmlReader::destroy($mail);
-		$this->assertFileNotExists($fname);	// destroy a supprimé le fichier temporaire
-		
-/*
-
-		// multipart/related
-		// attachment text/plain caractère saut de ligne CRLF
-		$this->setSubject('EmlReader::fromFile(multipart/related:attachment-CRLF)');								
-		$mail = EmlReader::fromFile($this->getRoot() . '_data/attachment-textplain.eml');
-		$this->assertNotNull($mail);
-		$this->assertObject($mail);
-		$this->assertObjectInstanceOf($mail, '\Ppast\Mailing\MailPieces\MailMultipart');		
-		$this->assertObjectInstanceOf($mail->getPart(0), '\Ppast\Mailing\MailPieces\MailMultipart');		
-		$this->assertEquals($mail->getType(), 'mixed');
-		$this->assertEquals($mail->getPart(0)->getType(), 'alternative');
-		$this->assertObjectInstanceOf($mail->getPart(0)->getPart(0), '\Ppast\Mailing\MailPieces\MailTextPlainContent');		
-		$this->assertStringStartsWith($mail->getPart(0)->getPart(0)->getText(), 
-							"Bonjour,\n" .
-							"\n" .
-							"\n" .
-							"Sur mon site www.xyz.fr, j'ai détecté"
-						);
-		$this->assertObjectInstanceOf($mail->getPart(1), '\Ppast\Mailing\MailPieces\MailAttachment');
-		$fname = $mail->getPart(1)->getFile();
-		$this->assertFileEquals($fname, gzdecode(file_get_contents($this->getRoot() . '_data/attachmentCRLF.txt.gz'))); // gzdecode car GIT convertit les sauts de ligne CRLF en LF
-		EmlReader::destroy($mail);
-		$this->assertFileNotExists($fname);	// destroy a supprimé le fichier temporaire
-
-		
-		
-		// multipart/related
-		// attachment text/plain caractère saut de ligne LF
-		$this->setSubject('EmlReader::fromFile(multipart/related:attachment-LF)');								
-		$mail = EmlReader::fromFile($this->getRoot() . '_data/attachment-textplainLF.eml');
-		$this->assertNotNull($mail);
-		$this->assertObject($mail);
-		$this->assertObjectInstanceOf($mail, '\Ppast\Mailing\MailPieces\MailMultipart');		
-		$this->assertObjectInstanceOf($mail->getPart(0), '\Ppast\Mailing\MailPieces\MailMultipart');		
-		$this->assertEquals($mail->getType(), 'mixed');
-		$this->assertEquals($mail->getPart(0)->getType(), 'alternative');
-		$this->assertObjectInstanceOf($mail->getPart(0)->getPart(0), '\Ppast\Mailing\MailPieces\MailTextPlainContent');		
-		$this->assertStringStartsWith($mail->getPart(0)->getPart(0)->getText(), 
-							"Bonjour,\n" .
-							"\n" .
-							"\n" .
-							"Sur mon site www.xyz.fr, j'ai détecté"
-						);
-		$this->assertObjectInstanceOf($mail->getPart(1), '\Ppast\Mailing\MailPieces\MailAttachment');
-		$fname = $mail->getPart(1)->getFile();
-		$this->assertFileEquals($fname, file_get_contents($this->getRoot() . '_data/attachmentLF.txt'));
+		$this->assertFileEquals(__DIR__ . '/data/' . __CLASS__ . '.inline.png', $fname);
 		EmlReader::destroy($mail);
 		$this->assertFileNotExists($fname);	// destroy a supprimé le fichier temporaire
 		
 
-		
-		// multipart/mixed avec 2 PJ (pas de alternative html)
-		// 2 attachments + pollution content-disposition
-		$this->setSubject('EmlReader::fromFile(multipart/related:attachments-X2)');								
-		$mail = EmlReader::fromFile($this->getRoot() . '_data/attachments-x2.eml');
+
+		// multipart/mixed
+		// attachment with text/plain content and CRLF newlines
+		$mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.CRLF_attachment.eml');
 		$this->assertNotNull($mail);
-		$this->assertObject($mail);
-		$this->assertObjectInstanceOf($mail, '\Ppast\Mailing\MailPieces\MailMultipart');		
-		$this->assertEquals($mail->getType(), 'mixed');
-		$this->assertObjectInstanceOf($mail->getPart(0), '\Ppast\Mailing\MailPieces\MailTextPlainContent');		
-		$this->assertStringStartsWith($mail->getPart(0)->getText(), 'deux pj');
-		$this->assertEquals($mail->getCount(), 3);
-		$this->assertObjectInstanceOf($mail->getPart(1), '\Ppast\Mailing\MailPieces\MailAttachment');
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->getPart(0));
+        $this->assertEquals('mixed', $mail->getType());
+		$this->assertStringStartsWith(
+							"Hi,\n" .
+							"\n" .
+							"\n" .
+							"This is a unit test",
+            
+                            $mail->getPart(0)->getText()
+						);
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->getPart(1));
 		$fname = $mail->getPart(1)->getFile();
-		$this->assertFileEquals($fname, gzdecode(file_get_contents($this->getRoot() . '_data/attachmentCRLF.txt.gz')));
-		$this->assertObjectInstanceOf($mail->getPart(2), '\Ppast\Mailing\MailPieces\MailAttachment');
+        // gzdecode because GIT or FTP software may convert CRLF to LF
+		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . __CLASS__ . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
+		EmlReader::destroy($mail);
+		$this->assertFileNotExists($fname);	
+
+		
+		
+		// multipart/mixed
+		// attachment with text/plain content and LF newlines
+		$mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.LF_attachment.eml');
+		$this->assertNotNull($mail);
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->getPart(0));
+        $this->assertEquals('mixed', $mail->getType());
+		$this->assertStringStartsWith(
+							"Hi,\n" .
+							"\n" .
+							"\n" .
+							"This is a unit test",
+            
+                            $mail->getPart(0)->getText()
+						);
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->getPart(1));
+		$fname = $mail->getPart(1)->getFile();
+        // gzdecode because GIT or FTP software may convert CRLF to LF
+		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . __CLASS__ . '.LF_attachment.bin.gz')), file_get_contents($fname)); 
+		EmlReader::destroy($mail);
+		$this->assertFileNotExists($fname);	
+		
+
+		
+		// multipart/mixed with 2 attachments (no multipart/alternative html part)
+		$mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.CRLF_LF_attachments.eml');
+		$this->assertNotNull($mail);
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->getPart(0));
+        $this->assertEquals('mixed', $mail->getType());
+        $this->assertStringStartsWith('two attachments', $mail->getPart(0)->getText());
+		$this->assertEquals(3, $mail->getCount()); // 3 parts in the mailmultipart : the text/plain one, and the 2 attachments
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->getPart(1));
+		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->getPart(2));
+
+        $fname = $mail->getPart(1)->getFile();
+		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . __CLASS__ . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
 		$fname2 = $mail->getPart(2)->getFile();
-		$this->assertFileEquals($fname2, file_get_contents($this->getRoot() . '_data/attachmentLF.txt'));
+		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . __CLASS__ . '.LF_attachment.bin.gz')), file_get_contents($fname2)); 
 		EmlReader::destroy($mail);
-		$this->assertFileNotExists($fname);	// destroy a supprimé le fichier temporaire
-		$this->assertFileNotExists($fname2);	// destroy a supprimé le fichier temporaire*/
+		$this->assertFileNotExists($fname);	
+		$this->assertFileNotExists($fname2);
 	}
 
 }

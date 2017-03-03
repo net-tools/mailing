@@ -1,0 +1,34 @@
+X-Account-Key: account1
+X-UIDL: 9.1488544645
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Subject: unit test CRLF attachment
+Date: Fri, 3 Mar 2017 13:37:46 +0100
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="------------21299505FEFF57220EF49CFD"
+
+This is a multi-part message in MIME format.
+--------------21299505FEFF57220EF49CFD
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Hi,
+
+
+This is a unit test with text/plain attachment and CRLF newlines.
+
+
+
+--------------21299505FEFF57220EF49CFD
+Content-Type: text/plain; charset=UTF-8;
+ name="attachmentCRLF.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="attachmentCRLF.txt"
+
+YWJjDQrDqQ0KZGVm
+--------------21299505FEFF57220EF49CFD--
+
+

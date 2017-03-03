@@ -13,7 +13,8 @@ class EmlReaderTest extends PHPUnit\Framework\TestCase
 		// we test headers with simple values and headers with multiple values (separated by ';')
 		// we test headers with folding, with or without quotes (")
 		// we test iso-8859-1 charset converted to utf8
-		$mail = EmlReader::fromFile(str_replace('.php', '', __FILE__) . '.plainhtml.eml');
+		//$mail = EmlReader::fromFile(str_replace('.php', '', __FILE__) . '.plainhtml.eml');
+        $mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.plainhtml.eml');
 		$this->assertNotNull($mail);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
 		$this->assertEquals('alternative', $mail->getType());
@@ -33,12 +34,11 @@ class EmlReaderTest extends PHPUnit\Framework\TestCase
                             $mail->getPart(1)->getHtml()
 						);
 
-/*
+
 
 		// multipart/related
-		// content-disposition absent, à deviner avec présence content-id
-		$this->setSubject('EmlReader::fromFile(multipart/related:inline)');								
-		$mail = EmlReader::fromFile($this->getRoot() . '_data/inline.eml');
+		// content-disposition is not present, we guess it thanks to the content-id attribute
+        $mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.inline.eml');
 		$this->assertNotNull($mail);
 		$this->assertObject($mail);
 		$this->assertObjectInstanceOf($mail, '\Ppast\Mailing\MailPieces\MailMultipart');		
@@ -58,7 +58,7 @@ class EmlReaderTest extends PHPUnit\Framework\TestCase
 		EmlReader::destroy($mail);
 		$this->assertFileNotExists($fname);	// destroy a supprimé le fichier temporaire
 		
-
+/*
 
 		// multipart/related
 		// attachment text/plain caractère saut de ligne CRLF

@@ -1,5 +1,9 @@
 <?php
 
+namespace \Nettools\Mailing\Tests;
+
+
+
 use \Nettools\Mailing\MailPieces\MailMultipart;
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
@@ -11,7 +15,8 @@ use \Nettools\Core\Containers\Cache;
 
 
 
-class MailerTest extends PHPUnit\Framework\TestCase
+
+class MailerTest extends \PHPUnit\Framework\TestCase
 {
 	protected static $_fatt = NULL;
 	protected static $_fatt2 = NULL;

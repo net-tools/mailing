@@ -1,11 +1,17 @@
 <?php
 
+namespace \Nettools\Mailing\Tests;
+
+
+
+
 use \Nettools\Mailing\MailPieces\MailAttachment;
 use \Nettools\Mailing\MailPieces\MailEmbedding;
 
 
 
-class MailMixedContentTest extends PHPUnit\Framework\TestCase
+
+class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 {
     protected static $_fatt = NULL;
 	protected static $_fatt_ignorecache = NULL;

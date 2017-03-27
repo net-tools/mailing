@@ -1,12 +1,17 @@
 <?php
 
+namespace \Nettools\Mailing\Tests;
+
+
+
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\MailPieces\MailMultipart;
 
 
 
-class MailMultipartTest extends PHPUnit\Framework\TestCase
+
+class MailMultipartTest extends \PHPUnit\Framework\TestCase
 {
     public function test()
     {

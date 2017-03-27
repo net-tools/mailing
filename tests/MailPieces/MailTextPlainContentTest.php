@@ -1,10 +1,15 @@
 <?php
 
+namespace \Nettools\Mailing\Tests;
+
+
+
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 
 
 
-class MailTextPlainContentTest extends PHPUnit\Framework\TestCase
+
+class MailTextPlainContentTest extends \PHPUnit\Framework\TestCase
 {
     public function test()
     {

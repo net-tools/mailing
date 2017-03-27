@@ -1,11 +1,15 @@
 <?php 
 
+namespace \Nettools\Mailing\Tests;
+
+
 
 use \Nettools\Mailing\EmlReader;
 
 
 
-class EmlReaderTest extends PHPUnit\Framework\TestCase
+
+class EmlReaderTest extends \PHPUnit\Framework\TestCase
 {
     public function testPlainHtml()
 	{

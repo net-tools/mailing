@@ -1,10 +1,15 @@
 <?php
 
+namespace \Nettools\Mailing\Tests;
+
+
+
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 
 
 
-class MailTextHtmlContentTest extends PHPUnit\Framework\TestCase
+
+class MailTextHtmlContentTest extends \PHPUnit\Framework\TestCase
 {
     public function test()
     {

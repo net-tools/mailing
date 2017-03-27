@@ -1,6 +1,6 @@
 <?php
 
-namespace \Nettools\Mailing\Tests;
+namespace Nettools\Mailing\Tests;
 
 
 

@@ -17,8 +17,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 		// we test headers with simple values and headers with multiple values (separated by ';')
 		// we test headers with folding, with or without quotes (")
 		// we test iso-8859-1 charset converted to utf8
-		//$mail = EmlReader::fromFile(str_replace('.php', '', __FILE__) . '.plainhtml.eml');
-        $mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.plainhtml.eml');
+        $mail = EmlReader::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.plainhtml.eml');
 		$this->assertNotNull($mail);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
 		$this->assertEquals('alternative', $mail->getType());
@@ -42,7 +41,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 
 		// multipart/related (embedding)
 		// content-disposition is not present, we guess it thanks to the content-id attribute
-        $mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.inline.eml');
+        $mail = EmlReader::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.inline.eml');
 		$this->assertNotNull($mail);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->getPart(0));		
@@ -59,7 +58,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 
 		// multipart/mixed
 		// attachment with text/plain content and CRLF newlines
-		$mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.CRLF_attachment.eml');
+		$mail = EmlReader::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.eml');
 		$this->assertNotNull($mail);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->getPart(0));
@@ -75,7 +74,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->getPart(1));
 		$fname = $mail->getPart(1)->getFile();
         // gzdecode because GIT or FTP software may convert CRLF to LF
-		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . __CLASS__ . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
+		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
 		EmlReader::destroy($mail);
 		$this->assertFileNotExists($fname);	
 
@@ -83,7 +82,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 		
 		// multipart/mixed
 		// attachment with text/plain content and LF newlines
-		$mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.LF_attachment.eml');
+		$mail = EmlReader::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.eml');
 		$this->assertNotNull($mail);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->getPart(0));
@@ -99,7 +98,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->getPart(1));
 		$fname = $mail->getPart(1)->getFile();
         // gzdecode because GIT or FTP software may convert CRLF to LF
-		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . __CLASS__ . '.LF_attachment.bin.gz')), file_get_contents($fname)); 
+		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.bin.gz')), file_get_contents($fname)); 
 		EmlReader::destroy($mail);
 		$this->assertFileNotExists($fname);	
 		
@@ -117,9 +116,9 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->getPart(2));
 
         $fname = $mail->getPart(1)->getFile();
-		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . __CLASS__ . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
+		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
 		$fname2 = $mail->getPart(2)->getFile();
-		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . __CLASS__ . '.LF_attachment.bin.gz')), file_get_contents($fname2)); 
+		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.bin.gz')), file_get_contents($fname2)); 
 		EmlReader::destroy($mail);
 		$this->assertFileNotExists($fname);	
 		$this->assertFileNotExists($fname2);

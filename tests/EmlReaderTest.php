@@ -50,7 +50,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringStartsWith("this is a *unit test* with inline attachment", $mail->getPart(0)->getPart(0)->getText());
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailEmbedding', $mail->getPart(1));
 		$fname = $mail->getPart(1)->getFile();
-		$this->assertFileEquals(__DIR__ . '/data/' . __CLASS__ . '.inline.png', $fname);
+		$this->assertFileEquals(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.inline.png', $fname);
 		EmlReader::destroy($mail);
 		$this->assertFileNotExists($fname);	// destroy a supprimé le fichier temporaire
 		
@@ -105,7 +105,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 
 		
 		// multipart/mixed with 2 attachments (no multipart/alternative html part)
-		$mail = EmlReader::fromFile(__DIR__ . '/data/' . __CLASS__ . '.CRLF_LF_attachments.eml');
+		$mail = EmlReader::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_LF_attachments.eml');
 		$this->assertNotNull($mail);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail);		
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->getPart(0));

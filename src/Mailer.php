@@ -570,10 +570,10 @@ final class Mailer {
 				'~<h1[^>]*>([^<]*)</h1>~', 
 		
 				/* replacement callback */
-				create_function(
-					'$matches',
-					'return "\r\n" . strtoupper($matches[1]) ."\r\n\r\n";'
-				),
+				function($matches)
+				{
+					return "\r\n" . strtoupper($matches[1]) ."\r\n\r\n";
+				},
 				
 				$p
 			);

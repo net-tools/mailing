@@ -275,16 +275,27 @@ class MailSenderQueue
 		
 		// if sorting on an existing property
 		if ( $sort != self::SORT_STATUS )
-			$fun = create_function('$a, $b',"if ( \$a->$sort < \$b->$sort ) return $inf; " .
-											"else if ( \$a->$sort == \$b->$sort ) return 0;  " .
-											"else return $sup;");
+			$fun = function($a, $b)
+				{
+					if ( $a->$sort < $b->$sort ) 
+						return $inf;
+					else if ( $a->$sort == $b->$sort ) 
+						return 0;  
+					else return $sup;
+				};
 		else
 			// if sorting on the status
-			$fun = create_function('$a, $b',"\$st_a = \$a->count - \$a->sendOffset; " .
-											"\$st_b = \$b->count - \$b->sendOffset; " .
-											"if ( \$st_a > \$st_b ) return $inf; " .
-											"else if ( \$st_a == \$st_b ) return 0; " .
-											"else return $sup;");
+			$fun = function($a, $b)
+				{
+					$st_a = $a->count - $a->sendOffset;
+					$st_b = $b->count - $b->sendOffset;
+					if ( $st_a > $st_b ) 
+						return $inf;
+					else if ( $st_a == $st_b ) 
+						return 0;
+					else
+						return $sup;
+				};
 		
 		// sort array
 		uasort($ret, $fun);

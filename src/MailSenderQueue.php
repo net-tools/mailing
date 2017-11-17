@@ -275,7 +275,7 @@ class MailSenderQueue
 		
 		// if sorting on an existing property
 		if ( $sort != self::SORT_STATUS )
-			$fun = function($a, $b) use ($inf, $sup)
+			$fun = function($a, $b) use ($inf, $sup, $sort)
 				{
 					if ( $a->$sort < $b->$sort ) 
 						return $inf;

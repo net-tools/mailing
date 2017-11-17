@@ -275,7 +275,7 @@ class MailSenderQueue
 		
 		// if sorting on an existing property
 		if ( $sort != self::SORT_STATUS )
-			$fun = function($a, $b)
+			$fun = function($a, $b) use ($inf, $sup)
 				{
 					if ( $a->$sort < $b->$sort ) 
 						return $inf;
@@ -285,7 +285,7 @@ class MailSenderQueue
 				};
 		else
 			// if sorting on the status
-			$fun = function($a, $b)
+			$fun = function($a, $b) use ($inf, $sup)
 				{
 					$st_a = $a->count - $a->sendOffset;
 					$st_b = $b->count - $b->sendOffset;

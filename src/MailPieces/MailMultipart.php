@@ -156,7 +156,7 @@ class MailMultipart extends MailContent {
 		parent::__construct("multipart/$type");
 	
 		$this->_type = $type;
-		$this->_separator = "am63-${type}-" . sha1(uniqid());
+		$this->_separator = "MailMultipart-${type}-" . sha1(uniqid());
 		$this->_parts = $parts;
 	}
 	

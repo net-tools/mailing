@@ -19,7 +19,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 	protected static $_fatt_content_b64 = 'QXR0YWNobWVudCBzYW1wbGUgd2l0aCBhY2NlbnRzIMOpLg==';
 	
 	
-	static public function setUpBeforeClass()
+	static public function setUpBeforeClass() :void
 	{
         $tmp = tempnam(sys_get_temp_dir(), 'phpunit');
 		self::$_fatt = $tmp . 'att1.txt';
@@ -36,7 +36,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 	}
 	
 	
-	static public function tearDownBeforeClass()
+	static public function tearDownBeforeClass() :void
 	{
 		if ( file_exists(self::$_fatt) )
 			unlink(self::$_fatt);

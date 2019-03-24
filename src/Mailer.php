@@ -16,12 +16,10 @@ namespace Nettools\Mailing;
 use \Nettools\Mailing\MailPieces\MailAttachment;
 use \Nettools\Mailing\MailPieces\MailContent;
 use \Nettools\Mailing\MailPieces\MailEmbedding;
-use \Nettools\Mailing\MailPieces\MailMixedContent;
 use \Nettools\Mailing\MailPieces\MailMultipart;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Core\Helpers\EncodingHelper;
-use \Nettools\Core\Containers\Cache;
 use \Nettools\Core\Helpers\FileHelper;
 
 

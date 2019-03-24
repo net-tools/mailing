@@ -127,7 +127,7 @@ class MailSenderQueue
 				$ret = $mailer->sendmail_raw($to, $data['subject'], $mail['email'], $mail['headers']);
 		}
 		else
-			return "Missing data files for the email '$i' from queue '" . $q->title . "'";
+			return "Missing data files for the email '$index' from queue '" . $q->title . "'";
 
 
 		// set sending status and write config

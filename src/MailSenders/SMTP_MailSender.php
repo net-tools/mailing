@@ -131,7 +131,7 @@ class SMTP_MailSender extends MailSender
 	// get info for last error
 	function getMessage()
 	{
-		if ( $this->smtp && $this->smtp instanceof \PEARError )
+		if ( $this->smtp && $this->smtp instanceof \PEAR_Error )
 			return $this->smtp->toString();
 		else
 		if ( $this->initerror )

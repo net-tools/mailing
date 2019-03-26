@@ -4,14 +4,10 @@ namespace Nettools\Mailing\Tests;
 
 
 
-use \Nettools\Mailing\MailPieces\MailMultipart;
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
-use \Nettools\Mailing\MailPieces\MailEmbedding;
-use \Nettools\Mailing\MailPieces\MailAttachment;
 use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailSender;
-use \Nettools\Core\Containers\Cache;
 
 
 

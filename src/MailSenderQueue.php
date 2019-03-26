@@ -661,7 +661,8 @@ class MailSenderQueue
      */
 	function purgeAllQueues()
 	{
-		foreach ( $this->_data['queues'] as $qid => $q )
+	    $keys = array_keys($this->_data['queues']);
+		foreach ( $keys as $qid )
 		{
 			$files = glob($this->_directory . "$qid/*");
 			if ( is_array($files) )

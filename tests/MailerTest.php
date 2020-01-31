@@ -8,6 +8,7 @@ use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailSender;
+use \org\bovigo\vfs\vfsStream;
 
 
 
@@ -23,30 +24,13 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 	
 	static public function setUpBeforeClass() :void
 	{
-        $tmp = tempnam(sys_get_temp_dir(), 'phpunit');
-		self::$_fatt = $tmp . 'att1.txt';
-		self::$_fatt2 = $tmp . 'att2.txt';
-		
-		// create attachments
-		$f = fopen(self::$_fatt, "w");
-		fwrite($f, self::$_fatt_content); 
-		fclose($f);
-
-		$f = fopen(self::$_fatt2, "w");
-		fwrite($f, self::$_fatt_content2); 
-		fclose($f);
+		$vfs = vfsStream::setup('root');
+        self::$_fatt = vfsStream::newFile('att1.txt')->at($vfs)->setContent(self::$_fatt_content)->url();
+        self::$_fatt2 = vfsStream::newFile('att2.txt')->at($vfs)->setContent(self::$_fatt_content2)->url();
 	}
 	
 	
-	static public function tearDownBeforeClass() :void
-	{
-		if ( file_exists(self::$_fatt) )
-			unlink(self::$_fatt);
-		if ( file_exists(self::$_fatt2) )
-			unlink(self::$_fatt2);
-	}
-    
-    
+	
     public function testMethods()
     {
         // getDefault

@@ -185,28 +185,32 @@ final class Mailer {
 	/**
 	 * Create an embedding object
 	 * 
-	 * @param string $embed File path to the file to embed
+	 * @param string $embed File path to the file to embed or data string
 	 * @param string $embedtype Mime type of the embedding
 	 * @param string $cid Content-ID for embedding
+     * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
+	 * @param bool $isFile True if $embed is a file path, false if it's a data string
 	 * @return MailPieces\MailEmbedding Returns a embedding part
 	 */
-	public static function createEmbedding($embed, $embedtype, $cid)
+	public static function createEmbedding($embed, $embedtype, $cid, $ignoreCache = false, $isFile = true)
 	{
-		return new MailEmbedding($embed, $embedtype, $cid);
+		return new MailEmbedding($embed, $embedtype, $cid, $ignoreCache, $isFile);
 	}
 	
 	
 	/**
 	 * Create an attachment object
 	 * 
-	 * @param string $file File path to the file to attach
+	 * @param string $file File path to the file to attach or data string
 	 * @param string $filename File name used in the email (will appear in the email client of the recipient)
 	 * @param string $filetype Mime type of the attachment
+     * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
+	 * @param bool $isFile True if $embed is a file path, false if it's a data string
 	 * @return MailPieces\MailAttachment Returns a embedding part
 	 */
-	public static function createAttachment($file, $filename, $filetype)
+	public static function createAttachment($file, $filename, $filetype, $ignoreCache = false, $isFile = true)
 	{
-		return new MailAttachment($file, $filename, $filetype);
+		return new MailAttachment($file, $filename, $filetype, $ignoreCache, $isFile);
 	}
 	
 	
@@ -215,13 +219,15 @@ final class Mailer {
 	 * 
 	 * @param MailPieces\MailContent $mail Email object
 	 * @param string[][] $files Array of array about files to attach ; provide `file`, `filename` and `filetype` values for each file
+     * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
+	 * @param bool $isFile True if 'file' value in $files array is a file path, false if it's a data string
 	 * @return MailPieces\MailMultipart Returns a multipart
 	 */
-	public static function addAttachments (MailContent $mail, $files)
+	public static function addAttachments (MailContent $mail, $files, $ignoreCache = false, $isFile = true)
 	{
 		$att = array();
 		foreach ( $files as $f )
-			$att[] = self::createAttachment($f['file'], $f['filename'], $f['filetype']);
+			$att[] = self::createAttachment($f['file'], $f['filename'], $f['filetype'], $ignoreCache, $isFile);
 			
 		return self::addAttachmentObjects($mail, $att);
 	}
@@ -234,11 +240,13 @@ final class Mailer {
 	 * @param string $file Filepath to file to attach
 	 * @param string $filename Filename to display to the user
 	 * @param string $filetype Mime type of the attachment
+     * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
+	 * @param bool $isFile True if 'file' value in $files array is a file path, false if it's a data string
 	 * @return MailPieces\MailMultipart Returns a multipart
 	 */
-	public static function addAttachment (MailContent $mail, $file, $filename, $filetype)
+	public static function addAttachment (MailContent $mail, $file, $filename, $filetype, $ignoreCache = false, $isFile = true)
 	{
-		return self::addAttachmentObject($mail, self::createAttachment($file, $filename, $filetype));
+		return self::addAttachmentObject($mail, self::createAttachment($file, $filename, $filetype, $ignoreCache, $isFile));
 	}
 
 	
@@ -275,11 +283,13 @@ final class Mailer {
 	 * @param string $embed Filepath to file to embed
 	 * @param string $embedtype Mime type of the embedding
 	 * @param string $cid Embedding CID
+     * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
+	 * @param bool $isFile True if $embed is a file path, false if it's a data string
 	 * @return MailPieces\MailMultipart Returns a multipart
 	 */
-	public static function addEmbedding (MailContent $mail, $embed, $embedtype, $cid)
+	public static function addEmbedding (MailContent $mail, $embed, $embedtype, $cid, $ignoreCache = false, $isFile = true)
 	{
-		return self::addEmbeddingObject($mail, self::createEmbedding($embed, $embedtype, $cid));
+		return self::addEmbeddingObject($mail, self::createEmbedding($embed, $embedtype, $cid, $ignoreCache, $isFile));
 	}
 
 	
@@ -301,13 +311,15 @@ final class Mailer {
 	 * 
 	 * @param MailPieces\MailContent $mail Email object
 	 * @param string[][] $files Array of array about files to embed ; provide `file`, `cid` and `filetype` values for each file
+     * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
+	 * @param bool $isFile True if 'file' value in $files array is a file path, false if it's a data string
 	 * @return MailPieces\MailMultipart Returns a multipart
 	 */
-	public static function addEmbeddings (MailContent $mail, $embeds)
+	public static function addEmbeddings (MailContent $mail, $embeds, $ignoreCache = false, $isFile = true)
 	{
 		$emb = array();
 		foreach ( $embeds as $e )
-			$emb[] = self::createEmbedding($e['file'], $e['filetype'], $e['cid']);
+			$emb[] = self::createEmbedding($e['file'], $e['filetype'], $e['cid'], $ignoreCache, $isFile);
 
 		return MailMultipart::fromArray("related", $mail, $emb);
 	}

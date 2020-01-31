@@ -7,7 +7,7 @@ namespace Nettools\Mailing\Tests;
 
 use \Nettools\Mailing\MailPieces\MailAttachment;
 use \Nettools\Mailing\MailPieces\MailEmbedding;
-
+use \org\bovigo\vfs\vfsStream;
 
 
 
@@ -21,30 +21,12 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 	
 	static public function setUpBeforeClass() :void
 	{
-        $tmp = tempnam(sys_get_temp_dir(), 'phpunit');
-		self::$_fatt = $tmp . 'att1.txt';
-		self::$_fatt_ignorecache = $tmp . 'att2.txt';
-		
-		// create attachments
-		$f = fopen(self::$_fatt, "w");
-		fwrite($f, self::$_fatt_content); 
-		fclose($f);
-	
-		$f = fopen(self::$_fatt_ignorecache, "w");
-		fwrite($f, self::$_fatt_content); 
-		fclose($f);
+		$vfs = vfsStream::setup('root');
+        self::$_fatt = vfsStream::newFile('att1.txt')->at($vfs)->setContent(self::$_fatt_content)->url();
+        self::$_fatt_ignorecache = vfsStream::newFile('att2.txt')->at($vfs)->setContent(self::$_fatt_content)->url();
 	}
 	
 	
-	static public function tearDownBeforeClass() :void
-	{
-		if ( file_exists(self::$_fatt) )
-			unlink(self::$_fatt);
-		if ( file_exists(self::$_fatt_ignorecache) )
-			unlink(self::$_fatt_ignorecache);
-	}
-    
-    
     public function testMailMixedContent()
     {
 		// getContent
@@ -108,8 +90,44 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 			);
 		
 		
+		// isFile
+		$this->assertEquals(true, $matt->getIsFile());
+		
+		
 		// getContent
 		$this->assertEquals(self::$_fatt_content_b64, $matt->getContent());
+    }
+    
+    
+    
+    public function testMailAttachmentAsString()
+    {
+        // getFileName
+		$matt = new MailAttachment('attachment data string', 'attach.txt', 'text/plain', false, false);
+		$this->assertEquals('attach.txt', $matt->getFileName());
+
+        
+        // setFileName
+		$matt->setFileName('att.txt');
+		$this->assertEquals('att.txt', $matt->getFileName());
+		
+        
+		// getHeaders
+		$this->assertEquals(
+				"Content-Type: text/plain;\r\n   name=\"att.txt\"\r\n" .
+				"Content-Transfer-Encoding: base64\r\n" .
+				"Content-Disposition: attachment;\r\n   filename=\"att.txt\"",
+				
+                $matt->getHeaders()
+			);
+		
+		
+		// isFile
+		$this->assertEquals(false, $matt->getIsFile());
+		
+		
+		// getContent
+		$this->assertEquals(base64_encode('attachment data string'), $matt->getContent());
     }
     
     
@@ -137,10 +155,48 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 			);
 				
 				
+		// isFile
+		$this->assertEquals(true, $membed->getIsFile());
+				
+				
         // getContent
 		$this->assertEquals(self::$_fatt_content_b64, $membed->getContent()); 
     }
+
+	
+	
+    public function testMailEmbeddingAsString()
+    {
+        // getCid
+		$membed = new MailEmbedding('embedding data string', 'text/plain', 'cid-123', false, false);
+		$this->assertEquals('cid-123', $membed->getCid());
+
+
+        // setCid
+		$membed->setCid('cid-456');
+		$this->assertEquals('cid-456', $membed->getCid());
+		
+		
+        // getHeaders
+		$this->assertEquals(
+				"Content-Type: text/plain\r\n" .
+				"Content-Transfer-Encoding: base64\r\n" .
+				"Content-Disposition: inline;\r\n   filename=\"cid-456\"\r\n" .
+				"Content-ID: <cid-456>",
+            
+				$membed->getHeaders()
+			);
+
+		
+		// isFile
+		$this->assertEquals(false, $membed->getIsFile());
+				
+				
+        // getContent
+		$this->assertEquals(base64_encode('embedding data string'), $membed->getContent()); 
+    }
         
+	
 }
 
 ?>

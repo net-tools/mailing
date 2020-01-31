@@ -52,11 +52,12 @@ class MailEmbedding extends MailMixedContent {
      * @param string $file_type Mime type of file to embed
      * @param string $cid Content-ID to associate with the embedding
      * @param bool $ignoreCache Indicates whether the embeddings cache must be ignored or used 
-     */
-     public function __construct($file, $file_type, $cid, $ignoreCache = false)
+     * @param bool $isFile Indicates whether 'file' parameter is a file path or a data string
+	 */
+     public function __construct($file, $file_type, $cid, $ignoreCache = false, $isFile = true)
 	{
 		// if file_type not provided, guess it from the filename
-		parent::__construct($file, is_null($file_type) ? FileHelper::guessMimeType($file, "image/jpeg") : $file_type, $ignoreCache);
+		parent::__construct($file, is_null($file_type) ? FileHelper::guessMimeType($file, "image/jpeg") : $file_type, $ignoreCache, $isFile);
 		$this->_cid = $cid;
 	}
 	

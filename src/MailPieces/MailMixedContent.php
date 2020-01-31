@@ -26,7 +26,12 @@ abstract class MailMixedContent extends MailContent {
     
     /** @var bool Indicates whether the cache should be used or not */
 	protected $_ignoreCache = NULL;
+	
+	
+	/** @var bool Indicates whether $_file is a filepath or a data string */
+	protected $_isFile = true;
 
+	
     
 	/** 
      * Abstract method to get the cache object to query
@@ -59,13 +64,15 @@ abstract class MailMixedContent extends MailContent {
      * @param string $file Path to file to attach/embed
      * @param string $file_type Mime type of file to embed
      * @param bool $ignoreCache Indicates whether the cache must be ignored or used 
+     * @param bool $isFile Indicates whether 'file' parameter is a file path or a data string
      */
-	public function __construct($file, $file_type, $ignoreCache = false)
+	public function __construct($file, $file_type, $ignoreCache = false, $isFile = true)
 	{
 		parent::__construct($file_type);
 	
 		$this->_file = $file;
 		$this->_ignoreCache = $ignoreCache;
+		$this->_isFile = $isFile;
 	}
 	
 	
@@ -96,11 +103,33 @@ abstract class MailMixedContent extends MailContent {
     /**
      * Set IgnoreCache accessor
      * 
-     * @param bool Set this parameter to TRUE to ignore the cache
+     * @param bool $i Set this parameter to TRUE to ignore the cache
      */
 	public function setIgnoreCache($i) { $this->_ignoreCache = $i; }
+
+    
+	/**
+     * Get IsFile accessor
+     * 
+     * @return bool True if 'file' property points to a real file path, false if it's a data string
+     */
+    public function getIsFile() { return $this->_isFile; }
+	
+    
+    /**
+     * Set IsFile accessor
+     * 
+     * @param bool $i Set this parameter to TRUE if 'file' property is a real file path, false if it's a data string
+     */
+	public function setIsFile($i) { $this->_isFile = $i; }
 	
 
+	
+	/**
+	 * Getting part content
+	 *
+	 * @return string
+	 */
     public function getContent()
 	{
 		// see if the content is already cached (if we send many emails with the same attachment, this is the case !)
@@ -109,7 +138,8 @@ abstract class MailMixedContent extends MailContent {
 
 
 		// if not, read the file, base64encode it, and store it in the cache (unless instructed not to do so)
-		$content = trim(chunk_split(base64_encode(file_get_contents($this->_file)))) /*. "\r\n\r\n"*/;
+		$content = trim(chunk_split(base64_encode($this->_isFile?file_get_contents($this->_file):$this->_file))) /*. "\r\n\r\n"*/;
+			
 		
 		if( !$this->_ignoreCache )
 			$this->_getCache()->register($this->_getCacheID(), $content);

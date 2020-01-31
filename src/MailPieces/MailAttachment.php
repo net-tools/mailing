@@ -21,7 +21,7 @@ class MailAttachment extends MailMixedContent {
 
 // [----- PROTECTED -----
 
-    /** @var string Filename to display (not to be misunderstanded with the path to the file attached) */
+    /** @var string Filename to display (not to be misunderstood with the path to the file attached) */
 	protected $_filename = NULL;
 
 

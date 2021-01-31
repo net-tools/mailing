@@ -52,7 +52,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 		$fname = $mail->getPart(1)->getFile();
 		$this->assertFileEquals(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.inline.png', $fname);
 		EmlReader::destroy($mail);
-		$this->assertFileNotExists($fname);	// destroy a supprimé le fichier temporaire
+		$this->assertFileDoesNotExist($fname);	// destroy a supprimé le fichier temporaire
 		
 
 
@@ -76,7 +76,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
         // gzdecode because GIT or FTP software may convert CRLF to LF
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
 		EmlReader::destroy($mail);
-		$this->assertFileNotExists($fname);	
+		$this->assertFileDoesNotExist($fname);	
 
 		
 		
@@ -100,7 +100,7 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
         // gzdecode because GIT or FTP software may convert CRLF to LF
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.bin.gz')), file_get_contents($fname)); 
 		EmlReader::destroy($mail);
-		$this->assertFileNotExists($fname);	
+		$this->assertFileDoesNotExist($fname);	
 		
 
 		
@@ -120,8 +120,8 @@ class EmlReaderTest extends \PHPUnit\Framework\TestCase
 		$fname2 = $mail->getPart(2)->getFile();
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.bin.gz')), file_get_contents($fname2)); 
 		EmlReader::destroy($mail);
-		$this->assertFileNotExists($fname);	
-		$this->assertFileNotExists($fname2);
+		$this->assertFileDoesNotExist($fname);	
+		$this->assertFileDoesNotExist($fname2);
 	}
 
 }

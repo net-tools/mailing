@@ -350,7 +350,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
 		$obj = Mailer::createText('textplain content');
 		Mailer::render($obj);
-		$this->assertRegExp('/MIME-Version: 1\\.0/', $obj->getFullHeaders());
+		$this->assertMatchesRegularExpression('/MIME-Version: 1\\.0/', $obj->getFullHeaders());
     }
     
     

@@ -36,7 +36,7 @@ class MailMultipartTest extends \PHPUnit\Framework\TestCase
 
 
         // getSeparator
-		$this->assertRegExp('/MailMultipart-alternative-[a-fA-F0-9]{40}/', $mcalt->getSeparator());
+		$this->assertMatchesRegularExpression('/MailMultipart-alternative-[a-fA-F0-9]{40}/', $mcalt->getSeparator());
 
         
         // getContentType

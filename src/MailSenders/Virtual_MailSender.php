@@ -34,7 +34,8 @@ class Virtual_MailSender extends MailSender
 	{
 		$m = $headers;
 		$m .= "\r\n";
-		$m .= "Delivered-To: $to";
+		$m .= "Delivered-To: $to\r\n";
+		$m .= "Subject: $subject";
 		$m .= "\r\n\r\n";
 		$m .= $mail;
 			

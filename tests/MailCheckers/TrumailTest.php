@@ -38,7 +38,7 @@ class TrumailIoTest extends \PHPUnit\Framework\TestCase
 		
 		
 		
-		$chk = new \Nettools\Mailing\MailChecker(new TrumailIo($stub_guzzle));
+		$chk = new TrumailIo($stub_guzzle);
 		$r = $chk->check('xxxx@gmail.com');
 		$this->assertEquals(true, $r);
     }
@@ -70,7 +70,7 @@ class TrumailIoTest extends \PHPUnit\Framework\TestCase
 		
 		
 		
-		$chk = new \Nettools\Mailing\MailChecker(new TrumailIo($stub_guzzle));
+		$chk = new TrumailIo($stub_guzzle);
 		$r = $chk->check('xxxx@gmail.com');
 		$this->assertEquals(false, $r);
     }
@@ -100,7 +100,7 @@ class TrumailIoTest extends \PHPUnit\Framework\TestCase
 		
 		
 
-		$chk = new \Nettools\Mailing\MailChecker(new TrumailIo($stub_guzzle));
+		$chk = new TrumailIo($stub_guzzle);
 		
 		$this->expectException(\Nettools\Mailing\MailCheckers\Exception::class);
 		$r = $chk->check('xxxx@gmail.com');

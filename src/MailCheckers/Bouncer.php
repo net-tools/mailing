@@ -14,11 +14,11 @@ namespace Nettools\Mailing\MailCheckers;
 
 
 /** 
- * Class to handle mail existence check with trumail.io
+ * Class to handle mail existence check with Bouncer
  */
-class TrumailIo extends Checker
+class Bouncer extends Checker
 {
-	const URL = 'https://api.trumail.io/v2/lookups/json';
+	const URL = 'https://api.usebouncer.com/v1/email/verify';
 	
 	
 	
@@ -34,25 +34,38 @@ class TrumailIo extends Checker
 		// request
 		$response = $this->http->request('GET', self::URL, 
 						 	[ 
-								'query' => ['email' => $email]
+								'query' 	=> ['email' => $email],
+								'headers'	=> ['x-api-key' => $this->api_key]
 							]);
 		
 		// http status code
 		if ( $response->getStatusCode() != 200 )
 			throw new Exception("HTTP error " . $response->getStatusCode() . ' ' . $response->getReasonPhrase() . " when checking email");
 
-		
-		/* 
-		{"address":"xxxx@gmail.com","username":"xxxx","domain":"gmail.com","md5Hash":"af1650be8b5d7d293ce8d1efc09a062f","suggestion":"","validFormat":true,"deliverable":true,"fullInbox":false,"hostExists":true,"catchAll":false,"gravatar":false,"role":false,"disposable":false,"free":true}
+		/*
+		{
+		  "email": "john@usebouncer.com",
+		  "status": "deliverable/undeliverable",
+		  "reason": "accepted_email/rejected_email",
+		  "domain": {
+			"name": "usebouncer.com",
+			"acceptAll": "no",
+			"disposable": "no",
+			"free": "no"
+		  },
+		  "account": {
+			"role": "no",
+			"disabled": "no",
+			"fullMailbox": "no"
+		  }
+		}
 		*/
 		
 		// read response
 		if ( $json = (string)($response->getBody()) )
 			if ( $json = json_decode($json) )
-				if ( property_exists($json, 'deliverable') )
-					return $json->deliverable;		
-				else if ( property_exists($json, 'message') )
-					throw new Exception("API error for email '$email' : " . $json->message);
+				if ( property_exists($json, 'status') )
+					return ($json->status == 'deliverable');
 		
 		throw new Exception("API error for email '$email' in " . __CLASS__ );
 	}

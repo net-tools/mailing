@@ -1,6 +1,6 @@
 <?php
 /**
- * Bouncer
+ * EmailValidator
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -14,11 +14,11 @@ namespace Nettools\Mailing\MailCheckers;
 
 
 /** 
- * Class to handle mail existence check with Bouncer
+ * Class to handle mail existence check with Email-Validator.net
  */
-class Bouncer extends Checker
+class EmailValidator extends Checker
 {
-	const URL = 'https://api.usebouncer.com/v1/email/verify';
+	const URL = 'https://api.email-validator.net/api/verify';
 	
 	
 	
@@ -31,11 +31,12 @@ class Bouncer extends Checker
 	 */
 	function check($email)
 	{
+		// https://api.email-validator.net/api/verify?EmailAddress=support@byteplant.com&APIKey=your API ke
+		
 		// request
 		$response = $this->http->request('GET', self::URL, 
 						 	[ 
-								'query' 	=> ['email' => $email],
-								'headers'	=> ['x-api-key' => $this->apikey]
+								'query' 	=> ['EmailAddress' => $email, 'APIKey' => $this->apikey, 'Timeout' => 5]
 							]);
 		
 		// http status code
@@ -44,20 +45,7 @@ class Bouncer extends Checker
 
 		/*
 		{
-		  "email": "john@usebouncer.com",
-		  "status": "deliverable/undeliverable",
-		  "reason": "accepted_email/rejected_email",
-		  "domain": {
-			"name": "usebouncer.com",
-			"acceptAll": "no",
-			"disposable": "no",
-			"free": "no"
-		  },
-		  "account": {
-			"role": "no",
-			"disabled": "no",
-			"fullMailbox": "no"
-		  }
+		  "status":200,"ratelimit_remain":99,"ratelimit_seconds":299,"info":"OK - Valid Address","details":"The mail address is valid.","freemail":true
 		}
 		*/
 		
@@ -65,7 +53,7 @@ class Bouncer extends Checker
 		if ( $json = (string)($response->getBody()) )
 			if ( $json = json_decode($json) )
 				if ( property_exists($json, 'status') )
-					return ($json->status == 'deliverable');
+					return ($json->status == 200);
 		
 		throw new Exception("API error for email '$email' in " . __CLASS__ );
 	}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Checker
+ * TrumailIo
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT

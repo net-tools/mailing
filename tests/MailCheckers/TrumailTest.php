@@ -25,7 +25,7 @@ class TrumailIoTest extends \PHPUnit\Framework\TestCase
 		// asserting that method Request is called with the right parameters, in particular, the options array being merged with default timeout options
 		$stub_guzzle->expects($this->once())->method('request')->with(
 						$this->equalTo('GET'), 
-						$this->equalTo(TrumailIoTest::URL), 
+						$this->equalTo(TrumailIo::URL), 
 						$this->equalTo(
 								array(
 									'query' => [
@@ -57,7 +57,7 @@ class TrumailIoTest extends \PHPUnit\Framework\TestCase
 		// asserting that method Request is called with the right parameters, in particular, the options array being merged with default timeout options
 		$stub_guzzle->expects($this->once())->method('request')->with(
 						$this->equalTo('GET'), 
-						$this->equalTo(TrumailIoTest::URL), 
+						$this->equalTo(TrumailIo::URL), 
 						$this->equalTo(
 								array(
 									'query' => [
@@ -87,7 +87,7 @@ class TrumailIoTest extends \PHPUnit\Framework\TestCase
 		// asserting that method Request is called with the right parameters, in particular, the options array being merged with default timeout options
 		$stub_guzzle->expects($this->once())->method('request')->with(
 						$this->equalTo('GET'), 
-						$this->equalTo(TrumailIoTest::URL), 
+						$this->equalTo(TrumailIo::URL), 
 						$this->equalTo(
 								array(
 									'query' => [

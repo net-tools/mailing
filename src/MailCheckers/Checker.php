@@ -34,6 +34,21 @@ abstract class Checker
 	
 	
 	/**
+	 * Create a checker instance with default GuzzleHttp interface
+	 *
+	 * Late static binding is use to know which is the real calling class	 
+	 *
+	 * @return Nettools\Mailing\MailCheckers\Checker
+	 */
+	static function create()
+	{
+		$class = get_called_class();
+		return new $class(new \GuzzleHttp\Client());
+	}
+	
+	
+	
+	/**
 	 * Check that a given email exists
 	 * 
 	 * @param string $email

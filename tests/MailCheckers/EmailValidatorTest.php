@@ -4,7 +4,7 @@ namespace Nettools\Mailing\Tests;
 
 
 
-use \Nettools\Mailing\MailCheckers\Bouncer;
+use \Nettools\Mailing\MailCheckers\EmailValidator;
 
 
 

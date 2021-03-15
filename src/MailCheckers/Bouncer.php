@@ -29,13 +29,13 @@ class Bouncer extends Checker
 	 * @return bool Returns true if the email can be delivered, false otherwise
 	 * @throws \Nettools\Mailing\MailCheckers\Exception Thrown if trumail.io API does not return a valid response
 	 */
-	function check ($email)
+	function check($email)
 	{
 		// request
 		$response = $this->http->request('GET', self::URL, 
 						 	[ 
 								'query' 	=> ['email' => $email],
-								'headers'	=> ['x-api-key' => $this->api_key]
+								'headers'	=> ['x-api-key' => $this->apikey]
 							]);
 		
 		// http status code

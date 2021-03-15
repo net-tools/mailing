@@ -71,7 +71,7 @@ class BouncerTest extends \PHPUnit\Framework\TestCase
 		
 		
 		
-		$chk = new Bouncer($stub_guzzle);
+		$chk = new Bouncer($stub_guzzle, 'apikey');
 		$r = $chk->check('xxxx@gmail.com');
 		$this->assertEquals(true, $r);
     }
@@ -119,7 +119,7 @@ class BouncerTest extends \PHPUnit\Framework\TestCase
 		
 		
 		
-		$chk = new Bouncer($stub_guzzle);
+		$chk = new Bouncer($stub_guzzle, 'apikey');
 		$r = $chk->check('xxxx@gmail.com');
 		$this->assertEquals(false, $r);
     }
@@ -151,7 +151,7 @@ class BouncerTest extends \PHPUnit\Framework\TestCase
 		
 		
 		
-		$chk = new Bouncer($stub_guzzle);
+		$chk = new Bouncer($stub_guzzle, 'apikey');
 		
 		$this->expectException(\Nettools\Mailing\MailCheckers\Exception::class);
 		$r = $chk->check('xxxx@gmail.com');
@@ -184,7 +184,7 @@ class BouncerTest extends \PHPUnit\Framework\TestCase
 		
 		
 
-		$chk = new Bouncer($stub_guzzle);
+		$chk = new Bouncer($stub_guzzle, 'apikey');
 		
 		$this->expectException(\Nettools\Mailing\MailCheckers\Exception::class);
 		$r = $chk->check('xxxx@gmail.com');

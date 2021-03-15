@@ -44,7 +44,10 @@ class TrumailIo extends Checker
 		// read response
 		if ( $json = (string)($response->getBody()) )
 			if ( $json = json_decode($json) )
-				return $json->deliverable;		
+				if ( property_exists($json, 'deliverable') )
+					return $json->deliverable;		
+				else if ( property_exists($json, 'message') )
+					throw new Exception("API error for email '$email' : " . $json->message);
 		
 		throw new Exception("API error for email '$email' in " . __CLASS__ );
 	}

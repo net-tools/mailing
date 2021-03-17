@@ -1,6 +1,6 @@
 <?php
 /**
- * SMTP_MailSender
+ * SMTP
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -31,7 +31,7 @@ use \Nettools\Mailing\Mailer;
  * - persist (true to let the connection open or false to close it)
  * 
  */
-class SMTP_MailSender extends MailSender
+class SMTP extends MailSender
 {
 	// [----- PROTECTED -----
 	

@@ -20,37 +20,11 @@ abstract class MailSender{
 
 	// [----- STATIC -----
 	
-    /** @var string Class name of a sending strategy which produces EML files */
-	const EMLFILE = "EmlFile_MailSender";
-    
-    /** @var string Class name of a sending strategy which uses PHP buil-in mail() function */
-	const PHPMAIL = "PHPMail_MailSender";
-    
-    /** @var string Class name of a sending strategy which connects to a SMTP server */
-	const SMTP = "SMTP_MailSender";
-    
-    /** @var string Class name of a sending strategy which stores sent emails in an array (useful for debugging or unit tests) */
-	const VIRTUAL = "Virtual_MailSender";
-	
     /** @var string Parameter name for the log callback ; to be used in the `$params` parameter in constructor of `factory` method */
 	const CALLBACK_LOG = "callback_log";
 
     /** @var string Parameter name for the log callback data ; to be used in the `$params` parameter in constructor of `factory` method */
     const CALLBACK_LOG_DATA = "callback_log_data";
-
-	
-	/**
-     * Create an object instance for the strategy
-     *
-     * @param string $concreteSenderName Set this parameter to one of the constants declared in MailSender : `EMLFILE, PHPMAIL, SMTP or VIRTUAL`
-     * @param string[]|NULL $params Array of parameters to pass to the strategy constructor
-     * @return MailSender Returns a sending strategy
-     */
-	static function factory($concreteSenderName, $params = NULL)
-	{
-		$cname = "\\Nettools\\Mailing\\MailSenders\\$concreteSenderName";
-		return new $cname($params);
-	}
 
 	// ----- STATIC -----]
 

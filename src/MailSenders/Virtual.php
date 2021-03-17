@@ -1,6 +1,6 @@
 <?php
 /**
- * Virtual_MailSender
+ * Virtual
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -19,7 +19,7 @@ use \Nettools\Mailing\MailSender;
 /** 
  * Strategy to send emails to an array (useful for unit testing)
  */
-class Virtual_MailSender extends MailSender
+class Virtual extends MailSender
 {
 	// [----- PROTECTED -----
 	

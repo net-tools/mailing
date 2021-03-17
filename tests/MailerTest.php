@@ -8,6 +8,7 @@ use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailSender;
+use \Nettools\Mailing\MailSenders\Virtual;
 use \org\bovigo\vfs\vfsStream;
 
 
@@ -71,12 +72,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         
         // getMailSender
 		$ml = Mailer::getDefault();
-		$this->assertInstanceOf('Nettools\\Mailing\\MailSenders\\' . MailSender::PHPMAIL, $ml->getMailSender());
+		$this->assertInstanceOf(\Nettools\Mailing\MailSenders\PHPMail::class, $ml->getMailSender());
 
 
         // setMailSender
-		$ml->setMailSender(MailSender::VIRTUAL, NULL);
-		$this->assertInstanceOf("Nettools\\Mailing\\MailSenders\\" . MailSender::VIRTUAL, $ml->getMailSender());
+		$ml->setMailSender(new Virtual());
+		$this->assertInstanceOf(Virtual::class, $ml->getMailSender());
     }
     
     
@@ -357,7 +358,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendmail()
     {
 		$ml = Mailer::getDefault();
-		$ml->setMailSender(MailSender::VIRTUAL, NULL);
+		$ml->setMailSender(new Virtual());
 
         $obj = Mailer::addAttachment(new MailTextPlainContent('textplain content'), self::$_fatt, 'attach.txt', 'text/plain');
 		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
@@ -397,7 +398,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
 		$obj = new MailTextPlainContent('textplain content');
 		$ml = Mailer::getDefault();
-		$ml->setMailSender(MailSender::VIRTUAL, NULL);
+		$ml->setMailSender(new Virtual(), NULL);
 		Mailer::render($obj);
 		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), Mailer::addHeader($obj->getFullHeaders(), 'From: unit-test@php.com'), false); 
 		$sent = $ml->getMailSender()->getSent();
@@ -435,7 +436,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		
         
         // by setting the mailsender, we create another strategy; previously sent emails are lost
-        $ml->setMailSender(MailSender::VIRTUAL, NULL);
+        $ml->setMailSender(new Virtual());
 		Mailer::render($obj);
 		$ml->sendmail_raw(array('user1@test.com','user2@test.com'), 'test subject', $obj->getContent(), Mailer::addHeader($obj->getFullHeaders(), 'From: unit-test@php.com'), false); 
 		$sent = $ml->getMailSender()->getSent();

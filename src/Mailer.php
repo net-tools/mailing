@@ -68,12 +68,13 @@ final class Mailer {
 	public static function getDefault()
 	{
 		if ( is_null(self::$defaultMailer) )
-			self::$defaultMailer = new Mailer(MailSender::PHPMAIL, NULL);
+			self::$defaultMailer = new Mailer(new \Nettools\Mailing\MailSenders\PHPMail());
 		
 		return self::$defaultMailer;
 	}
-
-
+	
+	
+	
 	/**
 	 * Get cache for attachments
 	 *
@@ -693,25 +694,23 @@ final class Mailer {
 	/**
 	 * Constructor
 	 * 
-	 * @param string $mailsender_name Email sending strategy name
-	 * @param string[]|NULL $params Array of parameters for the strategy
+	 * @param \Nettools\Mailing\MailSender $mailsender Email sending strategy
 	 */
-	public function __construct($mailsender_name, $params = NULL)
+	public function __construct(\Nettools\Mailing\MailSender $mailsender)
 	{
-		$this->setMailSender($mailsender_name, $params);
+		$this->setMailSender($mailsender);
 	}
 	
 
 	/** 
 	 * Set the email sending strategy
 	 * 
-	 * @param string $mailsender_name Email sending strategy name
-	 * @param string[]|NULL $params Array of parameters for the strategy
+	 * @param \Nettools\Mailing\MailSender $mailsender Email sending strategy
 	 * @return bool Returns TRUE if mail sending strategy is ready after its creation, or not 
 	 */
-	public function setMailSender($mailsender_name, $params = NULL)
+	public function setMailSender(\Nettools\Mailing\MailSender $mailsender)
 	{
-		$this->mailsender = MailSender::factory($mailsender_name, $params);
+		$this->mailsender = $mailsender;
 		
 		return $this->mailsender->ready();
 	}
@@ -729,12 +728,12 @@ final class Mailer {
 	/**
 	 * Get current email sending strategy, or create a default one
 	 *
-	 * @return MailSender Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
+	 * @return \Nettools\Mailing\MailSender Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
 	 */
 	public function getMailSender()
 	{
 		if ( is_null($this->mailsender) )
-			$this->mailsender = MailSender::factory(MailSender::PHPMAIL);
+			$this->mailsender = new \Nettools\Mailing\MailSenders\PHPMail();
 
 		return $this->mailsender;
 	}

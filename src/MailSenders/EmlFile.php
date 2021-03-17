@@ -1,6 +1,6 @@
 <?php
 /**
- * EmlFile_MailSender
+ * EmlFile
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -22,7 +22,7 @@ use \Nettools\Mailing\MailSender;
  * 
  * We expect that the constructor receive a 'path' option containing a path to the working storage folder for sent emails.
  */
-class EmlFile_MailSender extends MailSender
+class EmlFiler extends MailSender
 {
 	// [----- PROTECTED -----
 	

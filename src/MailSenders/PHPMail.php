@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPMail_MailSender
+ * PHPMail
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -19,7 +19,7 @@ use \Nettools\Mailing\MailSender;
 /** 
  * Strategy to send emails with PHP built-in mail function
  */
-class PHPMail_MailSender extends MailSender
+class PHPMail extends MailSender
 {
 	/**
      * Analyse headers and maybe modify some. 

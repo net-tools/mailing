@@ -51,7 +51,7 @@ class QuotaFacade extends Facade{
 	public function compute()
 	{
 		$quotas = [];
-		$lst = $this->getProxyList()->getList();
+		$lst = $this->getProxyList();
 		
 
 		// create an associative array (name => quota%)

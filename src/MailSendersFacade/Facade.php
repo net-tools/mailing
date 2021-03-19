@@ -41,13 +41,13 @@ class Facade{
 	
 	
 	/**
-	 * Get a proxy list strategy object
+	 * Get a proxy array
 	 * 
-	 * @return \Nettools\Mailing\MailSendersFacade\Res\ProxyList
+	 * @return \Nettools\Mailing\MailSendersFacade\Proxies\Proxy[]
 	 */	 
 	public function getProxyList()
 	{
- 		return $this->listStrategy;
+ 		return $this->listStrategy->getList();
 	}
 	
 	

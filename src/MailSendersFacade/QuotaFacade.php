@@ -79,7 +79,7 @@ class QuotaFacade extends Facade{
 	 */
 	static function facadeQuotaProxiesFromJson(array $list, $json, $active, QuotaInterface $qi)
 	{
-		return new QuotaFacade(new JsonProxies($list, $json, $active, new QuotaCreator($qi)));
+		return new QuotaFacade(new JsonProxies($list, $json, $active, new QuotaCreator($qi)), $qi);
 	}
 }
 

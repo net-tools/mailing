@@ -32,7 +32,7 @@ class PdoQuotaInterface implements QuotaInterface{
 	 * The `$cleanQuery` prepared statement must have 1 named parameter, ':before'
 	 *
 	 * @param \PDOStatement $ackQuery Prepared PDO statement responsible for adding a quota
-	 * @param \PDOStatement $computeQuery Prepared PDO statement responsible for computing a quota over a time interval
+	 * @param \PDOStatement $computeQuery Prepared PDO statement responsible for computing a quota over a time interval (returns a single-row, single-column dataset with quota calculation)
 	 * @param \PDOStatement $cleanQuery Prepared PDO statement responsible for clean quota log before a given timestamp
 	 */
 	public function __construct(\PDOStatement $ackQuery, \PDOStatement $computeQuery, \PDOStatement $cleanQuery)
@@ -67,7 +67,10 @@ class PdoQuotaInterface implements QuotaInterface{
 	 */
 	function compute($name, $from, $to)
 	{
-		$this->computeQuery->execute([':name'=>$name, ':from'=>$from, ':to'=>$to]);
+		if ( $this->computeQuery->execute([':name'=>$name, ':from'=>$from, ':to'=>$to]) )
+			return $this->computeQuery->fetchColumn(0);
+		else
+			return 0;
 	}
 	
 	

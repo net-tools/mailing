@@ -69,14 +69,14 @@ class QuotaFacade extends Facade{
 	
 
 	/**
-	 * Static method to create a Facade from json data
+	 * Static method to create a QuotaFacade object from json data
 	 *
 	 * @param string[] $list List of mailsenders strategies as a string array ["SMTP:aws", "PHPMail", "SMTP:gmail"]
 	 * @param string $json Json-formatted string describing the `$list` items : {"SMTP:aws":{"className":"SMTP","key1":"value1","k2":"value2"}, "PHPMail":{"className":"PHPMail"}}
 	 * @param string $active Name of active mailsender strategy (ex. 'SMTP:aws')
 	 * @param \Nettools\Mailing\MailSendersFacade\Quotas\QuotaInterface $qi Quota interface to deal with quota computations
 	 */
-	static function fromJson(array $list, $json, $active, QuotaInterface $qi)
+	static function facadeQuotaProxiesFromJson(array $list, $json, $active, QuotaInterface $qi)
 	{
 		return new QuotaFacade(new JsonProxies($list, $json, $active, new QuotaCreator($qi)));
 	}

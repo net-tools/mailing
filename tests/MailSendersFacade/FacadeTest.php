@@ -26,7 +26,7 @@ class FacadeTest extends \PHPUnit\Framework\TestCase
 
 	public function testFacadeFromJson()
 	{
-		$f = \Nettools\Mailing\MailSendersFacade\Facade::fromJson(['PHPMail'], '{"PHPMail":{"name":"PHPMail"}}', 'PHPMail');
+		$f = \Nettools\Mailing\MailSendersFacade\Facade::facadeProxiesFromJson(['PHPMail'], '{"PHPMail":{"name":"PHPMail"}}', 'PHPMail');
 		
 		$this->assertEquals(true, is_array($f->getProxies()));
 		$this->assertEquals(1, count($f->getProxies()));

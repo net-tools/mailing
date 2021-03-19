@@ -60,7 +60,7 @@ class QuotaFacadeTest extends \PHPUnit\Framework\TestCase
 	public function testFacadeFromJson()
 	{
 		$qif = new QIF();
-		$f = \Nettools\Mailing\MailSendersFacade\QuotaFacade::fromJson(['PHPMail'], '{"PHPMail":{"name":"PHPMail","quota":"40:d"}}', 'PHPMail');
+		$f = \Nettools\Mailing\MailSendersFacade\QuotaFacade::facadeQuotaProxiesFromJson(['PHPMail'], '{"PHPMail":{"name":"PHPMail","quota":"40:d"}}', 'PHPMail', $qif);
 		
 		$this->assertEquals(true, is_array($f->getProxies()));
 		$this->assertEquals(1, count($f->getProxies()));

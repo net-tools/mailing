@@ -72,7 +72,7 @@ class Facade{
 	 * @param string $json Json-formatted string describing the `$list` items : {"SMTP:aws":{"className":"SMTP","key1":"value1","k2":"value2"}, "PHPMail":{"className":"PHPMail"}}
 	 * @param string $active Name of active mailsender strategy (ex. 'SMTP:aws')
 	 */
-	static function fromJson(array $list, $json, $active)
+	static function facadeProxiesFromJson(array $list, $json, $active)
 	{
 		return new Facade(new JsonProxies($list, $json, $active, new ProxyCreator()));
 	}

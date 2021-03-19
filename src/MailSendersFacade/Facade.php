@@ -14,6 +14,7 @@ namespace Nettools\Mailing\MailSendersFacade;
 
 
 use \Nettools\Mailing\MailSendersFacade\Lists\Proxies;
+use \Nettools\Mailing\MailSendersFacade\Lists\JsonProxies;
 use \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator;
 
 
@@ -60,6 +61,20 @@ class Facade{
 	public function getActiveProxy()
 	{
 		return $this->listStrategy->getActive();
+	}
+	
+	
+	
+	/**
+	 * Static method to create a Facade from json data
+	 *
+	 * @param string[] $list List of mailsenders strategies as a string array ["SMTP:aws", "PHPMail", "SMTP:gmail"]
+	 * @param string $json Json-formatted string describing the `$list` items : {"SMTP:aws":{"className":"SMTP","key1":"value1","k2":"value2"}, "PHPMail":{"className":"PHPMail"}}
+	 * @param string $active Name of active mailsender strategy (ex. 'SMTP:aws')
+	 */
+	static function fromJson(array $list, $json, $active)
+	{
+		return new Facade(new JsonProxies($list, $json, $active, new ProxyCreator()));
 	}
 }
 

@@ -21,6 +21,9 @@ class FacadeTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(1, count($f->getProxies()));
 		$this->assertEquals(\Nettools\Mailing\MailSendersFacade\Proxies\Proxy::class, get_class($f->getProxies()[0]));
 		$this->assertEquals('PHPMail', $f->getActiveProxy()->name);
+		
+		$ms = $f->getActiveMailSender();
+		$this->assertEquals(\Nettools\Mailing\MailSenders\PHPMail::class, get_class($ms));
 	}
     
 

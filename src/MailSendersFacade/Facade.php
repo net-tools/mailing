@@ -65,6 +65,18 @@ class Facade{
 	
 	
 	
+	/** 
+	 * Get the mailsender concrete object from active mailsender proxy
+	 *
+	 * @return \Nettools\Mailing\MailSenderIntf
+	 */
+	public function getActiveMailSender()
+	{
+		return $this->getActiveProxy()->getMailSender();
+	}
+	
+	
+	
 	/**
 	 * Static method to create a Facade from json data
 	 *

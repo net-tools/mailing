@@ -22,7 +22,7 @@ use \Nettools\Mailing\MailSender;
  * 
  * We expect that the constructor receive a 'path' option containing a path to the working storage folder for sent emails.
  */
-class EmlFiler extends MailSender
+class EmlFile extends MailSender
 {
 	// [----- PROTECTED -----
 	

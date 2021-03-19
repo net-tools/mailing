@@ -13,8 +13,8 @@ class PdoQuotaInterfaceTest extends \PHPUnit\Framework\TestCase
 {
 	public function testPdoQI()
 	{
-		$ackQ = $this->createMock(\PDOStatement::class)
-				->method('execute')
+		$ackQ = $this->createMock(\PDOStatement::class);
+		$ackQ->method('execute')
 				->with($this->equalTo([':name'=>'msname', ':timestamp'=>123456789]))
 				->willReturn(true);
 		
@@ -28,8 +28,8 @@ class PdoQuotaInterfaceTest extends \PHPUnit\Framework\TestCase
 				->willReturn(75);
 		
 		
-		$cleanQ = $this->createMock(\PDOStatement::class)
-				->method('execute')
+		$cleanQ = $this->createMock(\PDOStatement::class);
+		$cleanQ->method('execute')
 				->with($this->equalTo([':name'=>'msname', ':before'=>123456789]))
 				->willReturn(true);		
 		

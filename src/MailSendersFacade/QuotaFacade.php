@@ -14,6 +14,7 @@ namespace Nettools\Mailing\MailSendersFacade;
 
 
 use \Nettools\Mailing\MailSendersFacade\Lists\Proxies;
+use \Nettools\Mailing\MailSendersFacade\Lists\JsonProxies;
 use \Nettools\Mailing\MailSendersFacade\Quotas\QuotaInterface;
 use \Nettools\Mailing\MailSendersFacade\Factories\QuotaCreator;
 

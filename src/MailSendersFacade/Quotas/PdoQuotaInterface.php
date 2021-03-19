@@ -1,6 +1,6 @@
 <?php
 /**
- * PdoQuota
+ * PdoQuotaInterface
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT

@@ -1,6 +1,6 @@
 <?php
 /**
- * JsonProxyList
+ * JsonProxies
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -9,7 +9,7 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailSendersFacade\Res;
+namespace Nettools\Mailing\MailSendersFacade\Lists;
 
 
 
@@ -21,7 +21,7 @@ use \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator;
 /**
  * Listing all email sending strategies (list in `$list` string, parameters for all strategies in a json-encoded string)
  */
-class JsonProxyList extends ProxyList {
+class JsonProxies extends Proxies {
 
 	/**
 	 * Constructor

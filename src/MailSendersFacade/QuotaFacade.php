@@ -13,7 +13,7 @@ namespace Nettools\Mailing\MailSendersFacade;
 
 
 
-use \Nettools\Mailing\MailSendersFacade\Res\ProxyList;
+use \Nettools\Mailing\MailSendersFacade\Lists\Proxies;
 use \Nettools\Mailing\MailSendersFacade\Quotas\QuotaInterface;
 
 
@@ -31,10 +31,10 @@ class QuotaFacade extends Facade{
 	/** 
 	 * Constructor
 	 *
-	 * @param \Nettools\Mailing\MailSendersFacade\Res\ProxyList $list
+	 * @param \Nettools\Mailing\MailSendersFacade\Lists\Proxies $list
 	 * @param \Nettools\Mailing\MailSendersFacade\Quotas\QuotaInterface $qi
 	 */
-	public function __construct(ProxyList $list, QuotaInterface $qi)
+	public function __construct(Proxies $list, QuotaInterface $qi)
 	{
 		parent::__construct($list);
 		
@@ -51,7 +51,7 @@ class QuotaFacade extends Facade{
 	public function compute()
 	{
 		$quotas = [];
-		$lst = $this->getProxyList();
+		$lst = $this->getProxies();
 		
 
 		// create an associative array (name => quota%)

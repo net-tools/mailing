@@ -4,7 +4,7 @@ namespace Nettools\Mailing\Tests;
 
 
 use \Nettools\Mailing\MailSendersFacade\QuotaFacade;
-use \Nettools\Mailing\MailSendersFacade\Res\ProxyList;
+use \Nettools\Mailing\MailSendersFacade\Lists\Proxies;
 use \Nettools\Mailing\MailSendersFacade\Factories\QuotaCreator;
 
 
@@ -42,13 +42,13 @@ class QuotaFacadeTest extends \PHPUnit\Framework\TestCase
 	public function testFacade()
 	{
 		$qif = new QIF();
-		$pl = new ProxyList([(object)['name'=>'PHPMail', 'params'=>(object)['quota'=>'40:d']]], 'PHPMail', new QuotaCreator($qif));
+		$pl = new Proxies([(object)['name'=>'PHPMail', 'params'=>(object)['quota'=>'40:d']]], 'PHPMail', new QuotaCreator($qif));
 		$f = new \Nettools\Mailing\MailSendersFacade\QuotaFacade($pl, $qif);
 		
 		
-		$this->assertEquals(true, is_array($f->getProxyList()));
-		$this->assertEquals(1, count($f->getProxyList()));
-		$this->assertEquals(\Nettools\Mailing\MailSendersFacade\Proxies\Quota::class, get_class($f->getProxyList()[0]));
+		$this->assertEquals(true, is_array($f->getProxies()));
+		$this->assertEquals(1, count($f->getProxies()));
+		$this->assertEquals(\Nettools\Mailing\MailSendersFacade\Proxies\Quota::class, get_class($f->getProxies()[0]));
 		$this->assertEquals('PHPMail', $f->getActiveProxy()->name);
 	
 		$quotas = $f->compute();

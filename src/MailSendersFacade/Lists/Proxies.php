@@ -1,6 +1,6 @@
 <?php
 /**
- * ProxyList
+ * Proxies
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -9,7 +9,7 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailSendersFacade\Res;
+namespace Nettools\Mailing\MailSendersFacade\Lists;
 
 
 
@@ -21,7 +21,7 @@ use \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator;
 /**
  * Listing all email sending strategies
  */
-class ProxyList{
+class Proxies{
 
 	protected $lst;
 	protected $active;

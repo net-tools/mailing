@@ -2,7 +2,7 @@
 
 namespace Nettools\Mailing\Tests;
 
-use \Nettools\Mailing\MailSendersFacade\Res\ProxyList;
+use \Nettools\Mailing\MailSendersFacade\Lists\Proxies;
 use \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator;
 use \Nettools\Mailing\MailSendersFacade\Factories\QuotaCreator;
 use \Nettools\Mailing\MailSendersFacade\Proxies\Proxy;
@@ -33,7 +33,7 @@ class ProxyListTest extends \PHPUnit\Framework\TestCase
 
 
 
-		$pl = new ProxyList([$o1, $o2, $o3], 'PHPMail', new ProxyCreator());
+		$pl = new Proxies([$o1, $o2, $o3], 'PHPMail', new ProxyCreator());
 		$this->assertEquals(true, is_array($pl->getList()));
 
 		$p1 = $pl->getList()[0];
@@ -69,7 +69,7 @@ class ProxyListTest extends \PHPUnit\Framework\TestCase
 
 
 		$qi = new QIProxy();
-		$pl = new ProxyList([$o], 'PHPMail', new QuotaCreator($qi));
+		$pl = new Proxies([$o], 'PHPMail', new QuotaCreator($qi));
 		$this->assertEquals(true, is_array($pl->getList()));
 
 		$p1 = $pl->getList()[0];

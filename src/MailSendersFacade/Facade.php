@@ -13,7 +13,7 @@ namespace Nettools\Mailing\MailSendersFacade;
 
 
 
-use \Nettools\Mailing\MailSendersFacade\Res\ProxyList;
+use \Nettools\Mailing\MailSendersFacade\Lists\Proxies;
 use \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator;
 
 
@@ -31,9 +31,9 @@ class Facade{
 	/** 
 	 * Constructor
 	 *
-	 * @param \Nettools\Mailing\MailSendersFacade\Res\ProxyList $list
+	 * @param \Nettools\Mailing\MailSendersFacade\Lists\Proxies $list
 	 */
-	public function __construct(ProxyList $list)
+	public function __construct(Proxies $list)
 	{
 		$this->listStrategy = $list;
 	}
@@ -45,7 +45,7 @@ class Facade{
 	 * 
 	 * @return \Nettools\Mailing\MailSendersFacade\Proxies\Proxy[]
 	 */	 
-	public function getProxyList()
+	public function getProxies()
 	{
  		return $this->listStrategy->getList();
 	}

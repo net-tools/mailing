@@ -52,7 +52,7 @@ class PdoQuotaInterface implements QuotaInterface{
 	 */
 	function add($name, $time)
 	{
-		$this->ackquery->execute([':name'=>$name, ':timestamp'=>$time]);
+		$this->ackQuery->execute([':name'=>$name, ':timestamp'=>$time]);
 	}
 	
 	

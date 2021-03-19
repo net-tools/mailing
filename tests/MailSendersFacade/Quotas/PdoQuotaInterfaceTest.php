@@ -30,14 +30,14 @@ class PdoQuotaInterfaceTest extends \PHPUnit\Framework\TestCase
 		
 		$cleanQ = $this->createMock(\PDOStatement::class);
 		$cleanQ->method('execute')
-				->with($this->equalTo([':name'=>'msname', ':before'=>123456789]))
+				->with($this->equalTo([':before'=>123456789]))
 				->willReturn(true);		
 		
 		
 		$pdoqi = new \Nettools\Mailing\MailSendersFacade\Quotas\PdoQuotaInterface($ackQ, $quotaQ, $cleanQ);
 		$pdoqi->add('msname', 123456789);
 		$this->assertEquals(75, $pdoqi->compute('msname', 123456789, 987654321));
-		$pdoqi->clean('msname', 123456789);
+		$pdoqi->clean(123456789);
 	}
 }
 

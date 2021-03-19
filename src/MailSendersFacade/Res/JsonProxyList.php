@@ -9,7 +9,12 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailSendersFacade\Strategies;
+namespace Nettools\Mailing\MailSendersFacade\Res;
+
+
+
+use \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator;
+
 
 
 
@@ -21,18 +26,13 @@ class JsonProxyList extends ProxyList {
 	/**
 	 * Constructor
 	 *
-	 * @param string $list List of mailsenders strategies (format is SMTP:aws;PHPMail;SMTP:gmail;...)
+	 * @param string[] $list List of mailsenders strategies as a string array ["SMTP:aws", "PHPMail", "SMTP:gmail"]
 	 * @param string $json Json-formatted string describing the `$list` items : {"SMTP:aws":{"className":"SMTP","key1":"value1","k2":"value2"}, "PHPMail":{"className":"PHPMail"}}
 	 * @param string $active Name of active mailsender strategy (ex. 'SMTP:aws')
+	 * @param \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator $creator Strategy used to create a MailSenderProxy of suitable class
 	 */
-	public function __construct($list, $json, $active)
+	public function __construct(array $list, $json, $active, ProxyCreator $creator)
 	{
-		if ( $list != '' )
-			$list = explode(';', $list);
-		else 
-			$list = [];
-		
-		
 		// decode $jsonparams structure
 		$json = json_decode($json);
 		if ( is_null($json) )
@@ -45,27 +45,22 @@ class JsonProxyList extends ProxyList {
 		// for all names, look for the proxy definition json string in the `$json` parameter
 		foreach ( $list as $name )
 		{
-			// if no parameters for strategy, name=className, params = []
-			if ( !property_exists($json, $name) )
-				$className = $name;
-			else
-				// if className key found, use it to grab the class name info, or use the name value instead
-				if ( property_exists($json->$name, 'className') )
-					$className = $json->$name->className;
-				else
-					$className = $name;
-			
-			
-			$lst[] = (object)[
-					'className'	=> $classname,
+			$item = (object)[
 					'name'		=> $name,
-					'params'	=> $json->$name
+					'params'	=> property_exists($json, $name) ? $json->$name : (object)[]
 				];
+
+			
+			// looking for className key
+			if ( property_exists($json, $name) && property_exists($json->$name, 'className') )
+				$item->className = $json->$name->className;
+			
+			$lst[] = $item;
 		}
 		
 		
 		// calling inherited constructor
-		parent::__construct($lst, $active);
+		parent::__construct($lst, $active, $creator);
 	}
 	
 }

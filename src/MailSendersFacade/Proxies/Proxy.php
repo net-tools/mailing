@@ -1,6 +1,6 @@
 <?php
 /**
- * MailSenderProxy
+ * Proxy
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -9,14 +9,14 @@
 
 
 // namespace
-namespace Nettools\Mailing;
+namespace Nettools\Mailing\MailSendersFacade\Proxies;
 
 
 
 /**
  * Class for an email sending strategy proxy (proxies a real strategy during back-office facade stuff such as quotas, create the concrete sending strategy)
  */
-class MailSenderProxy{
+class Proxy{
 
 	public $className;
 	public $name;
@@ -47,9 +47,9 @@ class MailSenderProxy{
 	
 	
 	/**
-	 * Get a MailSender instance from this facade
+	 * Get a concrete MailSender instance from this mail sender proxy
 	 * 
-	 * @return \Nettools\Mailing\MailSender
+	 * @return \Nettools\Mailing\MailSenderIntf
 	 */
 	public function getMailSender()
 	{

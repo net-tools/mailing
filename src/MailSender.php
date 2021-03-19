@@ -16,35 +16,16 @@ namespace Nettools\Mailing;
 /**
  * Base class for an email sending strategy (PHP Mail function, SMTP, etc.)
  */
-abstract class MailSender{
-
-	// [----- STATIC -----
-	
-    /** @var string Parameter name for the log callback ; to be used in the `$params` parameter in constructor of `factory` method */
-	const CALLBACK_LOG = "callback_log";
-
-    /** @var string Parameter name for the log callback data ; to be used in the `$params` parameter in constructor of `factory` method */
-    const CALLBACK_LOG_DATA = "callback_log_data";
-
-	// ----- STATIC -----]
-
+abstract class MailSender implements MailSenderIntf{
 
 	// [----- PROTECTED -----
 	
     /** @var string[] Array of strategy parameters */
 	protected $params = NULL;
 	
-	
-	/** 
-     * Callback to the caller when email sent (if needed)
-     */
-	protected function _acknowledgeMailSent()
-	{
-		if ( $this->params[self::CALLBACK_LOG] )
-			call_user_func_array($this->params[self::CALLBACK_LOG], $this->params[self::CALLBACK_LOG_DATA]);
-	}
-
 	// ----- PROTECTED -----]
+	
+	
 	
 	/** 
      * Constructor
@@ -53,10 +34,7 @@ abstract class MailSender{
      */
 	function __construct($params = NULL)
 	{
-		if ( is_null($params) )
-			$params = array();
-			
-		$this->params = $params;
+		$this->params = is_null($params)?array():$params;
 	}
 	
 
@@ -186,13 +164,7 @@ abstract class MailSender{
 			$this->handleHeaders($to, $subject, $mail, $headers);
 			
 			// send
-			$ret = $this->handleSend($to, $subject, $mail, $headers);
-			
-			// if sending OK, acknowledge it
-			if ( $ret === FALSE )
-				$this->_acknowledgeMailSent();
-				
-			return $ret;
+			return $this->handleSend($to, $subject, $mail, $headers);
 		}
 		else
 			return __CLASS__ . ' not ready : \'' . $this->getMessage() . '\'';

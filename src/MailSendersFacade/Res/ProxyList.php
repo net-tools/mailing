@@ -9,7 +9,12 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailSendersFacade\Strategies;
+namespace Nettools\Mailing\MailSendersFacade\Res;
+
+
+
+use \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator;
+
 
 
 
@@ -34,17 +39,19 @@ class ProxyList{
 	 *			}
 	 * 		]
 	 *
-	 * @param object[] $list List of mailsenders strategies as object litterals
+	 * @param object[] $list Array of mailsenders strategies as object litterals with above structure
 	 * @param string $active Name of active mailsender strategy (ex. 'SMTP:aws')
+	 * @param \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator $creator Strategy used to create a MailSenderProxy of suitable class
 	 */
-	public function __construct($list, $active)
+	public function __construct($list, $active, ProxyCreator $creator)
 	{
 		$this->lst = [];
 		
 		// creating MailSenderProxy instances based on `$list` array data
 		foreach ( $list as $item )
-			$this->lst[] = new \Nettools\Mailing\MailSenderProxy($item->className, $item->name, $item->params);
+			$this->lst[] = $creator->create(property_exists($item, 'className') ? $item->className : $item->name, $item->name, property_exists($item, 'params')?$item->params:(object)[]);
 
+		
 		// search for strategy with name $active
 		foreach ( $this->lst as $msp )
 			if ( $msp->name == $active )
@@ -57,11 +64,11 @@ class ProxyList{
 	
 
 	/**
-	 * Get a list of strategies proxy
+	 * Get a list of mail sender strategies proxy
 	 * 
-	 * @return \Nettools\Mailing\MailSenderProxy[]
+	 * @return \Nettools\Mailing\MailSendersFacade\Proxies\Proxy[]
 	 */	 
-	public function getProxyList()
+	public function getList()
 	{
 		return $this->lst;
 	}
@@ -69,11 +76,11 @@ class ProxyList{
 	
 	
 	/**
-	 * Get active strategy proxy
+	 * Get active mailsender strategy proxy
 	 *
-	 * @return \Nettools\Mailing\MailSenderProxy
+	 * @return \Nettools\Mailing\MailSendersFacade\Proxies\Proxy
 	 */
-	public function getActiveProxy()
+	public function getActive()
 	{
 		return $this->active;
 	}

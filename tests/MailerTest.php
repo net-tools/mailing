@@ -7,7 +7,6 @@ namespace Nettools\Mailing\Tests;
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\Mailer;
-use \Nettools\Mailing\MailSender;
 use \Nettools\Mailing\MailSenders\Virtual;
 use \org\bovigo\vfs\vfsStream;
 

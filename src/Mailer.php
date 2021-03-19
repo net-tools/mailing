@@ -694,9 +694,9 @@ final class Mailer {
 	/**
 	 * Constructor
 	 * 
-	 * @param \Nettools\Mailing\MailSender $mailsender Email sending strategy
+	 * @param \Nettools\Mailing\MailSenderIntf $mailsender Email sending strategy
 	 */
-	public function __construct(\Nettools\Mailing\MailSender $mailsender)
+	public function __construct(\Nettools\Mailing\MailSenderIntf $mailsender)
 	{
 		$this->setMailSender($mailsender);
 	}
@@ -705,10 +705,10 @@ final class Mailer {
 	/** 
 	 * Set the email sending strategy
 	 * 
-	 * @param \Nettools\Mailing\MailSender $mailsender Email sending strategy
+	 * @param \Nettools\Mailing\MailSenderIntf $mailsender Email sending strategy
 	 * @return bool Returns TRUE if mail sending strategy is ready after its creation, or not 
 	 */
-	public function setMailSender(\Nettools\Mailing\MailSender $mailsender)
+	public function setMailSender(\Nettools\Mailing\MailSenderIntf $mailsender)
 	{
 		$this->mailsender = $mailsender;
 		
@@ -728,7 +728,7 @@ final class Mailer {
 	/**
 	 * Get current email sending strategy, or create a default one
 	 *
-	 * @return \Nettools\Mailing\MailSender Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
+	 * @return \Nettools\Mailing\MailSenderIntf Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
 	 */
 	public function getMailSender()
 	{

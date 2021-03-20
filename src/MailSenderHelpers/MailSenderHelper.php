@@ -24,8 +24,8 @@ class MailSenderHelper implements MailSenderHelperInterface
 	protected $from = NULL;
 	protected $subject = NULL;
 	protected $template = NULL;
-	protected $msender = NULL;
-	protected $msender_params = NULL;
+	protected $msenderq = NULL;
+	protected $msenderq_params = NULL;
 	protected $testmode = NULL;
 	protected $bcc = NULL;
 	protected $replyto = false;
@@ -75,12 +75,12 @@ class MailSenderHelper implements MailSenderHelperInterface
 	 * @param bool $testmode If true, email are sent to testing addresses
 	 * @param string $template Template string of email ; if set, must include a `%content%` string that will be replaced by the actual mail content
 	 * @param string $bcc If set, Email BCC address to send a copy to
-	 * @param string $msender If set, a MailSenderQueue name to append emails to
-	 * @param string $msender_params If set, parameters of `$msender` queue
+	 * @param string $msenderq If set, a MailSenderQueue name to append emails to
+	 * @param string $msenderq_params If set, parameters of `$msenderq` queue
 	 * @param string[] $testmails If set, an array of email addresses to send emails to for testing purposes
 	 * @param string $replyto If set, an email address to set as ReplyTo header
 	 */
-	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode, $template = NULL, $bcc = NULL, $msender = NULL, $msender_params = NULL, $testmails = NULL, $replyto = NULL)
+	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode, $template = NULL, $bcc = NULL, $msenderq = NULL, $msenderq_params = NULL, $testmails = NULL, $replyto = NULL)
 	{
 		// paramètres
 		$this->mailer = $mailer;
@@ -89,8 +89,8 @@ class MailSenderHelper implements MailSenderHelperInterface
 		$this->from = $from;
 		$this->subject = $subject ? Mailer::encodeSubject($subject) : NULL;
 		$this->template = $template ? $template : '%content%';
-		$this->msender = $msender;
-		$this->msender_params = $msender_params;
+		$this->msenderq = $msenderq;
+		$this->msenderq_params = $msenderq_params;
 		$this->testmode = $testmode;
 		$this->bcc = $bcc;
 		$this->to_override = NULL;
@@ -231,12 +231,12 @@ class MailSenderHelper implements MailSenderHelperInterface
 	public function send(MailContent $mail, $mto, $subject = NULL)
 	{
 		// if sending as batch (otherwise NULL), msender contains the queue name at first call ; then it will contain a record with required queue objects to send emails to
-		if ( $this->msender && is_string($this->msender) )
+		if ( $this->msenderq && is_string($this->msenderq) )
 		{
 			// getting path of queue, creating
-			$ms = new MailSenderQueue($this->msender_params[self::MAILSENDERQUEUE_PATH]);
-			$msqueue = $ms->createQueue($this->msender . '_' . date('Ymd'), $this->msender_params[self::MAILSENDERQUEUE_BATCH]);
-			$this->msender = array('ms'=>$ms, 'msqueue'=>$msqueue);
+			$ms = new MailSenderQueue($this->msenderq_params[self::MAILSENDERQUEUE_PATH]);
+			$msqueue = $ms->createQueue($this->msenderq . '_' . date('Ymd'), $this->msenderq_params[self::MAILSENDERQUEUE_BATCH]);
+			$this->msenderq = array('ms'=>$ms, 'msqueue'=>$msqueue);
 		}
 
 
@@ -248,7 +248,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 			next($this->testmails);
 
 			// if no more test email ($to = NULL) or if we are not using a queue, exiting as we only simulate
-			if ( !$to || is_null($this->msender) )
+			if ( !$to || is_null($this->msenderq) )
 				return; 
 		}
 		else
@@ -278,8 +278,8 @@ class MailSenderHelper implements MailSenderHelperInterface
 
 
 		// if sending to a queue
-		if ( $this->msender )
-			$this->msender['ms']->push($this->msender['msqueue'], $mail, $this->from, $dest, $subject ? $subject : $this->subject); 
+		if ( $this->msenderq )
+			$this->msenderq['ms']->push($this->msenderq['msqueue'], $mail, $this->from, $dest, $subject ? $subject : $this->subject); 
 		else
 			$this->mailer->sendmail($mail, $this->from, $dest, $subject ? $subject : $this->subject);
 	}
@@ -292,7 +292,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 	public function closeQueue()
 	{
 		if ( $this->getQueueCount() > 0 )
-			$this->msender['ms']->closeQueue($this->msender['msqueue']);
+			$this->msenderq['ms']->closeQueue($this->msenderq['msqueue']);
 	}
 	
 
@@ -305,14 +305,14 @@ class MailSenderHelper implements MailSenderHelperInterface
 	public function getQueueCount()
 	{
 		// if `msender` property is an array, the queue has already been created and used : at least an email is in there
-		if ( is_array($this->msender) )
+		if ( is_array($this->msenderq) )
 		{
-			$q = $this->msender['ms']->getQueue($this->msender['msqueue']);
+			$q = $this->msenderq['ms']->getQueue($this->msenderq['msqueue']);
 			return $q->count;
 		}
 		
 		// if queue but not used yet
-		else if ( is_string($this->msender) )
+		else if ( is_string($this->msenderq) )
 			return 0;
 		
 		

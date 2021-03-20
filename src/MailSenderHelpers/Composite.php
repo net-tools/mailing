@@ -194,7 +194,7 @@ abstract class Composite implements MailSenderHelperInterface
 	 */
 	public function send(MailContent $mail, $to, $subject = NULL)
 	{
-		return $this->component->send($mail, $to, $subject);
+		$this->component->send($mail, $to, $subject);
 	}
 
 	

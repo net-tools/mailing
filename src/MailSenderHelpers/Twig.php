@@ -10,7 +10,7 @@ use \Nettools\Mailing\Mailer;
 
 
 /**
- * Helper class to send email with Twig rendering
+ * Helper class to send an email whose content is rendered with Twig
  */
 class Twig extends MailSenderHelper
 {
@@ -29,17 +29,17 @@ class Twig extends MailSenderHelper
 	 * @param bool $testmode If true, email are sent to testing addresses
 	 * @param string $template Template string of email ; if set, must include a `%content%` string that will be replaced by the actual mail content
 	 * @param string $bcc If set, Email BCC address to send a copy to
-	 * @param string $msender If set, a MailSenderQueue name to append emails to
-	 * @param string $msender_params If set, parameters of `$msender` queue
+	 * @param string $msenderq If set, a MailSenderQueue name to append emails to
+	 * @param string $msenderq_params If set, parameters of `$msenderq` queue
 	 * @param string[] $testmails If set, an array of email addresses to send emails to for testing purposes
 	 * @param string $replyto If set, an email address to set as ReplyTo header
 	 * @param string $cache Path to cache
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
-	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode, $template = NULL, $bcc = NULL, $msender = NULL, $msender_params = NULL, $testmails = NULL, $replyto = false, $cache = NULL)
+	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode, $template = NULL, $bcc = NULL, $msenderq = NULL, $msenderq_params = NULL, $testmails = NULL, $replyto = false, $cache = NULL)
 	{
 		// calling parent constructor
-		parent::__construct($mailer, $mail, $mailContentType, $from, $subject, $testmode, $template, $bcc, $msender, $msender_params, $testmails, $replyto);
+		parent::__construct($mailer, $mail, $mailContentType, $from, $subject, $testmode, $template, $bcc, $msenderq, $msenderq_params, $testmails, $replyto);
 			
 		
 		// cache path

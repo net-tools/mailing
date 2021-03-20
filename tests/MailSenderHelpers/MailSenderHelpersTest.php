@@ -108,7 +108,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 			$msh->send($content, NULL);		// recipient not set
 			$this->assertEquals(true, false);
 		}
-		catch( \Ppast\Mailing\MailSenderHelpers\Exception $e )
+		catch( \Nettools\Mailing\MailSenderHelpers\Exception $e )
 		{
 		}
 			
@@ -119,7 +119,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 			$msh->send($content, 'nouser');	// recipient syntax wrong
 			$this->assertEquals(true, false);
 		}
-		catch( \Ppast\Mailing\MailSenderHelpers\Exception $e )
+		catch( \Nettools\Mailing\MailSenderHelpers\Exception $e )
 		{
 		}
 			

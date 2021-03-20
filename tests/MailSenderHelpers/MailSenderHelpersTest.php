@@ -251,7 +251,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$amsh = new Attachments(new MailSenderHelper($ml, 'content with attachments.', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--'));
 		$amsh->setAttachmentsCount(1);
-		$this->assertInstanceOf(\Nettools\Mailing\MailSenderHelpers\Attachmentsr::class, $amsh->setAttachment($this->_fatt, 'attachment.txt', 'text/plain', 0));	// tester chainage
+		$this->assertInstanceOf(\Nettools\Mailing\MailSenderHelpers\Attachments::class, $amsh->setAttachment($this->_fatt, 'attachment.txt', 'text/plain', 0));	// tester chainage
 
 
 

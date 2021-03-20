@@ -93,12 +93,12 @@ class MailSenderQueue
 			// check all required data are set
 			if ( $ret['data'] && $ret['headers'] && $ret['email'] )
 				return $ret;
-			else
-				return FALSE;
 		}
-		else
-			return FALSE;
+		
+		
+		throw new \Nettools\Mailing\Exception("Missing data for email at index $index from queue '$qid'.");
 	}
+	
 	
 	
 	// send an email from the queue ; we may modify the recipient, bcc, and headers
@@ -108,49 +108,49 @@ class MailSenderQueue
 		
 		
 		// read mail from the queue
-		if ( $mail = $this->_mailFromQueue($qid, $index) )
-		{
-			// handle bcc 
-			if ( !is_null($bcc) )
-				$mail['headers'] = Mailer::addHeader($mail['headers'], "Bcc: $bcc");
-				
-			// if supplementary headers
-			if ( $suppl_headers )
-				$mail['headers'] = Mailer::addHeaders($mail['headers'], $suppl_headers);
+		$mail = $this->_mailFromQueue($qid, $index);
+		
+		// handle bcc 
+		if ( !is_null($bcc) )
+			$mail['headers'] = Mailer::addHeader($mail['headers'], "Bcc: $bcc");
 
-			// unserialize data about the email (recipient, subject, etc.)
-			$data = unserialize($mail['data']);
-			
-			// how is the recipient ? either the TO recipient in the email or the $TO parameter here (if we want to override the recipient)
-			$to or $to = $data['to'];
-			if ( $data === FALSE )
-				return "Can't read data about email '$index' from queue '" . $q->title . "'";
-			else
-				try
-				{
-					// send the email
-					$mailer->sendmail_raw($to, $data['subject'], $mail['email'], $mail['headers']);
-				}
-				catch ( \Nettools\Mailing\Exception $e )
-				{
-					$err = $e->getMessage();
-				}
-		}
+		// if supplementary headers
+		if ( $suppl_headers )
+			$mail['headers'] = Mailer::addHeaders($mail['headers'], $suppl_headers);
+
+		
+		// unserialize data about the email (recipient, subject, etc.)
+		$data = unserialize($mail['data']);
+		
+
+		// how is the recipient ? either the TO recipient in the email or the $TO parameter here (if we want to override the recipient)
+		$to or $to = $data['to'];
+		if ( $data === FALSE )
+			throw new \Nettools\Mailing\Exception("Can't read data about email '$index' from queue '" . $q->title . "'");
 		else
-			return "Missing data files for the email '$index' from queue '" . $q->title . "'";
+			try
+			{
+				// send the email
+				$mailer->sendmail_raw($to, $data['subject'], $mail['email'], $mail['headers']);
+			}
+			catch ( \Nettools\Mailing\Exception $e )
+			{
+				$err = $e->getMessage();
+			}
 
 
+		
 		// set sending status and write config
 		$data['status'] = $err ? self::STATUS_ERROR : self::STATUS_SENT;
 
+		
 		$f = fopen($this->_directory . "$qid/$qid.$index.data", "w");
 		fwrite($f, serialize($data));
 		fclose($f);
-			
+
+		
 		if ( $err )
-			return "Can't send email to '$to' (" . $q->title .") : $err";
-		else
-			return FALSE;
+			throw new \Nettools\Mailing\Exception("Can't send email to '$to' (" . $q->title .") : $err");
 	}
 	
 	
@@ -206,7 +206,6 @@ class MailSenderQueue
 		
 		// increment queue count
 		$this->_data['queues'][$qid]->count++;
-		return false; // no error
 	}
 	
 	
@@ -228,6 +227,7 @@ class MailSenderQueue
 	}
 	
 	
+	
 	/**
      * Create a new queue
      * 
@@ -242,6 +242,7 @@ class MailSenderQueue
 		
 		return $id;
 	}
+	
 	
 	
 	/**
@@ -266,6 +267,7 @@ class MailSenderQueue
 	{
 		return $this->_data['queues'][$qid];
 	}
+	
 	
 	
 	/**
@@ -314,6 +316,7 @@ class MailSenderQueue
 	}
 	
 	
+	
 	/**
      * Push an email to the queue
      * 
@@ -322,14 +325,13 @@ class MailSenderQueue
      * @param string $from Email address of the sender
      * @param string $to Email recipient
      * @param string $subject Email subject
-     * @return bool Always return FALSE (meaning no error)
      */
 	function push($qid, MailContent $mail, $from, $to, $subject)
 	{
 		// add required headers to the email (importance, etc.)
 		Mailer::render($mail);
 		
-		return $this->_push(
+		$this->_push(
 						$qid, 
 						$mail->getContent(), 
 						Mailer::addHeader($mail->getFullHeaders(), "From: $from"), 
@@ -340,6 +342,7 @@ class MailSenderQueue
 									))
 					);
 	}
+	
 	
 	
 	/**
@@ -355,6 +358,7 @@ class MailSenderQueue
 	}
 	
 	
+	
 	/**
      * Unlock a queue (a queue is locked when all email have been sent)
      * 
@@ -365,6 +369,7 @@ class MailSenderQueue
 		$this->_data['queues'][$qid]->locked = false;
 		$this->_writeData();
 	}
+	
 	
 	
 	/**
@@ -396,12 +401,14 @@ class MailSenderQueue
 	}
 	
 	
+	
 	/**
      * Extract an email from the queue
      * 
      * @param string $qid ID of the queue
      * @param int 0-index of email in the queue
      * @return string Email raw text (headers and content)
+	 * @throws \Nettools\Mailing\Exception
      */
 	function emlFromQueue($qid, $index)
 	{
@@ -409,22 +416,20 @@ class MailSenderQueue
 
 		// check queue exists
 		if ( is_null($q) )
-			return FALSE;
+			throw new \Nettools\Mailing\Exception("Queue '$qid' does not exist");
+		
 
 		// read email from queue et get a string for an EML file
-		if ( $mail = $this->_mailFromQueue($qid, $index) )
-		{
-			$data = unserialize($mail['data']);
-			$eml = $mail['headers'] . "\r\n" .
-					"To: " . $data['to'] . "\r\n" .
-					"Subject: " . $data['subject'] . "\r\n" .
-					"\r\n" .
-					$mail['email'];
-			return $eml;
-		}
-			
-		return FALSE;
+		$mail = $this->_mailFromQueue($qid, $index);
+		$data = unserialize($mail['data']);
+		$eml = $mail['headers'] . "\r\n" .
+				"To: " . $data['to'] . "\r\n" .
+				"Subject: " . $data['subject'] . "\r\n" .
+				"\r\n" .
+				$mail['email'];
+		return $eml;
 	}
+	
 	
 	
 	/** 
@@ -438,6 +443,7 @@ class MailSenderQueue
 	}
 	
 	
+	
 	/** 
      * Resend an email from the queue
      * 
@@ -446,17 +452,18 @@ class MailSenderQueue
      * @param int $index 0-index of the email to send in the queue
      * @param string|NULL $bcc Recipient in bcc, if necessary
      * @param string|NULL $to Recipient to send the email to, if we want to override the previous recipient
-     * @return bool|string Return FALSE if email was sent (meaning no error), or a string with an error message
+     * @throws \Nettools\Mailing\Exception
      */
 	function resendFromQueue(Mailer $mailer, $qid, $index, $bcc = NULL, $to = NULL)
 	{
 		$q = $this->_data['queues'][$qid];
 
 		if ( is_null($q) )
-			return "Queue '$qid' does not exist";
+			throw new \Nettools\Mailing\Exception("Queue '$qid' does not exist");
 			
-		return $this->_sendFromQueue($mailer, $q, $qid, $index, $bcc, $to);
+		$this->_sendFromQueue($mailer, $q, $qid, $index, $bcc, $to);
 	}
+	
 	
 	
 	/**
@@ -474,15 +481,14 @@ class MailSenderQueue
 		// check all emails from the queue
 		for ( $i = 0 ; $i < $q->count ; $i++ )
 		{
-			if ( $mail = $this->_mailFromQueue($qid, $i) )
+			$mail = $this->_mailFromQueue($qid, $i);
+			
+			// if email was not sent, pushing it to the new queue
+			$data = unserialize($mail['data']);
+			if ( $data['status'] == self::STATUS_ERROR )
 			{
-				// if email was not sent, pushing it to the new queue
-				$data = unserialize($mail['data']);
-				if ( $data['status'] == self::STATUS_ERROR )
-				{
-					$data['status'] = self::STATUS_TOSEND;
-					$this->_push($nid, $mail['email'], $mail['headers'], serialize($data));
-				}
+				$data['status'] = self::STATUS_TOSEND;
+				$this->_push($nid, $mail['email'], $mail['headers'], serialize($data));
 			}
 		}
 		
@@ -492,13 +498,14 @@ class MailSenderQueue
 	}
 	
 	
+	
 	/** 
      * Send a batch of email through a Mailer instance, and optionnally add headers
      *
      * @param Mailer $mailer Mailer instance to send email through
      * @param string $qid ID of the queue to process
      * @param string $suppl_headers Optionnal supplementary headers
-     * @return bool|string Returns FALSE if the process was OK, an string with an error message otherwise 
+     * @throws \Nettools\Mailing\Exception
      */
 	function sendQueue(Mailer $mailer, $qid, $suppl_headers = "")
 	{
@@ -506,7 +513,7 @@ class MailSenderQueue
 		
 		// check file exists
 		if ( is_null($q) )
-			return "La file '$qid' n'existe pas";
+			throw new \Nettools\Mailing\Exception("Queue '$qid' does not exist");
 		
 		
 		// are the emails to sent ?
@@ -518,9 +525,14 @@ class MailSenderQueue
 			$max = min(array($q->sendOffset + $q->batchCount, $q->count));
 			for ( $i = $q->sendOffset ; $i < $max ; $i++ )
 			{
-				$r = $this->_sendFromQueue($mailer, $q, $qid, $i, NULL, NULL, $suppl_headers);
-				if ( $r )
-					$ret[] = $r;
+				try
+				{
+					$this->_sendFromQueue($mailer, $q, $qid, $i, NULL, NULL, $suppl_headers);
+				}
+				catch ( \Nettools\Mailing\Exception $e )
+				{
+					$ret[] = $e->getMessage();
+				}
 			}
 			
 			
@@ -541,11 +553,13 @@ class MailSenderQueue
 			$this->_writeData();
 
 			// check errors
-			return count($ret) ? "Errors occured during queue processing '" . $q->title . "'" : false;
+			if ( count($ret) )
+				throw new \Nettools\Mailing\Exception("Errors occured during queue processing '$q->title'");
 		}
 		else
-			return "Queue '" . $q->title . "' is empty";
+			throw new \Nettools\Mailing\Exception("Queue '$q->title' is empty");
 	}
+	
 	
 	
 	/**
@@ -559,13 +573,15 @@ class MailSenderQueue
      * 
      * @param string $qid ID of the queue to extract recipients from
      * @return object[] Return an array of litteral objects about recipients 
+	 * @throws \Nettools\Mailing\Exception
      */
 	function recipientsFromQueue($qid)
 	{
 		$q = $this->_data['queues'][$qid];
 		
 		if ( is_null($q) )
-			return FALSE;
+			throw new \Nettools\Mailing\Exception("Queue '$qid' does not exist");
+
 		
 		$ret = array();
 			
@@ -581,6 +597,7 @@ class MailSenderQueue
 	}
 	
 	
+	
 	/**
      * Set an email to error (after it has been sent)
      * 
@@ -588,6 +605,7 @@ class MailSenderQueue
      *
      * @param string $qid ID of the queue
      * @param int 0-index of the email to set to error status
+	 * @throws \Nettools\Mailing\Exception
      */
 	function recipientError($qid, $index)
 	{
@@ -595,18 +613,17 @@ class MailSenderQueue
 
 		// check queue exists
 		if ( is_null($q) )
-			return "Queue '$qid' does not exist";
+			throw new \Nettools\Mailing\Exception("Queue '$qid' does not exist");
 
 
 		// get email info
 		$mail = $this->_mailFromQueue($qid, $index);
-		if ( !$mail) 
-			return "Missing data files for email '$index' from the queue '" . $q->title . "'";
+		
 
 		// unserialize email data
 		$data = unserialize($mail['data']);
 		if ( $data === FALSE )
-			return "Can't read data about email '$index' from the queue '" . $q->title . "'";
+			throw new \Nettools\Mailing\Exception("Can't read data about email '$index' from the queue '" . $q->title . "'");
 
 	
 		// modify status and write config
@@ -615,32 +632,32 @@ class MailSenderQueue
 		fwrite($f, serialize($data));
 		fclose($f);
 		
+		
 		// update log
 		$this->_data['queues'][$qid]->sendLog = array_merge($this->_data['queues'][$qid]->sendLog, array("Error for '" . $data['to'] . "' (" . $q->title . ") : set to Error by user"));
 		$this->_writeData();
-		
-		// no error
-		return FALSE;
 	}
+	
 	
 	
 	/**
      * Erase log for a queue
      *
      * @param string $qid ID of the queue
+	 * @throws \Nettools\Mailing\Exception
      */
 	function clearLog($qid)
 	{
 		$q = $this->_data['queues'][$qid];
 
 		if ( is_null($q) )
-			return "Queue '$qid' does not exist";
+			throw new \Nettools\Mailing\Exception("Queue '$qid' does not exist");
 			
+		
 		$this->_data['queues'][$qid]->sendLog = array();
 		$this->_writeData();
-		
-		return FALSE;
 	}
+	
 	
 	
 	/**
@@ -664,6 +681,7 @@ class MailSenderQueue
 		
         $this->_writeData();
 	}
+	
 	
 	
 	/**

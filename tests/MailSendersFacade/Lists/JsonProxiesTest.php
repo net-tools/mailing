@@ -29,6 +29,18 @@ class JsonProxiesTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals((object)['className'=>"SMTP", "host"=>"my.host2.com"], $p2->params);
 		$this->assertEquals((object)[], $p3->params);
 	}
+	
+	
+	public function testProxyJsonKo()
+	{
+		$lst = ['SMTP:test', 'SMTP:test2', 'PHPMail'];
+		$json = '{"SMTP:test":}';
+		
+
+		$this->expectException(\Nettools\Mailing\MailSendersFacade\Exception::class);
+		$this->expectExceptionMessage('Malformed Json');
+		$pl = new JsonProxies($lst, $json, 'SMTP:test', new ProxyCreator());
+	}
 }
 
 ?>

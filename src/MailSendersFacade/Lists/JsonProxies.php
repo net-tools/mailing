@@ -30,13 +30,14 @@ class JsonProxies extends Proxies {
 	 * @param string $json Json-formatted string describing the `$list` items : {"SMTP:aws":{"className":"SMTP","key1":"value1","k2":"value2"}, "PHPMail":{"className":"PHPMail"}}
 	 * @param string $active Name of active mailsender strategy (ex. 'SMTP:aws')
 	 * @param \Nettools\Mailing\MailSendersFacade\Factories\ProxyCreator $creator Strategy used to create a MailSenderProxy of suitable class
+	 * @throws \Nettools\Mailing\MailSendersFacade\Exception Thrown if `$json` is not valid
 	 */
 	public function __construct(array $list, $json, $active, ProxyCreator $creator)
 	{
 		// decode $jsonparams structure
 		$json = json_decode($json);
 		if ( is_null($json) )
-			$json = (object)[];
+			throw new \Nettools\Mailing\MailSendersFacade\Exception('Malformed Json data in constructor of ' . __CLASS__);
 		
 		
 		// preparing list before calling inherited constructor

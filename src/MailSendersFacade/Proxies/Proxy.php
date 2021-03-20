@@ -54,7 +54,15 @@ class Proxy{
 	public function getMailSender()
 	{
 		$class = "\\Nettools\\Mailing\\MailSenders\\" . $this->className;
-		return new $class((array)($this->params));
+
+		try
+		{
+			return (new ReflectionClass($class))->newInstanceArgs([(array)($this->params)]);
+		}
+		catch( \ReflectionException $e )
+		{
+			throw new \Nettools\Mailing\MailSendersFacade\Exception("Mailsender of class '$class' does not exist (" . $e->getMessage() . ")");
+		}
 	}
 	
 }

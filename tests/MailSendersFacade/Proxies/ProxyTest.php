@@ -61,6 +61,18 @@ use \Nettools\Mailing\MailSender;
 			$this->assertEquals(true, $ms instanceof \Nettools\Mailing\MailSenderIntf);
 			$this->assertEquals(['k1'=>'value1'], $ms->parameters);
 		}
+		
+		
+		public function testProxyWrongClass()
+		{
+			$params = (object)["k1" => "value1"];
+
+			$p = new Proxy('TestMailSenderKo', 'TestMailSender:test', $params);
+
+			$this->expectException(\Nettools\Mailing\MailSendersFacade\Exception::class);
+			$this->expectExceptionMessage('Mailsender of class ');
+			$ms = $p->getMailSender();
+		}
 	}
 }
 ?>

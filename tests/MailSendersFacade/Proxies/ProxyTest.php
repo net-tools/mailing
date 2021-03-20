@@ -25,11 +25,6 @@ namespace Nettools\Mailing\MailSenders
 		}
 
 
-		function getMessage()
-		{
-			return '';
-		}
-
 
     	function __construct($params = NULL)
 		{

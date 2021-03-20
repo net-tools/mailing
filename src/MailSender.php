@@ -38,6 +38,7 @@ abstract class MailSender implements MailSenderIntf{
 	}
 	
 
+	
 	/**
      * Send the email (to be implemented in child classes)
      *
@@ -45,11 +46,12 @@ abstract class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-     * @return bool|string Returns FALSE if sending is done (no error), or an error string if an error occured
+	 * @param throws \Nettools\Mailing\Exception
      */
 	abstract function doSend($to, $subject, $mail, $headers);
 	
 
+	
 	/**
      * Handle Bcc 
      *
@@ -61,8 +63,8 @@ abstract class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-     * @return bool Always returns FALSE (no error)
-     */
+	 * @param throws \Nettools\Mailing\Exception
+	 */
 	function handleBcc($to, $subject, $mail, &$headers)
 	{
 		if ( $bcc = Mailer::getHeader($headers, 'Bcc') )
@@ -76,9 +78,8 @@ abstract class MailSender implements MailSenderIntf{
 				// envoyer avec BCC comme destinataire ; headers est privé de son champ BCC
 				$this->doSend(trim($bcc), $subject, $mail, $headers);
 		}
-		
-		return FALSE;
 	}
+
 
 	
 	/**
@@ -88,7 +89,7 @@ abstract class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-     * @return bool|string Returns FALSE if sending is done (no error), or an error string if an error occured
+	 * @param throws \Nettools\Mailing\Exception
      */
 	function handleSend($to, $subject, $mail, $headers)
 	{
@@ -96,8 +97,9 @@ abstract class MailSender implements MailSenderIntf{
 		$this->handleBcc($to, $subject, $mail, $headers);
 		
 		// send the email
-		return $this->doSend($to, $subject, $mail, $headers);
+		$this->doSend($to, $subject, $mail, $headers);
 	}
+	
 	
 	
 	/**
@@ -113,6 +115,7 @@ abstract class MailSender implements MailSenderIntf{
 		$headers = Mailer::addHeader($headers, "To: $to");
 		$headers = Mailer::addHeader($headers, "Subject: $subject");
 	}
+	
 	
 	
 	/**
@@ -131,6 +134,7 @@ abstract class MailSender implements MailSenderIntf{
 	}
 	
 	
+	
 	/**
      * Handle headers modifications (to/subject/priority)
      * 
@@ -146,6 +150,7 @@ abstract class MailSender implements MailSenderIntf{
 	}
 	
 	
+	
 	/**
      * Send the email
      *
@@ -153,7 +158,7 @@ abstract class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-     * @return bool|string Returns FALSE if sending is done (no error), or an error string if an error occured
+	 * @param throws \Nettools\Mailing\Exception
      */
 	function send($to, $subject, $mail, $headers)
 	{
@@ -164,10 +169,10 @@ abstract class MailSender implements MailSenderIntf{
 			$this->handleHeaders($to, $subject, $mail, $headers);
 			
 			// send
-			return $this->handleSend($to, $subject, $mail, $headers);
+			$this->handleSend($to, $subject, $mail, $headers);
 		}
 		else
-			return __CLASS__ . ' not ready : \'' . $this->getMessage() . '\'';
+			throw new \Nettools\Mailing\Exception(__CLASS__ . ' not ready for sending email');
 	}	
 
 
@@ -183,14 +188,6 @@ abstract class MailSender implements MailSenderIntf{
      * Destruct strategy (do housecleaning stuff such as closing SMTP connections)
      */
 	function destruct() {}
-	
-	
-	/**
-     * Get an error message explaining why the strategy is not ready
-     *
-     * @return string Error message
-     */
-	function getMessage() { return NULL; }
 }
 
 

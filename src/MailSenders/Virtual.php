@@ -29,7 +29,14 @@ class Virtual extends MailSender
 	// ----- PROTECTED -----]
 	
 	
-	// send the email
+	/**
+	 * send the email
+	 *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+	 */
 	function doSend($to, $subject, $mail, $headers)
 	{
 		$m = $headers;
@@ -40,15 +47,18 @@ class Virtual extends MailSender
 			
 
 		$this->_sent[] = $m;
-		return FALSE; // ok
 	}
 	
 	
-	// destroy instance
+	
+	/**
+	 * destroy instance
+	 */
 	function destruct()
 	{
 		$this->_sent = array();
 	}
+	
 	
 	
 	/**

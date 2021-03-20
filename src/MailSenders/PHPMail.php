@@ -44,10 +44,8 @@ class PHPMail extends MailSender
 	// concrete implemntation to send the email
 	function doSend($to, $subject, $mail, $headers)
 	{
-		if ( mail($to, $subject, $mail, $headers) )
-			return FALSE;
-		else
-			return "Unknown error with PHP:mail()";
+		if ( !mail($to, $subject, $mail, $headers) )
+			throw new \Nettools\Mailing\Exception("Unknown error with PHP:mail()");
 	}
 }
 ?>

@@ -17,6 +17,6 @@ namespace Nettools\Mailing\MailSendersFacade;
 /**
  * Class for exception during Facade stuff
  */
-class Exception extends \Exception {}
+class Exception extends \Nettools\Mailing\Exception {}
 
 ?>

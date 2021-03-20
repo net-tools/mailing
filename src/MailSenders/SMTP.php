@@ -48,20 +48,26 @@ class SMTP extends MailSender
      * @param string $to Recipient
      * @param string $mail Email to send, as text
      * @param string[] $headers Email headers array
+	 * @param throws \Nettools\Mailing\Exception
      */
 	protected function _doSend($to, $mail, $headers)
 	{
 		$ret = $this->smtp->send($to, $headers, $mail);
 		if ( $ret === TRUE )
-			return FALSE;
+			return;
 		else
-			return $ret->toString();
+			throw new \Nettools\Mailing\Exception($ret->toString());
 	}
 	
 	
 	// ----- PROTECTED -----]
 
-    // constructor
+    /**
+	 * Constructor
+	 * 
+	 * @param string[] $params
+	 * @param throws \Nettools\Mailing\Exception
+	 */
     function __construct($params = NULL)
 	{
 		// parent constructor call
@@ -70,11 +76,9 @@ class SMTP extends MailSender
 
 		// we must at least have the host
 		if ( !isset($this->params['host']) )
-		{
-			$this->initerror = "SMTP Host parameter missing";
-			return;
-		}
+			throw new \Nettools\Mailing\Exception("SMTP Host parameter missing");
 
+		
 		// default values
 		$this->params['port'] or $this->params['port'] = '25';
 		$this->params['auth'] or $this->params['auth'] = FALSE;
@@ -89,26 +93,34 @@ class SMTP extends MailSender
 				||
 				(strpos(get_include_path(), 'pear/net_smtp') === FALSE)
 			)
-		{
-			$this->smtp = null;
-			$this->initerror = "Composer libraries missing : pear/mail or pear/net_smtp or net-tools/auth_sasl";
-		}
-		else
-			// create connection
-			$this->smtp = \Mail::factory('smtp', 
-				array(
-						  'host'         	=> $this->params['host'],
-						  'port'         	=> $this->params['port'],
-						  'auth'         	=> $this->params['auth'] ? TRUE:FALSE,
-						  'username'     	=> $this->params['username'],
-						  'password'     	=> $this->params['password'],
-						  'persist'      	=> $this->params['persist'] ? TRUE:FALSE,
-						  'socket_options'	=> array('ssl'=>array('verify_peer'=>false))
-					)); 
+			throw new \Nettools\Mailing\Exception("Composer libraries missing : pear/mail or pear/net_smtp or net-tools/auth_sasl");
+
+		
+		
+		// create connection
+		$this->smtp = \Mail::factory('smtp', 
+			array(
+					  'host'         	=> $this->params['host'],
+					  'port'         	=> $this->params['port'],
+					  'auth'         	=> $this->params['auth'] ? TRUE:FALSE,
+					  'username'     	=> $this->params['username'],
+					  'password'     	=> $this->params['password'],
+					  'persist'      	=> $this->params['persist'] ? TRUE:FALSE,
+					  'socket_options'	=> array('ssl'=>array('verify_peer'=>false))
+				)); 
+		
+		
+		if ( $this->smtp instanceof \PEAR_Error )
+			throw new \Nettools\Mailing\Exception($this->smtp->toString());
 	}
 	
 	
-	// is the SMTP connection ready ?
+	
+	/**
+	 * is the SMTP connection ready ?
+	 *
+	 * @return bool
+	 */
 	function ready()
 	{
 		// tester 
@@ -116,7 +128,10 @@ class SMTP extends MailSender
 	}
 	
 	
-	// destruct object, and disconnet SMTP 
+	
+	/**
+	 * destruct object, and disconnet SMTP 
+	 */
 	function destruct()
 	{
 		if ( $this->params['persist'] && $this->ready() )
@@ -128,24 +143,20 @@ class SMTP extends MailSender
 	}
 	
 	
-	// get info for last error
-	function getMessage()
-	{
-		if ( $this->smtp && $this->smtp instanceof \PEAR_Error )
-			return $this->smtp->toString();
-		else
-		if ( $this->initerror )
-			return $this->initerror;
-		else
-			return NULL;
-	}
 	
-		
-	// implement sending
+	/**
+	 * implement sending
+	 *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+	 * @param throws \Nettools\Mailing\Exception
+	 */
 	function doSend($to, $subject, $mail, $headers)
 	{
 		// PEAR SMTP::send expects headers to be an associative array
-		return $this->_doSend($to, $mail, Mailer::headersToArray($headers));
+		$this->_doSend($to, $mail, Mailer::headersToArray($headers));
 	}
 }
 ?>

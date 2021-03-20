@@ -748,7 +748,7 @@ final class Mailer {
 	 * @param string $subject Email subject
 	 * @param string[] $attachments Array of filepaths
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
-	 * @return bool|string Returns FALSE if mail was sent, an error message if someting went wrong
+	 * @param throws \Nettools\Mailing\Exception
 	 */
 	public function expressSendmail($content, $from, $to, $subject, $attachments = array(), $destruct = false)
 	{
@@ -778,7 +778,7 @@ final class Mailer {
 		
 		
 		// send the email
-		return $this->sendmail($mailcontent, $from, $to, $subject, $destruct);
+		$this->sendmail($mailcontent, $from, $to, $subject, $destruct);
 	}
 	
 	
@@ -790,15 +790,14 @@ final class Mailer {
 	 * @param string $to Email recipient
 	 * @param string $subject Email subject
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
-	 * @return bool|string Returns FALSE if mail was sent, an error message if someting went wrong
+	 * @param throws \Nettools\Mailing\Exception
 	 */
 	public function sendmail(MailContent $mail, $from, $to, $subject, $destruct = false)
 	{
 		// add required technical headers
 		self::render($mail);
 		
-		return $this->sendmail_raw($to, $subject, $mail->getContent(), 
-								self::addHeader($mail->getFullHeaders(),"From: $from"), $destruct);
+		$this->sendmail_raw($to, $subject, $mail->getContent(), self::addHeader($mail->getFullHeaders(),"From: $from"), $destruct);
 	}
 	
 	
@@ -810,7 +809,7 @@ final class Mailer {
 	 * @param string $mail Email body as text
 	 * @param string $headers Headers string
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
-	 * @return bool|string Returns FALSE if mail was sent, an error message if someting went wrong
+	 * @param throws \Nettools\Mailing\Exception
 	 */
 	public function sendmail_raw($to, $subject, $mail, $headers, $destruct = false)
 	{
@@ -820,14 +819,21 @@ final class Mailer {
 						
 		$st = array();
 		foreach ( $to as $recipient )
-			if ( $s = $this->getMailSender()->send($recipient, $subject, $mail, $headers) )
-				$st[] = $s;
+			try
+			{
+				$this->getMailSender()->send($recipient, $subject, $mail, $headers);
+			}
+			catch ( \Nettools\Mailing\Exception $e )
+			{
+				$st[] = $e->getMessage();
+			}
 
 		if ( $destruct )
 			$this->destruct();
 
 		// return FALSE if ok, a string if an error occured
-		return count($st) ? implode("\n", $st) : false;
+		if ( count($st) )
+			throw new \Nettools\Mailing\Exception("Errors occured when sending to recipients '$to' : " . implode("\n", $st));
 	}
 
 // ----- PUBLIC -----]

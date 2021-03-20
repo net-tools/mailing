@@ -61,18 +61,13 @@ class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-     * @return bool|string Returns FALSE if sending is done (no error), or an error string if an error occured
+	 * @param throws \Nettools\Mailing\Exception
      */
 	function send($to, $subject, $mail, $headers)
 	{
 		// send email through decorated instance
-		$r = $this->ms->send($to, $subject, $mail, $headers);
-				
-		// if mail sent, increment quota
-		if ( $r === FALSE )
-			$this->quotaAdd();
-		
-		return $r;
+		$this->ms->send($to, $subject, $mail, $headers);
+		$this->quotaAdd();
 	}
 
 	
@@ -97,18 +92,6 @@ class MailSender implements MailSenderIntf{
 		$this->ms->destruct();
 	}
 	
-	
-	
-	/**
-     * Get an error message explaining why the strategy is not ready
-     *
-     * @return string Error message
-     */
-	function getMessage()
-	{
-		return $this->ms->getMessage();
-	}
-
 	
 	
 	/** 

@@ -41,9 +41,10 @@ class MailSenderTest extends \PHPUnit\Framework\TestCase
 		$qi = new QI2();
 		$msv = new Virtual();
 		$ms = new \Nettools\Mailing\MailSendersFacade\Quotas\MailSender('Virtual:test', $msv, $qi);
-		$this->assertEquals(FALSE, $ms->send('tester@gmail.com', 'subject', 'this is a test mail', 'From: unitest@selfhost.com'));
-		$this->assertEquals(FALSE, $ms->send('tester2@gmail.com', 'subject 2', 'this is a test mail 2', 'From: unitest@selfhost.com'));
 
+		$ms->send('tester@gmail.com', 'subject', 'this is a test mail', 'From: unitest@selfhost.com');
+		$ms->send('tester2@gmail.com', 'subject 2', 'this is a test mail 2', 'From: unitest@selfhost.com');
+		
 		$this->assertCount(2, $qi->quota);
 		$this->assertEquals('Virtual:test', $qi->quota[0]['name']);
 		$this->assertIsInt($qi->quota[0]['time']);

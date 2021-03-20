@@ -36,7 +36,15 @@ class EmlFile extends MailSender
 	const PATH = 'path';
 	
 	
-	// send an email
+	/**
+	 * send an email
+	 *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+	 * @param throws \Nettools\Mailing\Exception
+	 */
 	function doSend($to, $subject, $mail, $headers)
 	{
 		if ( $this->params[self::PATH] )
@@ -58,11 +66,9 @@ class EmlFile extends MailSender
 			fclose($f);
 			
 			$this->_emlSent[] = $fname;
-			
-			return FALSE; // ok
 		}
 		else
-			return "Folder not available : '" . $this->params[self::PATH] . "'";
+			throw new \Nettools\Mailing\Exception("Folder not available : '" . $this->params[self::PATH] . "'");
 	}
 	
 	

@@ -104,6 +104,9 @@ class MailSenderQueue
 	// send an email from the queue ; we may modify the recipient, bcc, and headers
 	private function _sendFromQueue(Mailer $mailer, \stdClass $q, $qid, $index, $bcc = NULL, $to = NULL, $suppl_headers = "")
 	{
+		$err = null;
+		
+		
 		// read mail from the queue
 		if ( $mail = $this->_mailFromQueue($qid, $index) )
 		{
@@ -123,22 +126,29 @@ class MailSenderQueue
 			if ( $data === FALSE )
 				return "Can't read data about email '$index' from queue '" . $q->title . "'";
 			else
-				// send the email ; false is returned if OK, an error string if something is wrong
-				$ret = $mailer->sendmail_raw($to, $data['subject'], $mail['email'], $mail['headers']);
+				try
+				{
+					// send the email
+					$mailer->sendmail_raw($to, $data['subject'], $mail['email'], $mail['headers']);
+				}
+				catch ( \Nettools\Mailing\Exception $e )
+				{
+					$err = $e->getMessage();
+				}
 		}
 		else
 			return "Missing data files for the email '$index' from queue '" . $q->title . "'";
 
 
 		// set sending status and write config
-		$data['status'] = $ret ? self::STATUS_ERROR : self::STATUS_SENT;
+		$data['status'] = $err ? self::STATUS_ERROR : self::STATUS_SENT;
 
 		$f = fopen($this->_directory . "$qid/$qid.$index.data", "w");
 		fwrite($f, serialize($data));
 		fclose($f);
 			
-		if ( $ret )
-			return "Can't send email to '$to' (" . $q->title .") : $ret";
+		if ( $err )
+			return "Can't send email to '$to' (" . $q->title .") : $err";
 		else
 			return FALSE;
 	}

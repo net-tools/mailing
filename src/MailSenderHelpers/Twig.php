@@ -39,7 +39,7 @@ class Twig extends MailSenderHelper
 	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode, $template = NULL, $bcc = NULL, $msender = NULL, $msender_params = NULL, $testmails = NULL, $replyto = false, $cache = NULL)
 	{
 		// calling parent constructor
-		parent::__construct($mailer, $mail, $mailContentType, $from, $sujet, $testmode, $template, $bcc, $msender, $msender_params, $testmails, $replyto);
+		parent::__construct($mailer, $mail, $mailContentType, $from, $subject, $testmode, $template, $bcc, $msender, $msender_params, $testmails, $replyto);
 			
 		
 		// cache path

@@ -57,7 +57,7 @@ class Proxy{
 
 		try
 		{
-			return (new ReflectionClass($class))->newInstanceArgs([(array)($this->params)]);
+			return (new \ReflectionClass($class))->newInstanceArgs([(array)($this->params)]);
 		}
 		catch( \ReflectionException $e )
 		{

@@ -281,7 +281,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 		if ( $this->msender )
 			$this->msender['ms']->push($this->msender['msqueue'], $mail, $this->from, $dest, $subject ? $subject : $this->subject); 
 		else
-			$this->mailer->sendmail($mail, $this->from, $dest, $subject ? subject : $this->subject);
+			$this->mailer->sendmail($mail, $this->from, $dest, $subject ? $subject : $this->subject);
 	}
 	
 	

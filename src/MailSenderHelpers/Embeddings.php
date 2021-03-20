@@ -12,7 +12,7 @@ use \Nettools\Mailing\Mailer;
 /**
  * Helper class for embedded images
  */
-class EmbeddingsMailSenderHelper extends CompositeAttachmentsMailSenderHelper
+class Embeddings extends Composite
 {
 	/**
 	 * Create a embedding object
@@ -67,7 +67,7 @@ class EmbeddingsMailSenderHelper extends CompositeAttachmentsMailSenderHelper
 	 * Set embedded images with a single class
 	 * 
 	 * @param array $embeddings Array of associative arrays with keys : file, contentType, cid, ignoreCache
-	 * @return EmbeddingsMailSenderHelper
+	 * @return Embeddings
 	 */
 	public function setEmbeddings($embeddings)
 	{

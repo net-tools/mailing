@@ -12,7 +12,7 @@ use \Nettools\Mailing\Mailer;
 /**
  * Helper class to send email with Twig rendering
  */
-class TwigMailSenderHelper extends MailSenderHelper
+class Twig extends MailSenderHelper
 {
 	protected $_twigTemplate = NULL;
 	

@@ -13,7 +13,7 @@ use \Nettools\Mailing\MailPieces\MailContent;
 /**
  * Base to class to deal with attachments and embeddings
  */
-abstract class CompositeAttachmentsMailSenderHelper implements MailSenderHelperInterface
+abstract class Composite implements MailSenderHelperInterface
 {
 	
 	protected $component = NULL;

@@ -12,7 +12,7 @@ use \Nettools\Mailing\Mailer;
 /** 
  * Helper class to deal with attachments
  */
-class AttachmentsMailSenderHelper extends CompositeAttachmentsMailSenderHelper
+class Attachments extends Composite
 {
 	/**
 	 * Factory method to create an attachment
@@ -46,7 +46,7 @@ class AttachmentsMailSenderHelper extends CompositeAttachmentsMailSenderHelper
 	 * @param string $ftype Content-type
 	 * @param int $index Index of mail attachment to set
 	 * @param bool $ignoreCache
-	 * @return AttachementsMailSenderHelper
+	 * @return Attachements
 	 */
 	public function setAttachment($f, $fname, $ftype, $index = 0, $ignoreCache = false)
 	{

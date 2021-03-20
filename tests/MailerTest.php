@@ -74,9 +74,16 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Nettools\Mailing\MailSenders\PHPMail::class, $ml->getMailSender());
 
 
-        // setMailSender
-		$ml->setMailSender(new Virtual());
-		$this->assertInstanceOf(Virtual::class, $ml->getMailSender());
+		try
+		{
+        	// setMailSender
+			$ml->setMailSender(new Virtual());
+			$this->assertInstanceOf(Virtual::class, $ml->getMailSender());
+		}
+		finally
+		{
+			$ml->setMailSender(new \Nettools\Mailing\MailSenders\PHPMail());
+		}
     }
     
     
@@ -356,8 +363,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     
     public function testSendmail()
     {
-		$ml = Mailer::getDefault();
-		$ml->setMailSender(new Virtual());
+		$ml = new Mailer(new Virtual());
 
         $obj = Mailer::addAttachment(new MailTextPlainContent('textplain content'), self::$_fatt, 'attach.txt', 'text/plain');
 		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
@@ -396,8 +402,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendmail_raw()
     {
 		$obj = new MailTextPlainContent('textplain content');
-		$ml = Mailer::getDefault();
-		$ml->setMailSender(new Virtual(), NULL);
+		$ml = new Mailer(new Virtual());
 		Mailer::render($obj);
 		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), Mailer::addHeader($obj->getFullHeaders(), 'From: unit-test@php.com'), false); 
 		$sent = $ml->getMailSender()->getSent();

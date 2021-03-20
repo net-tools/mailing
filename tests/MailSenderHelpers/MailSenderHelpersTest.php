@@ -59,8 +59,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		}
 		
 		
-		$ml = Mailer::getDefault();
-		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
+		$ml = new Mailer(new \Nettools\Mailing\MailSenders\Virtual());
 		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', true);
 		$this->assertEquals(NULL, $msh->getToOverride());
 

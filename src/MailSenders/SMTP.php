@@ -48,7 +48,7 @@ class SMTP extends MailSender
      * @param string $to Recipient
      * @param string $mail Email to send, as text
      * @param string[] $headers Email headers array
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
      */
 	protected function _doSend($to, $mail, $headers)
 	{
@@ -66,7 +66,7 @@ class SMTP extends MailSender
 	 * Constructor
 	 * 
 	 * @param string[] $params
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
 	 */
     function __construct($params = NULL)
 	{
@@ -151,7 +151,7 @@ class SMTP extends MailSender
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
 	 */
 	function doSend($to, $subject, $mail, $headers)
 	{

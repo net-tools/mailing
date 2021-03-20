@@ -748,7 +748,7 @@ final class Mailer {
 	 * @param string $subject Email subject
 	 * @param string[] $attachments Array of filepaths
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
 	 */
 	public function expressSendmail($content, $from, $to, $subject, $attachments = array(), $destruct = false)
 	{
@@ -790,7 +790,7 @@ final class Mailer {
 	 * @param string $to Email recipient
 	 * @param string $subject Email subject
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
 	 */
 	public function sendmail(MailContent $mail, $from, $to, $subject, $destruct = false)
 	{
@@ -809,7 +809,7 @@ final class Mailer {
 	 * @param string $mail Email body as text
 	 * @param string $headers Headers string
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
 	 */
 	public function sendmail_raw($to, $subject, $mail, $headers, $destruct = false)
 	{

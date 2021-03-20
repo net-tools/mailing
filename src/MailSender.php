@@ -46,7 +46,7 @@ abstract class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
      */
 	abstract function doSend($to, $subject, $mail, $headers);
 	
@@ -63,7 +63,7 @@ abstract class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
 	 */
 	function handleBcc($to, $subject, $mail, &$headers)
 	{
@@ -89,7 +89,7 @@ abstract class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
      */
 	function handleSend($to, $subject, $mail, $headers)
 	{
@@ -158,7 +158,7 @@ abstract class MailSender implements MailSenderIntf{
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
-	 * @param throws \Nettools\Mailing\Exception
+	 * @throws \Nettools\Mailing\Exception
      */
 	function send($to, $subject, $mail, $headers)
 	{

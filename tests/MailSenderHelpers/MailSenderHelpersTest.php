@@ -219,7 +219,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(false, $q['value']->locked);
 		$this->assertEquals(0, $q['value']->sendOffset);
 
-		$msq->sendQueue($ml, $q['key']);
+		$msq->send();
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// one mail from queue sent
 		$this->assertStringStartsWith( 

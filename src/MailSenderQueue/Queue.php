@@ -4,6 +4,10 @@
 namespace Nettools\Mailing\MailSenderQueue;
 
 
+use \Nettools\Mailing\Mailer;
+
+
+
 
 /**
  * Class for storing data about a queue
@@ -24,6 +28,7 @@ class Queue {
 	
 	// protected members defined by setup method after unserialize wake-up (environment parameters of mail queue subsystem)
 	public $root;
+	public $store;
 	
 	
 	
@@ -104,7 +109,7 @@ class Queue {
 	 * @param string $rawmail Mail content as a string
 	 * @param object $data Data object with `to`, `subject`, `status` and `headers` properties
 	 */
-	protected function _push($rawmail, \stdClass $data)
+	function _push($rawmail, object $data)
 	{
 		// get ID for this email
 		$mid = $this->count;
@@ -155,6 +160,7 @@ class Queue {
 	public function setup(array $params)
 	{
 		$this->root = rtrim($params['root'], '/');
+		$this->store = $params['store'];
 	}
 	 
 	
@@ -166,12 +172,13 @@ class Queue {
 	 * @param string[] $params Parameters of queue system
 	 * @param int $batchCount Items sent per batch call
 	 * @return Queue
+	 * @throws \Nettools\Mailing\Exception
 	 */
 	static function create($name, $params, $batchCount = 50)
 	{
 		$q = new Queue();
 		$q->count = 0;
-		$q->sendOffet = 0;
+		$q->sendOffset = 0;
 		$q->date = time();
 		$q->lastBatchDate = NULL;
 		$q->sendLog = [];
@@ -186,8 +193,9 @@ class Queue {
 		$q->setup($params);
 		
 		// create a sub-folder for this queue
-		if ( !file_exists($this->root . $q->id) )
-			mkdir($this->root . $q->id);
+		if ( !file_exists($q->root . "/$q->id") )
+			if ( !mkdir($q->root . "/$q->id") )
+				throw new \Nettools\Mailing\Exception("Can't create folder for queue '$name'");
 		
 		
 		return $q;
@@ -203,6 +211,7 @@ class Queue {
 	public function rename($newName)
 	{
 		$this->title = $newName;
+		$this->commit();
 	}
 	
 	
@@ -213,6 +222,7 @@ class Queue {
 	public function unlock()
 	{
 		$this->locked = false;
+		$this->commit();
 	}
 	
 	
@@ -223,6 +233,17 @@ class Queue {
 	public function clearLog()
 	{
 		$this->sendLog = [];
+		$this->commit();
+	}
+	
+	
+	
+	/**
+	 * Commit queue updates
+	 */
+	public function commit()
+	{
+		$this->store->commit();
 	}
 	
 	
@@ -242,6 +263,10 @@ class Queue {
 				
 		if ( file_exists("$root/$qid") )
 			rmdir("$root/$qid");
+		
+		
+		// removing queue from subsystem
+		$this->store->removeQueue($this);
 	}
 
 	
@@ -362,6 +387,8 @@ class Queue {
 			if ( $this->sendOffset == $this->count )
 				$this->locked = true;
 
+			// saving queue data
+			$this->commit();
 			
 			// check errors
 			if ( count($ret) )
@@ -397,7 +424,8 @@ class Queue {
     */
 	function newQueueFromErrors($title)
 	{
-		$q = Queue::create($title, ['root'=>$this->root], $this->batchCount);
+		// creating queue
+		$q = $this->store->createQueue($title, $this->batchCount);
 		
 		
 		// check all emails from the queue
@@ -416,6 +444,11 @@ class Queue {
 			}
 		}
 		
+		
+		// commit all emails pushed
+		$q->commit();
+		
+		
 		return $q;
 	}
 	
@@ -426,7 +459,7 @@ class Queue {
      *
      * The litteral objects returned in the array have the following properties :
      * - to : recipient
-     * - id : 0-index of the email in the source queue
+     * - index : 0-index of the email in the source queue
      * - status : one of the Data::STATUS constants
      * 
      * @return object[] Return an array of litteral objects about recipients 
@@ -441,7 +474,7 @@ class Queue {
 			
 		for ( $i = 0 ; $i < $this->count ; $i++ )
 			if ( $data = Data::read($this, $i, false) )
-				$ret[] = (object) array('to'=>$data->to, 'id'=>$i, 'status'=>$data->status);
+				$ret[] = (object) array('to'=>$data->to, 'index'=>$i, 'status'=>$data->status);
 	
 		
 		return $ret;
@@ -473,6 +506,9 @@ class Queue {
 
 		// update log
 		$this->sendLog = array_merge($this->sendLog, array("Error for '" . $data->to . "' (" . $this->title . ") : set to Error by user"));
+		
+		// commit
+		$this->commit();
 	}
 }
 

@@ -75,7 +75,7 @@ class MailSenderQueue
 	
 	
 	// get an email from the queue
-	private function _mailFromQueue($qid, $index)
+	function _mailFromQueue($qid, $index)
 	{
 		if ( file_exists($this->_directory . "$qid/$qid.$index.data")
 			&&

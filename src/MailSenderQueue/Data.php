@@ -41,9 +41,9 @@ class Data {
 	/** 
 	 * Set data properties from an object
 	 *
-	 * @param stdClass $data
+	 * @param object $data
 	 */
-	public function from(\stdClass $data)
+	public function from(object $data)
 	{
 		// copy each required property from argument to the object
 		foreach ( self::PROPERTIES as $p )
@@ -65,6 +65,7 @@ class Data {
 	{
 		$root = $q->root;
 		$qid = $q->id;
+		
 		
 		if ( file_exists("$root/$qid/$qid.$index.data") && ($data = file_get_contents("$root/$qid/$qid.$index.data")) )
 		{

@@ -49,6 +49,7 @@ class DataTest extends \PHPUnit\Framework\TestCase
 	{
 		$params = ['root'=>$this->_vfs->url()];
 		$q = Queue::create('qname', $params);
+		$this->assertEquals(true, $this->_vfs->hasChild($q->id));
 
 		$data = (object)['to' => 'recipient@domain.tld', 'headers'=>'From: me@home.com', 'subject'=>'Fun subject', 'status'=>Data::STATUS_TOSEND];
 		$d = new Data($q, 0);

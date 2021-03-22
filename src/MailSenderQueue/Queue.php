@@ -109,7 +109,7 @@ class Queue {
 	 * @param string $rawmail Mail content as a string
 	 * @param object $data Data object with `to`, `subject`, `status` and `headers` properties
 	 */
-	function _push($rawmail, object $data)
+	protected function _push($rawmail, object $data)
 	{
 		// get ID for this email
 		$mid = $this->count;

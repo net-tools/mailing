@@ -5,8 +5,8 @@ namespace Nettools\Mailing\MailSenderHelpers\Tests;
 
 
 use \Nettools\Mailing\Mailer;
-use \Nettools\Mailing\MailSender;
-use \Nettools\Mailing\MailSenderQueue;
+use \Nettools\Mailing\MailSenderQueue\Store;
+use \Nettools\Mailing\MailSenderQueue\Queue;
 use \Nettools\Mailing\MailSenderHelpers\MailSenderHelper;
 use \Nettools\Mailing\MailSenderHelpers\Attachments;
 use \Nettools\Mailing\MailSenderHelpers\Embeddings;
@@ -208,8 +208,8 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(0, $sent);								// no mail sent yet, as we use a queue
 		
-		$msq = new MailSenderQueue($this->_queuePath);
-		$queues = $msq->getQueues(MailSenderQueue::SORT_DATE);
+		$msq = Store::read($this->_queuePath, true);
+		$queues = $msq->getQueues(Store::SORT_DATE);
 		$this->assertCount(1, $queues);
 		$q = [];
 		$q['key'] = key($queues);
@@ -226,7 +226,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
-				"X-ComIncludeMailer-MailSenderQueue: " . $q['key'] . "\r\n" .
+				"X-MailSenderQueue: " . $q['key'] . "\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
 				"X-Priority: 1\r\n" .

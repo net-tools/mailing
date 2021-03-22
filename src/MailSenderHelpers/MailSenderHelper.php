@@ -6,7 +6,8 @@ namespace Nettools\Mailing\MailSenderHelpers;
 // clauses use
 use \Nettools\Mailing\MailPieces\MailContent;
 use \Nettools\Mailing\Mailer;
-use \Nettools\Mailing\MailSenderQueue;
+use \Nettools\Mailing\MailSenderQueue\Queue;
+use \Nettools\Mailing\MailSenderQueue\Store;
 
 
 
@@ -75,8 +76,8 @@ class MailSenderHelper implements MailSenderHelperInterface
 	 * @param bool $testmode If true, email are sent to testing addresses
 	 * @param string $template Template string of email ; if set, must include a `%content%` string that will be replaced by the actual mail content
 	 * @param string $bcc If set, Email BCC address to send a copy to
-	 * @param string $msenderq If set, a MailSenderQueue name to append emails to
-	 * @param string $msenderq_params If set, parameters of `$msenderq` queue
+	 * @param string $msenderq If set, a MailSenderQueue id to append emails to
+	 * @param string $msenderq_params If set, parameters of queue subsystem
 	 * @param string[] $testmails If set, an array of email addresses to send emails to for testing purposes
 	 * @param string $replyto If set, an email address to set as ReplyTo header
 	 */
@@ -230,13 +231,13 @@ class MailSenderHelper implements MailSenderHelperInterface
 	 */
 	public function send(MailContent $mail, $mto, $subject = NULL)
 	{
-		// if sending as batch (otherwise NULL), msender contains the queue name at first call ; then it will contain a record with required queue objects to send emails to
+		// if sending as batch (otherwise NULL), msender contains the queue name at first call ; then it will contain the queue object
 		if ( $this->msenderq && is_string($this->msenderq) )
 		{
-			// getting path of queue, creating
-			$ms = new MailSenderQueue($this->msenderq_params[self::MAILSENDERQUEUE_PATH]);
-			$msqueue = $ms->createQueue($this->msenderq . '_' . date('Ymd'), $this->msenderq_params[self::MAILSENDERQUEUE_BATCH]);
-			$this->msenderq = array('ms'=>$ms, 'msqueue'=>$msqueue);
+			// opening queues store
+			$store = Store::read($this->msenderq_params[self::MAILSENDERQUEUE_PATH]);
+			$queue = $store->createQueue($this->msenderq . '_' . date('Ymd'), $this->msenderq_params[self::MAILSENDERQUEUE_BATCH]);
+			$this->msenderq = $queue;
 		}
 
 
@@ -279,7 +280,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 
 		// if sending to a queue
 		if ( $this->msenderq )
-			$this->msenderq['ms']->push($this->msenderq['msqueue'], $mail, $this->from, $dest, $subject ? $subject : $this->subject); 
+			$this->msenderq->push($mail, $this->from, $dest, $subject ? $subject : $this->subject); 
 		else
 			$this->mailer->sendmail($mail, $this->from, $dest, $subject ? $subject : $this->subject);
 	}
@@ -292,7 +293,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 	public function closeQueue()
 	{
 		if ( $this->getQueueCount() > 0 )
-			$this->msenderq['ms']->closeQueue($this->msenderq['msqueue']);
+			$this->msenderq->commit();
 	}
 	
 
@@ -304,12 +305,10 @@ class MailSenderHelper implements MailSenderHelperInterface
 	 */
 	public function getQueueCount()
 	{
-		// if `msender` property is an array, the queue has already been created and used : at least an email is in there
-		if ( is_array($this->msenderq) )
-		{
-			$q = $this->msenderq['ms']->getQueue($this->msenderq['msqueue']);
-			return $q->count;
-		}
+		// if `msender` property is an object, the queue has already been created and used : at least an email is in there
+		if ( is_object($this->msenderq) )
+			return $this->msenderq->count;
+
 		
 		// if queue but not used yet
 		else if ( is_string($this->msenderq) )

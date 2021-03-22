@@ -209,7 +209,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(0, $sent);								// no mail sent yet, as we use a queue
 		
 		$msq = Store::read($this->_queuePath, true);
-		$queues = $msq->getQueues(Store::SORT_DATE);
+		$queues = $msq->getList(Store::SORT_DATE);
 		$this->assertCount(1, $queues);
 		$q = [];
 		$q['key'] = key($queues);

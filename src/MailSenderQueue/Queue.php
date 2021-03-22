@@ -52,13 +52,17 @@ class Queue {
 		// read mail from the queue
 		$mail = $this->_mailFromQueue($index);
 		
+		
+		// create a copy of headers (as we may add a BCC, but we don't want to update the original headers)
+		$headers = $mail->data->headers;
+		
 		// handle bcc 
 		if ( !is_null($bcc) )
-			$mail->data->headers = Mailer::addHeader($mail->data->headers, "Bcc: $bcc");
+			$headers = Mailer::addHeader($headers, "Bcc: $bcc");
 
 		// if supplementary headers
 		if ( $suppl_headers )
-			$mail->data->headers = Mailer::addHeaders($mail->data->headers, $suppl_headers);
+			$headers = Mailer::addHeaders($headers, $suppl_headers);
 
 		
 
@@ -67,7 +71,7 @@ class Queue {
 		try
 		{
 			// send the email
-			$mailer->sendmail_raw($to, $mail->data->subject, $mail->email->content, $mail->data->headers);
+			$mailer->sendmail_raw($to, $mail->data->subject, $mail->email->content, $headers);
 		}
 		catch ( \Nettools\Mailing\Exception $e )
 		{

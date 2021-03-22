@@ -235,7 +235,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 		if ( $this->msenderq && is_string($this->msenderq) )
 		{
 			// opening queues store
-			$store = Store::read($this->msenderq_params[self::MAILSENDERQUEUE_PATH]);
+			$store = Store::read($this->msenderq_params[self::MAILSENDERQUEUE_PATH], true);
 			$queue = $store->createQueue($this->msenderq . '_' . date('Ymd'), $this->msenderq_params[self::MAILSENDERQUEUE_BATCH]);
 			$this->msenderq = $queue;
 		}
@@ -279,7 +279,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 
 
 		// if sending to a queue
-		if ( $this->msenderq )
+		if ( is_object($this->msenderq) )
 			$this->msenderq->push($mail, $this->from, $dest, $subject ? $subject : $this->subject); 
 		else
 			$this->mailer->sendmail($mail, $this->from, $dest, $subject ? $subject : $this->subject);

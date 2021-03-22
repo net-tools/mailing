@@ -49,7 +49,7 @@ class Proxy{
 	/**
 	 * Get a concrete MailSender instance from this mail sender proxy
 	 * 
-	 * @return \Nettools\Mailing\MailSenderIntf
+	 * @return \Nettools\Mailing\MailSenders\MailSenderIntf
 	 */
 	public function getMailSender()
 	{

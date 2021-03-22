@@ -13,7 +13,7 @@ use \Nettools\Mailing\MailPieces\MailContent;
 /**
  * Base to class to deal with attachments and embeddings
  */
-abstract class Composite implements MailSenderHelperInterface
+abstract class Composite implements MailSenderHelperIntf
 {
 	
 	protected $component = NULL;
@@ -25,9 +25,9 @@ abstract class Composite implements MailSenderHelperInterface
 	/** 
 	 * Constructor
 	 * 
-	 * @param MailSenderHelperInterface $component Underlying object
+	 * @param \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf $component Underlying object
 	 */
-	function __construct(MailSenderHelperInterface $component)
+	function __construct(MailSenderHelperIntf $component)
 	{
 		$this->component = $component;
 			
@@ -59,7 +59,7 @@ abstract class Composite implements MailSenderHelperInterface
 	 * Setter for ToOverride
 	 * 
 	 * @param strig $o Email address to send all emails to (for debugging purpose)
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelper Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf Returns the calling object for chaining
 	 */
 	public function setToOverride($o) { return $this->component->setToOverride($o); return $this; }
 	
@@ -87,7 +87,7 @@ abstract class Composite implements MailSenderHelperInterface
 	 * Update raw mail string
 	 * 
 	 * @param string $m
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelper Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf Returns the calling object for chaining
 	 */
 	public function setRawMail($m) { return $this->component->setRawMail($m); return $this; }
 	

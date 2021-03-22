@@ -18,20 +18,22 @@ use \Nettools\Mailing\MailSenderQueue\Store;
  * Subject, template, from address, bcc, replyto can be set at object construction, then all required customizations are applied to mail objects sent through `send` method.
  * It also makes it possible to send emails to tests recipients or to a queue object, again just by setting appropriate parameters of constructor
  */
-class MailSenderHelper implements MailSenderHelperInterface
+class MailSenderHelper implements MailSenderHelperIntf
 {
 	protected $mail = NULL;
 	protected $mailContentType = NULL;
 	protected $from = NULL;
 	protected $subject = NULL;
 	protected $template = NULL;
-	protected $msenderq = NULL;
-	protected $msenderq_params = NULL;
-	protected $testmode = NULL;
+	protected $queue = NULL;
+	protected $queueParams = NULL;
+	protected $testMode = NULL;
 	protected $bcc = NULL;
-	protected $replyto = false;
-	protected $to_override = NULL;
-	protected $testmails = NULL;
+	protected $replyTo = false;
+	protected $toOverride = NULL;
+	protected $testRecipients = NULL;
+	
+	
 	protected $mailer = NULL;
 	
 	
@@ -59,29 +61,29 @@ class MailSenderHelper implements MailSenderHelperInterface
 	}
 
 
-	const MAILSENDERQUEUE_PATH = "path";
-	const MAILSENDERQUEUE_BATCH = "batch";
-
-	
 	
 	
 	/**
 	 * Constructor
+	 *
+	 * Optionnal parameters for `$params` are :
+	 *   - template : template string used for email content ; if set, it must include a `%content%` string that will be replaced (call to `render` method) by the actual mail content (arg `$mail`)
+	 *   - queue : If set, a MailSenderQueue name to create and append emails to
+	 *   - queueParams : If set, parameters of queue subsystem as an associative array with values for keys `root` and `batchCount`
+	 *   - bcc : If set, email BCC address to send a copy to
+	 *   - testRecipients : If set, an array of email addresses to send emails to for testing purposes
+	 *   - replyTo : If set, an email address to set in a ReplyTo header
+	 *   - toOverride : If set, sends all email to a given address (debug purposes)
+	 *   - testMode : If true, email are sent to testing addresses (see `testtestRecipientsmails` optionnal parameter) ; defaults to false
 	 *
 	 * @param \Nettools\Mailing\Mailer $mailer
 	 * @param string $mail Mail content as a string
 	 * @param string $mailContentType May be 'text/plain' or 'text/html'
 	 * @param string $from Sender address
 	 * @param string $subject
-	 * @param bool $testmode If true, email are sent to testing addresses
-	 * @param string $template Template string of email ; if set, must include a `%content%` string that will be replaced by the actual mail content
-	 * @param string $bcc If set, Email BCC address to send a copy to
-	 * @param string $msenderq If set, a MailSenderQueue id to append emails to
-	 * @param string $msenderq_params If set, parameters of queue subsystem
-	 * @param string[] $testmails If set, an array of email addresses to send emails to for testing purposes
-	 * @param string $replyto If set, an email address to set as ReplyTo header
+	 * @param string[] $params Associative array with optionnal parameters
 	 */
-	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode, $template = NULL, $bcc = NULL, $msenderq = NULL, $msenderq_params = NULL, $testmails = NULL, $replyto = NULL)
+	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, array $params = [])
 	{
 		// paramètres
 		$this->mailer = $mailer;
@@ -89,14 +91,17 @@ class MailSenderHelper implements MailSenderHelperInterface
 		$this->mailContentType = $mailContentType;
 		$this->from = $from;
 		$this->subject = $subject ? Mailer::encodeSubject($subject) : NULL;
-		$this->template = $template ? $template : '%content%';
-		$this->msenderq = $msenderq;
-		$this->msenderq_params = $msenderq_params;
-		$this->testmode = $testmode;
-		$this->bcc = $bcc;
-		$this->to_override = NULL;
-		$this->testmails = $testmails;
-		$this->replyto = $replyto;
+
+		
+		// optionnal parameters
+		$this->testMode = array_key_exists('testMode', $params) ? $params['testMode'] : false;
+		$this->template = array_key_exists('template', $params) ? $params['template'] : '%content%';
+		$this->queue = array_key_exists('queue', $params) ? $params['queue'] : NULL;
+		$this->queueParams = array_key_exists('queueParams', $params) ? $params['queueParams'] : NULL;
+		$this->bcc = array_key_exists('bcc', $params) ? $params['bcc'] : NULL;
+		$this->toOverride = array_key_exists('toOverride', $params) ? $params['toOverride'] : NULL;
+		$this->testRecipients = array_key_exists('testRecipients', $params) ? $params['testRecipients'] : NULL;
+		$this->replyTo = array_key_exists('replyTo', $params) ? $params['replyTo'] : NULL;
 	}
 	
 	
@@ -106,7 +111,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 	 *
 	 * @return NULL|string Returns NULL if no override, a string with email address otherwise
 	 */
-	public function getToOverride() { return $this->to_override;}
+	public function getToOverride() { return $this->toOverride;}
 	
 	
 	
@@ -116,7 +121,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 	 * @param strig $o Email address to send all emails to (for debugging purpose)
 	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelper Returns the calling object for chaining
 	 */
-	public function setToOverride($o) { $this->to_override = $o; return $this;}
+	public function setToOverride($o) { $this->toOverride = $o; return $this;}
 	
 	
 	
@@ -125,7 +130,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 	 *
 	 * @return bool
 	 */
-	public function getTestMode() { return $this->testmode;}
+	public function getTestMode() { return $this->testMode;}
 	
 	
 	
@@ -178,33 +183,27 @@ class MailSenderHelper implements MailSenderHelperInterface
 		if ( !isset($this->from) )
             throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::from is not defined");
 
-		if ( !isset($this->subject) )
-            throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::subject is not defined");
-
 		if ( !isset($this->template) )
             throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::template is not defined");
 		
-		if ( !isset($this->testmode) )
-            throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testmode is not defined");
-
 		
-		if ( $this->testmode )
+		if ( $this->testMode )
 		{
-			if ( !isset($this->testmails) )
-            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testmails is not defined");
+			if ( !isset($this->testRecipients) )
+            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testRecipients is not defined");
 			
-			if ( !is_array($this->testmails) )
-            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testmails is not an array");
+			if ( !is_array($this->testRecipients) )
+            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testRecipients is not an array");
 			
-			if ( count($this->testmails) == 0 )
-            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testmails is an empty array");
+			if ( count($this->testRecipients) == 0 )
+            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testRecipients is an empty array");
 		}
 	}
 	
 	
 	
 	/**
-	 * Compute email 
+	 * Render email content
 	 *
 	 * @param mixed $data Data that may be required during rendering process
 	 * @return \Nettools\Mailing\MailPieces\MailContent
@@ -232,24 +231,24 @@ class MailSenderHelper implements MailSenderHelperInterface
 	public function send(MailContent $mail, $mto, $subject = NULL)
 	{
 		// if sending as batch (otherwise NULL), msender contains the queue name at first call ; then it will contain the queue object
-		if ( $this->msenderq && is_string($this->msenderq) )
+		if ( $this->queue && is_string($this->queue) )
 		{
 			// opening queues store
-			$store = Store::read($this->msenderq_params[self::MAILSENDERQUEUE_PATH], true);
-			$queue = $store->createQueue($this->msenderq . '_' . date('Ymd'), $this->msenderq_params[self::MAILSENDERQUEUE_BATCH]);
-			$this->msenderq = $queue;
+			$store = Store::read($this->queueParams['root'], true);
+			$queue = $store->createQueue($this->queue . '_' . date('Ymd'), $this->queueParams['batchCount']);
+			$this->queue = $queue;
 		}
 
 
 		// test mode ?
-		if ( $this->testmode )
+		if ( $this->testMode )
 		{
 			// next test mail
-			$to = current($this->testmails);
-			next($this->testmails);
+			$to = current($this->testRecipients);
+			next($this->testRecipients);
 
 			// if no more test email ($to = NULL) or if we are not using a queue, exiting as we only simulate
-			if ( !$to || is_null($this->msenderq) )
+			if ( !$to || is_null($this->queue) )
 				return; 
 		}
 		else
@@ -258,8 +257,9 @@ class MailSenderHelper implements MailSenderHelperInterface
 
 
 		// checking overide parameter
-		$dest = $this->to_override;
+		$dest = $this->toOverride;
 		$dest or $dest = $to;		
+		
 		
 		// checking email syntax
 		if ( is_null($dest) )
@@ -274,15 +274,21 @@ class MailSenderHelper implements MailSenderHelperInterface
 
 		
 		// dealing with replyTo
-		if ( $this->replyto )
-			$mail->addCustomHeader("Reply-To: " . $this->replyto);
+		if ( $this->replyTo )
+			$mail->addCustomHeader("Reply-To: " . $this->replyTo);
+
+		
+		// checking a subject is defined, either in constructor parameters or in this method argument
+		$subject = $subject ? $subject : $this->subject;
+		if ( is_null($subject) )
+            throw new \Nettools\Mailing\MailSenderHelpers\Exception("Subject in 'send' method is not defined");
 
 
 		// if sending to a queue
-		if ( is_object($this->msenderq) )
-			$this->msenderq->push($mail, $this->from, $dest, $subject ? $subject : $this->subject); 
+		if ( is_object($this->queue) && ($this->queue instanceof \Nettools\Mailing\MailSenderQueue\Queue) )
+			$this->queue->push($mail, $this->from, $dest, $subject); 
 		else
-			$this->mailer->sendmail($mail, $this->from, $dest, $subject ? $subject : $this->subject);
+			$this->mailer->sendmail($mail, $this->from, $dest, $subject);
 	}
 	
 	
@@ -293,7 +299,7 @@ class MailSenderHelper implements MailSenderHelperInterface
 	public function closeQueue()
 	{
 		if ( $this->getQueueCount() > 0 )
-			$this->msenderq->commit();
+			$this->queue->commit();
 	}
 	
 
@@ -306,12 +312,12 @@ class MailSenderHelper implements MailSenderHelperInterface
 	public function getQueueCount()
 	{
 		// if `msender` property is an object, the queue has already been created and used : at least an email is in there
-		if ( is_object($this->msenderq) )
-			return $this->msenderq->count;
+		if ( is_object($this->queue) && ($this->queue instanceof \Nettools\Mailing\MailSenderQueue\Queue) )
+			return $this->queue->count;
 
 		
 		// if queue but not used yet
-		else if ( is_string($this->msenderq) )
+		else if ( is_string($this->queue) )
 			return 0;
 		
 		

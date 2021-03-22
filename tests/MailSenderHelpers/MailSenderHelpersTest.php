@@ -60,10 +60,8 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		
 		$ml = new Mailer(new \Nettools\Mailing\MailSenders\Virtual());
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', true);
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', ['testMode'=>true]);
 		$this->assertEquals(NULL, $msh->getToOverride());
-
-
 		$msh->setToOverride('override-user@php.com');
 		$this->assertEquals('override-user@php.com', $msh->getToOverride());
 		$this->assertEquals(true, $msh->getTestMode());
@@ -72,33 +70,42 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$msh->setRawMail('other content');
 		$this->assertEquals('other content', $msh->getRawMail());
 		
-//	(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode, $template = NULL, $bcc = NULL, $msender = NULL, $msender_params = NULL, $testmails = NULL, $replyto = false)
-		$msh = new MailSenderHelper($ml, NULL, NULL, NULL, NULL, true);
-		
+//	(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode)
+		$msh = new MailSenderHelper($ml, NULL, NULL, NULL, NULL);		
 		$this->assertEquals(false, __ready($msh));	// no parameter
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', true, '--%content%--', NULL, NULL, NULL, array('user-test1@php.com', 'user-test2@php.com'), false);
+		
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject');
 		$this->assertEquals(true, __ready($msh));	// all parameters
-		$msh = new MailSenderHelper($ml, NULL, 'text/plain', 'unit-test@php.com', 'test subject', true, '--%content%--', NULL, NULL, NULL, array('user-test1@php.com', 'user-test2@php.com'), false);
+		$this->assertEquals(false, $msh->getTestMode());
+		
+		$msh = new MailSenderHelper($ml, NULL, 'text/plain', 'unit-test@php.com', 'test subject');		
 		$this->assertEquals(false, __ready($msh));	// all except content
-		$msh = new MailSenderHelper($ml, 'msh content', NULL, 'unit-test@php.com', 'test subject', true, '--%content%--', NULL, NULL, NULL, array('user-test1@php.com', 'user-test2@php.com'), false);
+		
+		$msh = new MailSenderHelper($ml, 'msh content', NULL, 'unit-test@php.com', 'test subject');
 		$this->assertEquals(false, __ready($msh));	// all except contenttype
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', NULL, 'test subject', true, '--%content%--', NULL, NULL, NULL, array('user-test1@php.com', 'user-test2@php.com'), false);
+		
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', NULL, 'test subject');
 		$this->assertEquals(false, __ready($msh));	// all exception from address
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', NULL, true, '--%content%--', NULL, NULL, NULL, array('user-test1@php.com', 'user-test2@php.com'), false);
-		$this->assertEquals(false, __ready($msh));	// all except subject
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', true, '--%content%--', NULL, NULL, NULL, NULL, false);
+		
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', NULL);
+		$this->assertEquals(true, __ready($msh));	// all except subject : but subject is not mandatory, provided it's set when calling `send`
+		
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', ['testMode' => true]);
 		$this->assertEquals(false, __ready($msh));	// test mode but no test recipients
 
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', ['testMode' => true, 'testRecipients' => ['me@home.com', 'them@home.net']]);
+		$this->assertEquals(true, __ready($msh));	// test mode with test recipients as params
+
 		
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', true, '--%content%--', 'bcc-user@php.com', NULL, NULL, array('user-test1@php.com', 'user-test2@php.com'), 'reply-to-user@php.com');
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', ['testMode' => true, 'testRecipients' => ['user-test1@php.com', 'user-test2@php.com']]);
 		$content = $msh->render(NULL);
 		$this->assertInstanceOf(\Nettools\Mailing\MailPieces\MailContent::class, $content);
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$msh->send($content, 'user-to@php.com');
-		$this->assertCount(0, $ml->getMailSender()->getSent());	// mode test, pas de mailsenderqueue, donc rien n'est envoyé
+		$this->assertCount(0, $ml->getMailSender()->getSent());	// test mode, so nothing really sent
 
 
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--', 'bcc-user@php.com', NULL, NULL, NULL, 'reply-to-user@php.com');
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', ['bcc' => 'bcc-user@php.com', 'replyTo' => 'reply-to-user@php.com']);
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$content = $msh->render(NULL);
 		
@@ -141,7 +148,8 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"--" . $content->getSeparator() . "\r\n",
 		
 				$sent[0]);
-		$this->assertEquals(true, is_int(strpos($sent[0], '--msh content--')));
+
+		$this->assertEquals(true, is_int(strpos($sent[0], 'msh content')));
 		$this->assertStringStartsWith( 
 				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
@@ -195,12 +203,12 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertEquals(NULL, $msh->getQueueCount());			// queue not used, NULL is returned
 		
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--', NULL, 'queuename', 
-									array(
-											MailSenderHelper::MAILSENDERQUEUE_PATH => $this->_queuePath,
-											MailSenderHelper::MAILSENDERQUEUE_BATCH => 10
-										)
-								);
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', 
+										[
+											'template' => 'my template : %content%',
+											'queue' => 'queuename',
+											'queueParams' => ['root' => $this->_queuePath, 'batchCount' => 10]
+										]);
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$content = $msh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
@@ -220,6 +228,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$q->send($ml);
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// one mail from queue sent
+		$this->assertEquals(true, is_int(strpos($sent[0], 'my template : msh content')));
 		$this->assertStringStartsWith( 
 				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
@@ -236,7 +245,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				$sent[0]);
 				
 				
-		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--');
+		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject');
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$content = $msh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
@@ -247,14 +256,14 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				
 				
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
-		$amsh = new Attachments(new MailSenderHelper($ml, 'content with attachments.', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--'));
+		$amsh = new Attachments(new MailSenderHelper($ml, 'content with attachments.', 'text/plain', 'unit-test@php.com', 'test subject'));
 		$amsh->setAttachmentsCount(1);
 		$this->assertInstanceOf(\Nettools\Mailing\MailSenderHelpers\Attachments::class, $amsh->setAttachment($this->_fatt, 'attachment.txt', 'text/plain', 0));	// tester chainage
 
 
 
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
-		$amsh = new Attachments(new MailSenderHelper($ml, 'content with attachments.', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--'));
+		$amsh = new Attachments(new MailSenderHelper($ml, 'content with attachments.', 'text/plain', 'unit-test@php.com', 'test subject'));
 		$this->assertInstanceOf(\Nettools\Mailing\MailSenderHelpers\Attachments::class,
 								
 								$amsh->setAttachments(
@@ -268,7 +277,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
-		$amsh = new Attachments(new MailSenderHelper($ml, 'content with attachments.', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--'));
+		$amsh = new Attachments(new MailSenderHelper($ml, 'content with attachments.', 'text/plain', 'unit-test@php.com', 'test subject'));
 		$amsh->setAttachmentsCount(2);
 		$amsh->setAttachment($this->_fatt, 'attachment1.txt', 'text/plain', 0);
 		$amsh->setAttachment($this->_fatt, 'attachment2.txt', 'text/plain', 1);
@@ -277,7 +286,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(false, $r);							// renvoie FALSE si OK
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// aucun mail réellement envoyé, puisqu'on utilise une file
-		$this->assertStringStartsWith( 
+		$this->assertEquals( 
 				"Content-Type: multipart/mixed;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
@@ -295,13 +304,13 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"Content-Type: text/plain; charset=UTF-8\r\n" .
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
 				"\r\n" .
-				"--content with attachments.--\r\n" .
+				"content with attachments.\r\n" .
 				"\r\n" . 
 				"--" . $content->getPart(0)->getSeparator() . "\r\n" .
 				"Content-Type: text/html; charset=UTF-8\r\n" .
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
 				"\r\n" .
-				"--content with attachments.--\r\n" .
+				"content with attachments.\r\n" .
 				"\r\n" . 
 				"--" . $content->getPart(0)->getSeparator() . "--\r\n" .
 				"\r\n" . 
@@ -331,14 +340,14 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				
 
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
-		$amsh = new Embeddings(new MailSenderHelper($ml, 'content with embeddings.', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--'));
+		$amsh = new Embeddings(new MailSenderHelper($ml, 'content with embeddings.', 'text/plain', 'unit-test@php.com', 'test subject'));
 		$amsh->setEmbeddingsCount(1);
 		$this->assertInstanceOf(\Nettools\Mailing\MailSenderHelpers\Embeddings::class, $amsh->setEmbedding($this->_fatt, 'text/plain', 'cid-123', 0));	// tester chainage
 
 
 
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
-		$amsh = new Embeddings(new MailSenderHelper($ml, 'content with embeddings.', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--'));
+		$amsh = new Embeddings(new MailSenderHelper($ml, 'content with embeddings.', 'text/plain', 'unit-test@php.com', 'test subject'));
 		$this->assertInstanceOf(\Nettools\Mailing\MailSenderHelpers\Embeddings::class,
 								
 								$amsh->setEmbeddings(
@@ -353,14 +362,14 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
-		$amsh = new Embeddings(new MailSenderHelper($ml, 'content with embeddings.', 'text/plain', 'unit-test@php.com', 'test subject', false, '--%content%--'));
+		$amsh = new Embeddings(new MailSenderHelper($ml, 'content with embeddings.', 'text/plain', 'unit-test@php.com', 'test subject'));
 		$amsh->setEmbeddingsCount(1);
 		$amsh->setEmbedding($this->_fatt, 'text/plain', 'cid-123', 0);
 		$content = $amsh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// aucun mail réellement envoyé, puisqu'on utilise une file
-		$this->assertStringStartsWith(
+		$this->assertEquals(
 				"Content-Type: multipart/related;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
@@ -378,13 +387,13 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"Content-Type: text/plain; charset=UTF-8\r\n" .
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
 				"\r\n" .
-				"--content with embeddings.--\r\n" .
+				"content with embeddings.\r\n" .
 				"\r\n" . 
 				"--" . $content->getPart(0)->getSeparator() . "\r\n" .
 				"Content-Type: text/html; charset=UTF-8\r\n" .
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
 				"\r\n" .
-				"--content with embeddings.--\r\n" .
+				"content with embeddings.\r\n" .
 				"\r\n" . 
 				"--" . $content->getPart(0)->getSeparator() . "--\r\n" .
 				"\r\n" . 

@@ -8,12 +8,10 @@
 
 
 
-
 // namespace
 namespace Nettools\Mailing\MailSenders;
 
 
-use \Nettools\Mailing\MailSender;
 use \Nettools\Mailing\Mailer;
 
 

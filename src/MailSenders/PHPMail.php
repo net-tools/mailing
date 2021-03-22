@@ -12,8 +12,6 @@
 namespace Nettools\Mailing\MailSenders;
 
 
-use \Nettools\Mailing\MailSender;
-
 
 
 /** 

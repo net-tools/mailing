@@ -42,10 +42,10 @@ $mail = Mailer::addAttachment($mail, '/home/tmp/invoice.pdf', 'your_invoice.pdf'
 Mailer::getDefault()->sendmail($mail, 'from-user@test.com', 'recipient@test.com', 'This is a subject');
 ```
 
-To send emails with SMTP protocol (or any other email sending strategy in the MailSenders subfolder), create the Mailer (instead of getting it throught `getDefault`) with the appropriate class name and an array of parameters :
+To send emails with SMTP protocol (or any other email sending strategy in the MailSenders subfolder), create the Mailer (instead of getting it throught `getDefault`) with the appropriate MailSender object
 
 ```php
-$smtpmailer = new Mailer(MailSender::SMTP, array('host'=>'mysmtphost.com', 'username'=>'user', 'password'=>'1234'));
+$smtpmailer = new Mailer(new MailSenders\SMTP(array('host'=>'mysmtphost.com', 'username'=>'user', 'password'=>'1234')));
 $smtpmailer->sendmail($mail);
 ```
 

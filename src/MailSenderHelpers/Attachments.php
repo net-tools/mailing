@@ -92,6 +92,7 @@ class Attachments extends Composite
 	 */
 	public function render($data)
 	{
+		// get a MailContent object
 		$value = parent::render($data);
 
 		return Mailer::addAttachmentObjects($value, $this->items);

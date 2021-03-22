@@ -3,6 +3,7 @@
 // namespace
 namespace Nettools\Mailing\MailSenderHelpers;
 
+
 // clauses use
 use \Nettools\Mailing\Mailer;
 
@@ -21,34 +22,32 @@ class Twig extends MailSenderHelper
 	/**
 	 * Constructor
 	 *
+	 * Optionnal parameters for `$params` are :
+	 *   - those of MailSenderHelper, plus :
+	 *   - cache : If set, path to twig cache as a string
+	 *
 	 * @param \Nettools\Mailing\Mailer $mailer
 	 * @param string $mail Mail content as a string
 	 * @param string $mailContentType May be 'text/plain' or 'text/html'
 	 * @param string $from Sender address
 	 * @param string $subject
-	 * @param bool $testmode If true, email are sent to testing addresses
-	 * @param string $template Template string of email ; if set, must include a `%content%` string that will be replaced by the actual mail content
-	 * @param string $bcc If set, Email BCC address to send a copy to
-	 * @param string $msenderq If set, a MailSenderQueue name to append emails to
-	 * @param string $msenderq_params If set, parameters of `$msenderq` queue
-	 * @param string[] $testmails If set, an array of email addresses to send emails to for testing purposes
-	 * @param string $replyto If set, an email address to set as ReplyTo header
-	 * @param string $cache Path to cache
+	 * @param string[] $params Associative array with optionnal parameters
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
-	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, $testmode, $template = NULL, $bcc = NULL, $msenderq = NULL, $msenderq_params = NULL, $testmails = NULL, $replyto = false, $cache = NULL)
+	function __construct(Mailer $mailer, $mail, $mailContentType, $from, $subject, array $params = [])
 	{
 		// calling parent constructor
-		parent::__construct($mailer, $mail, $mailContentType, $from, $subject, $testmode, $template, $bcc, $msenderq, $msenderq_params, $testmails, $replyto);
+		parent::__construct($mailer, $mail, $mailContentType, $from, $subject, $params);
 			
 		
 		// cache path
+		$cache = array_key_exists('cache', $params) ? $params['cache'] : NULL;
 		if ( is_null($cache) )
 			$cache = sys_get_temp_dir();
 		
 		try
 		{
-			$twig = "$subject.twig";
+			$twig = uniqid();
 			$loader = new \Twig\Loader\ArrayLoader([$twig => $mail]);
 			$twigenv = new \Twig\Environment($loader, array(
 				'cache' => $cache,
@@ -76,8 +75,9 @@ class Twig extends MailSenderHelper
 	{
 		parent::ready();
 		
+		
 		if ( !$this->_twigTemplate )
-			throw new \Nettools\Mailing\MailSenderHelpers\Exception('Twig template is empty');
+			throw new \Nettools\Mailing\MailSenderHelpers\Exception('Twig template construction failed during constructor call of MailSenderHelpers\\Twig');
 	}
 
 	

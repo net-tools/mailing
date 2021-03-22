@@ -9,7 +9,10 @@
 
 
 // namespace
-namespace Nettools\Mailing;
+namespace Nettools\Mailing\MailSenders;
+
+
+use \Nettools\Mailing\Mailer;
 
 
 

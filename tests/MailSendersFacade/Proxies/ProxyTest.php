@@ -2,7 +2,7 @@
 
 namespace Nettools\Mailing\MailSenders
 {
-	class TestMailSender implements \Nettools\Mailing\MailSenderIntf
+	class TestMailSender implements \Nettools\Mailing\MailSenders\MailSenderIntf
 	{
 		public $parameters;
 		public $name;
@@ -53,7 +53,7 @@ use \Nettools\Mailing\MailSender;
 			$this->assertEquals($params, $p->params);
 
 			$ms = $p->getMailSender();
-			$this->assertEquals(true, $ms instanceof \Nettools\Mailing\MailSenderIntf);
+			$this->assertEquals(true, $ms instanceof \Nettools\Mailing\MailSenders\MailSenderIntf);
 			$this->assertEquals(['k1'=>'value1'], $ms->parameters);
 		}
 		

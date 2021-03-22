@@ -11,7 +11,7 @@ namespace Nettools\Mailing\MailSendersFacade\Quotas;
 
 
 
-use \Nettools\Mailing\MailSenderIntf;
+use \Nettools\Mailing\MailSenders\MailSenderIntf;
 
 
 
@@ -31,7 +31,7 @@ class MailSender implements MailSenderIntf{
      * 
 	 * @param string $name Name of mailsender strategy (same name as proxy, ex 'SMTP:aws')
 	 * @param \Nettools\Mailing\Quotas\QuotaInferface $qi Quota interface object to send 'email sent' events acknowledgements to
-     * @param \Nettools\Mailing\MailSenderIntf $ms Mailsender strategy to decorate with quota handling
+     * @param \Nettools\Mailing\MailSenders\MailSenderIntf $ms Mailsender strategy to decorate with quota handling
      */
 	function __construct($name, MailSenderIntf $ms, QuotaInterface $qi)
 	{
@@ -45,7 +45,7 @@ class MailSender implements MailSenderIntf{
 	/**
 	 * Get underlying mail sender
 	 *
-	 * @return \Nettools\Mailing\MailSenderIntf
+	 * @return \Nettools\Mailing\MailSenders\MailSenderIntf
 	 */
 	function getUnderlyingObject()
 	{

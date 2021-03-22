@@ -19,6 +19,7 @@ use \Nettools\Mailing\MailPieces\MailEmbedding;
 use \Nettools\Mailing\MailPieces\MailMultipart;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
+use \Nettools\Mailing\MailSenders\MailSenderIntf;
 use \Nettools\Core\Helpers\EncodingHelper;
 use \Nettools\Core\Helpers\FileHelper;
 
@@ -39,7 +40,7 @@ use \Nettools\Core\Helpers\FileHelper;
 final class Mailer {
 // [----- PROTECTED -----
 
-	/** @var MailSender Email sending strategy */
+	/** @var \Nettools\Mailing\MailSenders\MailSender Email sending strategy */
 	protected $mailsender = NULL;
 	
 // ----- PROTECTED -----]
@@ -694,9 +695,9 @@ final class Mailer {
 	/**
 	 * Constructor
 	 * 
-	 * @param \Nettools\Mailing\MailSenderIntf $mailsender Email sending strategy
+	 * @param \Nettools\Mailing\MailSenders\MailSenderIntf $mailsender Email sending strategy
 	 */
-	public function __construct(\Nettools\Mailing\MailSenderIntf $mailsender)
+	public function __construct(MailSenderIntf $mailsender)
 	{
 		$this->setMailSender($mailsender);
 	}
@@ -705,10 +706,10 @@ final class Mailer {
 	/** 
 	 * Set the email sending strategy
 	 * 
-	 * @param \Nettools\Mailing\MailSenderIntf $mailsender Email sending strategy
+	 * @param \Nettools\Mailing\MailSenders\MailSenderIntf $mailsender Email sending strategy
 	 * @return bool Returns TRUE if mail sending strategy is ready after its creation, or not 
 	 */
-	public function setMailSender(\Nettools\Mailing\MailSenderIntf $mailsender)
+	public function setMailSender(MailSenderIntf $mailsender)
 	{
 		$this->mailsender = $mailsender;
 		
@@ -728,7 +729,7 @@ final class Mailer {
 	/**
 	 * Get current email sending strategy, or create a default one
 	 *
-	 * @return \Nettools\Mailing\MailSenderIntf Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
+	 * @return \Nettools\Mailing\MailSenders\MailSenderIntf Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
 	 */
 	public function getMailSender()
 	{

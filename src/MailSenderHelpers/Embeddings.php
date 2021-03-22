@@ -87,7 +87,7 @@ class Embeddings extends Composite
 	
 	
 	/**
-	 * Compute the email
+	 * Render the email
 	 *
 	 * @param mixed $data
 	 * @return \Nettools\Mailing\MailPieces\MailMultipart
@@ -95,6 +95,7 @@ class Embeddings extends Composite
 	 */
 	public function render($data)
 	{
+		// get a MailContent object
 		$value = parent::render($data);
 
 		return Mailer::addEmbeddingObjects($value, $this->items);

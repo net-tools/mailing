@@ -10,9 +10,9 @@ use \Nettools\Mailing\MailPieces\MailContent;
 
 
 /**
- * Interface for mailing helper with queues
+ * Interface for mailing helper (queue may be used, but this is not mandatory)
  */
-interface MailSenderHelperInterface
+interface MailSenderHelperIntf
 {
 	/** 
 	 * Testing that required parameters are set
@@ -68,6 +68,7 @@ interface MailSenderHelperInterface
 	public function destruct();
 	
 	
+	
 	/** 
 	 * Getter for ToOverride
 	 *
@@ -80,8 +81,8 @@ interface MailSenderHelperInterface
 	/**
 	 * Setter for ToOverride
 	 * 
-	 * @param strig $o Email address to send all emails to (for debugging purpose)
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperInterface Returns the calling object for chaining
+	 * @param string $o Email address to send all emails to (for debugging purpose)
+	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf Returns the calling object for chaining
 	 */
 	public function setToOverride($o);
 	
@@ -97,7 +98,7 @@ interface MailSenderHelperInterface
 	
 	
 	/**
-	 * Get raw mail string before any rendering actions
+	 * Get raw mail as a string before any rendering actions
 	 *
 	 * @return string
 	 */	
@@ -106,10 +107,10 @@ interface MailSenderHelperInterface
 	
 	
 	/**
-	 * Update raw mail string
+	 * Update raw mail content
 	 * 
 	 * @param string $m
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperInterface Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf Returns the calling object for chaining
 	 */
 	public function setRawMail($m);
 }

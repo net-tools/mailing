@@ -12,9 +12,6 @@
 namespace Nettools\Mailing\MailSenders;
 
 
-use \Nettools\Mailing\MailSender;
-
-
 
 /** 
  * Strategy to send emails to an array (useful for unit testing)

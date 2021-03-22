@@ -217,14 +217,14 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(1, $q->count);
 		$this->assertEquals(false, $q->locked);
 		$this->assertEquals(0, $q->sendOffset);
-		$q->send();
+		$q->send($ml);
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// one mail from queue sent
 		$this->assertStringStartsWith( 
 				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
-				"X-MailSenderQueue: " . $q['key'] . "\r\n" .
+				"X-MailSenderQueue: " . $q->id . "\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
 				"X-Priority: 1\r\n" .

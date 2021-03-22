@@ -211,15 +211,13 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$msq = Store::read($this->_queuePath, true);
 		$queues = $msq->getList(Store::SORT_DATE);
 		$this->assertCount(1, $queues);
-		$q = [];
-		$q['key'] = key($queues);
-		$q['value'] = current($queues);
-		$this->assertEquals('queuename_' . date("Ymd"), $q['value']->title);
-		$this->assertEquals(1, $q['value']->count);
-		$this->assertEquals(false, $q['value']->locked);
-		$this->assertEquals(0, $q['value']->sendOffset);
-
-		$msq->send();
+		$key = key($queues);
+		$q = current($queues);
+		$this->assertEquals('queuename_' . date("Ymd"), $q->title);
+		$this->assertEquals(1, $q->count);
+		$this->assertEquals(false, $q->locked);
+		$this->assertEquals(0, $q->sendOffset);
+		$q->send();
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// one mail from queue sent
 		$this->assertStringStartsWith( 

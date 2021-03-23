@@ -74,7 +74,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 *   - testRecipients : If set, an array of email addresses to send emails to for testing purposes
 	 *   - replyTo : If set, an email address to set in a ReplyTo header
 	 *   - toOverride : If set, sends all email to a given address (debug purposes)
-	 *   - testMode : If true, email are sent to testing addresses (see `testtestRecipientsmails` optionnal parameter) ; defaults to false
+	 *   - testMode : If true, email are sent to testing addresses (see `testRecipients` optionnal parameter) ; defaults to false
 	 *
 	 * @param \Nettools\Mailing\Mailer $mailer
 	 * @param string $mail Mail content as a string

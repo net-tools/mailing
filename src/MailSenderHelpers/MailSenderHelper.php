@@ -247,8 +247,8 @@ class MailSenderHelper implements MailSenderHelperIntf
 			$to = current($this->testRecipients);
 			next($this->testRecipients);
 
-			// if no more test email ($to = NULL) or if we are not using a queue, exiting as we only simulate
-			if ( !$to || is_null($this->queue) )
+			// if no more test email ($to = NULL), exiting as we only simulate
+			if ( !$to )
 				return; 
 		}
 		else

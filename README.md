@@ -75,10 +75,92 @@ EmlReader::destroy($mail);
 ```
 
 
+
+### Send with queues
+
+Sometimes we don't want to send a lot of emails in one shot, and we may want to queue them somewhere and then send them later, maybe through batches. This is the purpose of
+`MailSenderQueue` subfolder. It contains a `Store` and `Queue` classes ; the first one is the facade of queue subsystem, the second stands for a given queue.
+
+To queue items :
+
+```php
+
+// create a Store object to manage queues
+$store = new MailSenderQueue\Store('~/home/path_to_queue_subsystem_root');
+
+// create a new queue, which sends emails through batches of 75 items
+$queue = $store->createQueue('title_of_queue', 75);
+$id = $queue->id;
+
+// create an email content with text/plain and text/html parts
+$mail = Mailer::addTextHtmlFromText('\*\*This is a\*\* test');
+
+// then send email (of course this last line is usually called within a loop, to queue all items at once
+$queue->push ($mail, 'sender@domain.tld', 'recipient_here@domain.tld', 'Email subject here');
+
+```
+
+Then later on, maybe in another script/call :
+
+```php
+
+// reopen the same store
+$store = new MailSenderQueue\Store('~/home/path_to_queue_subsystem_root');
+
+// getting queue with `$id` (saved from above call)
+$queue = $store->getQueue($id);
+
+// send a batch
+$queue->send(Mailer::getDefault());
+
+```
+
+Please check API reference for full details about Store and Queue objects (deleting queues, dealing with errors, listing queues and recipients).
+
+
+
+
+### Managing mailsenders strategies
+
+The Mailer object, when constructed, accepts a `MailSenders\MailSenderIntf` object, which is a strategy to send the email through. It can be `MailSenders\PHPMail` (to use the built-in `mail()` function) or `MailSenders\SMTP`. Each strategy may have some parameters (for SMTP, those are the host/user/password data).
+
+Sometimes, there are multiple SMTP strategies (to send emails through several hosts). To deals with all those sending strategies, we have created a MailSendersFacade system :
+- data (strategies parameters) is stored in a JSON string
+- strategy list is stored in a PHP array as strings
+
+Json and strings makes it possible to update parameters withouth too much trouble, and can be stored in a file, a database or hard-coded.
+
+To create the facade object (this is the one we will be dealing with to list strategies or get one ready to use with `Mailer` class :
+
+```php
+
+// list of strategies with an optionnal paramaters set name
+$msenders = ['SMTP:params1', 'PHPMail'];
+
+// setting data for all strategies (json-formatted string)
+$msdata = '{"SMTP:params1":{"className":"SMTP","host":"value1","username":"value2","password":"value3"}, "PHPMail":{}}';
+
+// active strategy
+$ms = 'SMTP:params1';
+
+// create the facade object, creating a list of sending strategies proxies (we don't create real `MailSenders\MailSenderIntf` objects), thanks to json data
+$f = MailSendersFacade\Facade::facadeProxiesFromJson($msenders, $msdata, $ms);
+
+// ... do some stuff such as listing mail senders, etc.
+
+// now, get the active mail sender and create the concrete `MailSenders\MailSenderIntf` object, passing it to Mailer constructor
+$m = new Mailer($f->getActiveMailSender());
+```
+
+
+
+
+
+
 ## API Reference
 
 To read the entire API reference, please refer to the PHPDoc here :
-http://net-tools.ovh/api-reference/net-tools/Nettools/Mailing.html
+https://nettools.ovh/api-reference/net-tools/namespaces/nettools-mailing.html
 
 
 

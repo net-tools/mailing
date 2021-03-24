@@ -102,8 +102,10 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Nettools\Mailing\MailPieces\MailContent::class, $content);
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$msh->send($content, 'user-to@php.com');
-		$this->assertCount(0, $ml->getMailSender()->getSent());	// test mode, so nothing really sent
-
+		$sent = $ml->getMailSender()->getSent();
+		$this->assertCount(1, $sent);	// test mode, sent to a test recipient
+		$this->assertStringContainsString('user-test1@php.com', $sent[0]);
+		
 
 		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', ['bcc' => 'bcc-user@php.com', 'replyTo' => 'reply-to-user@php.com']);
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);

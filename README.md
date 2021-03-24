@@ -154,6 +154,38 @@ $m = new Mailer($f->getActiveMailSender());
 
 
 
+### Sending through `MailSenderHelpers\MailSenderHelper`
+
+Sometimes, creating the email content, adding the BCC, subject, replyTo headers or dealing with queues can be tough. The MailSenderHelpers subsystem is here to abstract all this.
+
+```php
+
+$mailer = Mailer::getDefault();
+
+// first, we create a helper object, with minimum parameters (mailer object, body content, sender, recipient subject, optional parameters)
+$msh = new MailSenderHelpers\MailSenderHelper($mailer, 'raw mail as text', 'text/plain', 'from@me.com', 'subject of email', $params);
+// OR : $msh = new MailSenderHelpers\MailSenderHelper($mailer, 'mail as <b>html</b>', 'text/html', 'from@me.com', 'subject of email', $params);
+
+// prepare the mail : checking required parameters set, building text/html and text/plain parts (from respectively text/plain or text/html body content) 
+$mailContent = $msh->render(null);
+
+// send the email rendered
+$msh->send($mailContent, 'recipient@here.com');
+
+```
+
+Of course, what is interesting is the optional `$params` last argument, as it may contains :
+- a `template` parameter (the body content of constructor is inserted in the template, replacing any %content% string
+- a `bcc` parameter, to send the email to its recipient AND a bcc one (to be given as a string)
+- a `testMode` parameter ; if set to True, the emails won't be sent to real recipients during `send` calls, but to test recipients (see below)
+- a `testRecipients` parameter ; a PHP array of test emails to send emails to, if `testMode` equals True
+- a `replyTo` parameter ; if set with an email string, it will insert a specific header in the email so that answer should be returned to another address
+- a `toOverride` parameter ; if set, all emails are sent to this address (debug purposes ?)
+- a `queue` parameter ; if set, a queue of the name provided will be created and call to `send` will push emails to the queue
+- a `queueParams` parameter ; if using a queue, this is an associative array of `Store` object constructor parameters (root of queue subsystem and batch count)
+
+The most interesting are the queue parameters, as it makes it possible to send emails either directly or through a queue, just with the same interface (MailSenderHelper class).
+
 
 
 

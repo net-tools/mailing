@@ -124,13 +124,13 @@ Please check API reference for full details about Store and Queue objects (delet
 
 The Mailer object, when constructed, accepts a `MailSenders\MailSenderIntf` object, which is a strategy to send the email through. It can be `MailSenders\PHPMail` (to use the built-in `mail()` function) or `MailSenders\SMTP`. Each strategy may have some parameters (for SMTP, those are the host/user/password data).
 
-Sometimes, there are multiple SMTP strategies (to send emails through several hosts). To deals with all those sending strategies, we have created a MailSendersFacade system :
+Sometimes, there are multiple SMTP strategies (to send emails through several hosts). To deals with all those sending strategies, we have created a `MailSendersFacade` class :
 - data (strategies parameters) is stored in a JSON string
 - strategy list is stored in a PHP array as strings
 
-Json and strings makes it possible to update parameters withouth too much trouble, and can be stored in a file, a database or hard-coded.
+Json and strings makes it possible to update parameters without too much trouble, and can be stored in a file, a database or hard-coded. Secondly, the creation of mail sending strategy is simplified, as all parameters are already defined in the Json data ; we just have to call a method to fetch the current strategy, initialized with proper parameters.
 
-To create the facade object (this is the one we will be dealing with to list strategies or get one ready to use with `Mailer` class :
+To create the facade object (this is the one we will be dealing with to list strategies or get one ready to use with `Mailer` class) :
 
 ```php
 
@@ -143,14 +143,24 @@ $msdata = '{"SMTP:params1":{"className":"SMTP","host":"value1","username":"value
 // active strategy
 $ms = 'SMTP:params1';
 
-// create the facade object, creating a list of sending strategies proxies (we don't create real `MailSenders\MailSenderIntf` objects), thanks to json data
+// create the facade object, through a list of sending strategies proxies (we don't create real `MailSenders\MailSenderIntf` objects), described with json structure
 $f = MailSendersFacade\Facade::facadeProxiesFromJson($msenders, $msdata, $ms);
 
-// ... do some stuff such as listing mail senders, etc.
+// ... do some stuff such as listing mail senders 
 
 // now, get the active mail sender and create the concrete `MailSenders\MailSenderIntf` object, passing it to Mailer constructor
 $m = new Mailer($f->getActiveMailSender());
 ```
+
+The typical use case of `MailSendersFacade` class is :
+- listing mail sending strategies to the end-user : call `getProxies()` method on `Facade` object
+- get the current mail sending strategy proxy : call `getActiveProxy()` method on `Facade` object
+- get a real MailSender object, based on the current strategy proxy, initialized with required parameters : call `getActiveMailSender()` method on `Facade` object (the parameters defined in the Json data are automatically applied)
+
+A word about proxies here. In this facade design pattern, we list mail sending strategies (use case : present a list of strategies and allow the end-user to choose one) ; however, creating real instances of MailSender classes (such as `MailSenders\SMTP`) is not really useful here, as we only want a list of strategies and their parameters, nothing less, nothing more.
+So we use proxies, that is to say objects standing for the real sending strategies in the facade design pattern ; those proxies are lightweight, so this is perfect for the use case.
+We also have a special kind of proxies, `Proxies\Quota` class, that makes it possible to log each mail sent with the strategy and computes quotas (the implementation of quotas has to be coded, but we provide a `PdoQuotaInterface` that may be a start to log on a database).
+When we do need the real mail sending strategy, we call `getMailSender()` on a proxy object, it creates the real object based on parameters provided un json data, and we get an object ready to use with `Mailer` constructor.
 
 
 

@@ -213,7 +213,7 @@ class EmlReader
 		
 		
 		// if content-id, force content-disposition to 'inline' (case when content-disposition:inline header missing)
-		if ( self::decodeHeader($headers['Content-ID']) )
+		if ( array_key_exists('Content-ID', $headers) && self::decodeHeader($headers['Content-ID']) )
 			$contentDisposition = 'inline';
 			
 				
@@ -402,7 +402,7 @@ class EmlReader
 
 		
 		// handle content according to it's content-type
-		if ( !$headers['Content-Type'] )
+		if ( !array_key_exists('Content-Type', $headers) )
 			return self::_error('Header \'Content-Type\' missing.');
 	
 		return self::fromContentType($headers['Content-Type'], $headers, $body);

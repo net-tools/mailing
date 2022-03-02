@@ -100,10 +100,10 @@ class SMTP extends MailSender
 			array(
 					  'host'         	=> $this->params['host'],
 					  'port'         	=> $this->params['port'],
-					  'auth'         	=> $this->params['auth'] ? TRUE:FALSE,
-					  'username'     	=> $this->params['username'],
-					  'password'     	=> $this->params['password'],
-					  'persist'      	=> $this->params['persist'] ? TRUE:FALSE,
+					  'auth'         	=> isset($this->params['auth']) ? TRUE:FALSE,
+					  'username'     	=> isset($this->params['username']) ? $this->params['username'] : null,
+					  'password'     	=> isset($this->params['password']) ? $this->params['password'] : null,
+					  'persist'      	=> isset($this->params['persist']) ? TRUE:FALSE,
 					  'socket_options'	=> array('ssl'=>array('verify_peer'=>false))
 				)); 
 		

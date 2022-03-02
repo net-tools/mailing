@@ -75,7 +75,7 @@ class Attachments extends Composite
 		for ( $i = 0 ; $i < count($attachments) ; $i++ )
 		{
 			$a = $attachments[$i];
-			$this->setAttachment($a['file'], $a['filename'], $a['contentType'], $i, $a['ignoreCache']);
+			$this->setAttachment($a['file'], $a['filename'], $a['contentType'], $i, isset($a['ignoreCache']) ? $a['ignoreCache'] : false);
 		}
 		
 		return $this; // chaining

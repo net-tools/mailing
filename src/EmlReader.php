@@ -206,7 +206,11 @@ class EmlReader
 	static function decodeContent($body, $headers, $contentType)
 	{
 		// get content-disposition header
-		$contentDisposition = self::decodeHeader($headers['Content-Disposition']);
+		if ( array_key_exists('Content-Disposition', $headers) )
+			$contentDisposition = self::decodeHeader($headers['Content-Disposition']);
+		else
+			$contentDisposition = null;
+		
 		
 		// if content-id, force content-disposition to 'inline' (case when content-disposition:inline header missing)
 		if ( self::decodeHeader($headers['Content-ID']) )

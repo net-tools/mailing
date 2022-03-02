@@ -285,7 +285,6 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$amsh->setAttachment($this->_fatt, 'attachment2.txt', 'text/plain', 1);
 		$content = $amsh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
-		$this->assertEquals(false, $r);							// renvoie FALSE si OK
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// aucun mail réellement envoyé, puisqu'on utilise une file
 		$this->assertEquals( 

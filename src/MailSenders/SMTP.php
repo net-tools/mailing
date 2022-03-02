@@ -78,9 +78,12 @@ class SMTP extends MailSender
 
 		
 		// default values
-		$this->params['port'] or $this->params['port'] = '25';
-		$this->params['auth'] or $this->params['auth'] = FALSE;
-		$this->params['persist'] or $this->params['persist'] = FALSE;
+		if ( empty($this->params['port']) )
+			$this->params['port'] = '25';
+		if ( empty($this->params['auth']) )
+			$this->params['auth'] = FALSE;
+		if ( empty($this->params['persist']) )
+			$this->params['persist'] = FALSE;
 		
 		
 		// test that required libraries are available

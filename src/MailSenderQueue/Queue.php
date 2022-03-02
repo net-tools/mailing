@@ -164,7 +164,7 @@ class Queue {
 	public function setup(array $params)
 	{
 		$this->root = rtrim($params['root'], '/');
-		$this->store = $params['store'];
+		$this->store = array_key_exists('store', $params) ? $params['store'] : null;
 	}
 	 
 	

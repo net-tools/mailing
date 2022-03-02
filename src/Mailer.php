@@ -405,7 +405,7 @@ final class Mailer {
 	public static function getHeader($headers, $hkey)
 	{
 		$pheaders = self::headersToArray($headers);
-		return $pheaders[$hkey];
+		return array_key_exists($hkey, $pheaders) ? $pheaders[$hkey] : null;
 	}
 	
 	

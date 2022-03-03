@@ -73,7 +73,7 @@ class SMTP extends MailSender
 		
 
 		// we must at least have the host
-		if ( !isset($this->params['host']) )
+		if ( empty($this->params['host']) )
 			throw new \Nettools\Mailing\Exception("SMTP Host parameter missing");
 
 		
@@ -103,10 +103,10 @@ class SMTP extends MailSender
 			array(
 					  'host'         	=> $this->params['host'],
 					  'port'         	=> $this->params['port'],
-					  'auth'         	=> isset($this->params['auth']) ? TRUE:FALSE,
-					  'username'     	=> isset($this->params['username']) ? $this->params['username'] : null,
-					  'password'     	=> isset($this->params['password']) ? $this->params['password'] : null,
-					  'persist'      	=> isset($this->params['persist']) ? TRUE:FALSE,
+					  'auth'         	=> !empty($this->params['auth']) ? TRUE:FALSE,
+					  'username'     	=> !empty($this->params['username']) ? $this->params['username'] : null,
+					  'password'     	=> !empty($this->params['password']) ? $this->params['password'] : null,
+					  'persist'      	=> !empty($this->params['persist']) ? TRUE:FALSE,
 					  'socket_options'	=> array('ssl'=>array('verify_peer'=>false))
 				)); 
 		

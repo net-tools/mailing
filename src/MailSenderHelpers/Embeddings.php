@@ -78,7 +78,7 @@ class Embeddings extends Composite
 		for ( $i = 0 ; $i < count($embeddings) ; $i++ )
 		{
 			$e = $embeddings[$i];
-			$this->setEmbedding($e['file'], $e['contentType'], $e['cid'], $i, isset($e['ignoreCache'])?$e['ignoreCache']:false);
+			$this->setEmbedding($e['file'], $e['contentType'], $e['cid'], $i, !empty($e['ignoreCache'])?$e['ignoreCache']:false);
 		}
 		
 		return $this; // chaining

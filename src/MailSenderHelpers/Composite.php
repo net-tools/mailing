@@ -110,10 +110,10 @@ abstract class Composite implements MailSenderHelperIntf
 	 */
 	public function ready()
 	{
-		if ( !isset($this->component) )
+		if ( empty($this->component) )
 			throw new \Nettools\Mailing\MailSenderHelpers\Exception('Underlying object unset');
 
-		if ( !isset($this->itemsPool) ) 
+		if ( empty($this->itemsPool) ) 
 			throw new \Nettools\Mailing\MailSenderHelpers\Exception('Items pool not initialized');
 			
 		

@@ -171,25 +171,25 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 */
 	public function ready()
 	{
-		if ( !isset($this->mailer) )
+		if ( empty($this->mailer) )
             throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::mailer is not defined");
 
-		if ( !isset($this->mail) )
+		if ( empty($this->mail) )
             throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::mail is not defined");
         
-		if ( !isset($this->mailContentType) )
+		if ( empty($this->mailContentType) )
         	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::mailContentType is not defined");
 
-		if ( !isset($this->from) )
+		if ( empty($this->from) )
             throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::from is not defined");
 
-		if ( !isset($this->template) )
+		if ( empty($this->template) )
             throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::template is not defined");
 		
 		
 		if ( $this->testMode )
 		{
-			if ( !isset($this->testRecipients) )
+			if ( empty($this->testRecipients) )
             	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testRecipients is not defined");
 			
 			if ( !is_array($this->testRecipients) )

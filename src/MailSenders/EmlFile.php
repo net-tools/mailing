@@ -46,7 +46,7 @@ class EmlFile extends MailSender
 	 */
 	function doSend($to, $subject, $mail, $headers)
 	{
-		if ( isset($this->params[self::PATH]) )
+		if ( !empty($this->params[self::PATH]) )
 		{
 			// add slash
 			$path = $this->params[self::PATH];

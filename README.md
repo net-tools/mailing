@@ -46,7 +46,7 @@ To send emails with SMTP protocol (or any other email sending strategy in the Ma
 
 ```php
 $smtpmailer = new Mailer(new MailSenders\SMTP(array('host'=>'mysmtphost.com', 'username'=>'user', 'password'=>'1234')));
-$smtpmailer->sendmail($mail);
+$smtpmailer->sendmail($mail, 'from-user@test.com', 'recipient@test.com', 'This is a subject');
 ```
 
 
@@ -96,7 +96,7 @@ $id = $queue->id;
 $mail = Mailer::addTextHtmlFromText('\*\*This is a\*\* test');
 
 // then send email (of course this last line is usually called within a loop, to queue all items at once
-$queue->push ($mail, 'sender@domain.tld', 'recipient_here@domain.tld', 'Email subject here');
+$queue->push($mail, 'sender@domain.tld', 'recipient_here@domain.tld', 'Email subject here');
 
 ```
 

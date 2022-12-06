@@ -82,9 +82,9 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
         
 		// getHeaders
 		$this->assertEquals(
-				"Content-Type: text/plain;\r\n   name=\"att.txt\"\r\n" .
+				"Content-Type: text/plain;\r\n name=\"att.txt\"\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: attachment;\r\n   filename=\"att.txt\"",
+				"Content-Disposition: attachment;\r\n filename=\"att.txt\"",
 				
                 $matt->getHeaders()
 			);
@@ -114,9 +114,9 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
         
 		// getHeaders
 		$this->assertEquals(
-				"Content-Type: text/plain;\r\n   name=\"att.txt\"\r\n" .
+				"Content-Type: text/plain;\r\n name=\"att.txt\"\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: attachment;\r\n   filename=\"att.txt\"",
+				"Content-Disposition: attachment;\r\n filename=\"att.txt\"",
 				
                 $matt->getHeaders()
 			);
@@ -148,7 +148,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(
 				"Content-Type: text/plain\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: inline;\r\n   filename=\"cid-456\"\r\n" .
+				"Content-Disposition: inline;\r\n filename=\"cid-456\"\r\n" .
 				"Content-ID: <cid-456>",
             
 				$membed->getHeaders()
@@ -181,7 +181,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(
 				"Content-Type: text/plain\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: inline;\r\n   filename=\"cid-456\"\r\n" .
+				"Content-Disposition: inline;\r\n filename=\"cid-456\"\r\n" .
 				"Content-ID: <cid-456>",
             
 				$membed->getHeaders()

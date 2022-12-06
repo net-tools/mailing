@@ -131,9 +131,9 @@ abstract class MailSender implements MailSenderIntf{
      */
 	function handleHeaders_Priority($to, $subject, $mail, &$headers)
 	{
-		$headers = Mailer::addHeader($headers, "X-Priority: 1");
+		//$headers = Mailer::addHeader($headers, "X-Priority: 1");
 //		$headers = Mailer::addHeader($headers, "X-MSMail-Priority: High"); //nécessite X-MimeOLE qui indique que le message a été rédigé avec outlook
-		$headers = Mailer::addHeader($headers, "Importance: High");
+		//$headers = Mailer::addHeader($headers, "Importance: High");
 	}
 	
 	

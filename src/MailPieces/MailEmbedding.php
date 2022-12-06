@@ -83,7 +83,7 @@ class MailEmbedding extends MailMixedContent {
 	{
 		return 	"Content-Type: " . $this->getContentType() . "\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: inline;\r\n   filename=\"" . $this->_cid . "\"\r\n" .
+				"Content-Disposition: inline;\r\n filename=\"" . $this->_cid . "\"\r\n" .
 				"Content-ID: <" . $this->_cid . ">";
 	}
 }

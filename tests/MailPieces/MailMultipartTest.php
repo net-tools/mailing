@@ -36,7 +36,7 @@ class MailMultipartTest extends \PHPUnit\Framework\TestCase
 
 
         // getSeparator
-		$this->assertMatchesRegularExpression('/MailMultipart-alternative-[a-fA-F0-9]{40}/', $mcalt->getSeparator());
+		$this->assertMatchesRegularExpression('/---[a-fA-F0-9]{40}/', $mcalt->getSeparator());
 
         
         // getContentType
@@ -45,7 +45,7 @@ class MailMultipartTest extends \PHPUnit\Framework\TestCase
 
 
         // getHeaders
-		$this->assertEquals("Content-Type: multipart/alternative;\r\n   boundary=\"" . $mcalt->getSeparator() . "\"", $mcalt->getHeaders());
+		$this->assertEquals("Content-Type: multipart/alternative;\r\n boundary=\"" . $mcalt->getSeparator() . "\"", $mcalt->getHeaders());
 		
 		
 		// getContent
@@ -68,7 +68,7 @@ class MailMultipartTest extends \PHPUnit\Framework\TestCase
 
 
         // toString
-		$this->assertEquals("Content-Type: multipart/alternative;\r\n   boundary=\"" . $mcalt->getSeparator() . "\"\r\n\r\n" . $mcalt_content_expected . "\r\n\r\n",
+		$this->assertEquals("Content-Type: multipart/alternative;\r\n boundary=\"" . $mcalt->getSeparator() . "\"\r\n\r\n" . $mcalt_content_expected . "\r\n\r\n",
                            $mcalt->toString());
     }
 }

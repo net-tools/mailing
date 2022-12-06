@@ -137,14 +137,12 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(2, $sent);								// BCC + mail
 		$this->assertStringStartsWith( 
-				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
+				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: bcc-user@php.com\r\n" .
 				"\r\n" . 
 				"--" . $content->getSeparator() . "\r\n",
@@ -153,14 +151,12 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertEquals(true, is_int(strpos($sent[0], 'msh content')));
 		$this->assertStringStartsWith( 
-				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
+				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" . 
 				"--" . $content->getSeparator() . "\r\n",
@@ -173,28 +169,24 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(2, $sent);								// BCC + mail
 		$this->assertStringStartsWith( 
-				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
+				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"To: override-user@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: bcc-user@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n",
 		
 				$sent[0]);
 		$this->assertStringStartsWith( 
-				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
+				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"To: override-user@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: override-user@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n",
@@ -232,14 +224,12 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertCount(1, $sent);								// one mail from queue sent
 		$this->assertEquals(true, is_int(strpos($sent[0], 'my template : msh content')));
 		$this->assertStringStartsWith( 
-				"Content-Type: multipart/alternative;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
+				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"X-MailSenderQueue: " . $q->id . "\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n",
@@ -288,18 +278,16 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// aucun mail réellement envoyé, puisqu'on utilise une file
 		$this->assertEquals( 
-				"Content-Type: multipart/mixed;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
+				"Content-Type: multipart/mixed;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n" .
 				"Content-Type: multipart/alternative;\r\n" .
-				"   boundary=\"" . $content->getPart(0)->getSeparator() . "\"\r\n" .
+				" boundary=\"" . $content->getPart(0)->getSeparator() . "\"\r\n" .
 				"\r\n" . 
 				"--" . $content->getPart(0)->getSeparator() . "\r\n" .
 				"Content-Type: text/plain; charset=UTF-8\r\n" .
@@ -317,19 +305,19 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"\r\n" . 
 				"--" . $content->getSeparator() . "\r\n" .
 				"Content-Type: text/plain;\r\n" .
-				"   name=\"attachment1.txt\"\r\n" .
+				" name=\"attachment1.txt\"\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
 				"Content-Disposition: attachment;\r\n" .
-				"   filename=\"attachment1.txt\"\r\n" .
+				" filename=\"attachment1.txt\"\r\n" .
 				"\r\n" .
 				self::$_fatt_content_b64 . "\r\n" .
 				"\r\n" . 
 				"--" . $content->getSeparator() . "\r\n" .
 				"Content-Type: text/plain;\r\n" .
-				"   name=\"attachment2.txt\"\r\n" .
+				" name=\"attachment2.txt\"\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
 				"Content-Disposition: attachment;\r\n" .
-				"   filename=\"attachment2.txt\"\r\n" .
+				" filename=\"attachment2.txt\"\r\n" .
 				"\r\n" .
 				self::$_fatt_content_b64 . "\r\n" .
 				"\r\n" . 
@@ -371,18 +359,16 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// aucun mail réellement envoyé, puisqu'on utilise une file
 		$this->assertEquals(
-				"Content-Type: multipart/related;\r\n   boundary=\"" . $content->getSeparator() . "\"\r\n" .
+				"Content-Type: multipart/related;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n" .
 				"Content-Type: multipart/alternative;\r\n" .
-				"   boundary=\"" . $content->getPart(0)->getSeparator() . "\"\r\n" .
+				" boundary=\"" . $content->getPart(0)->getSeparator() . "\"\r\n" .
 				"\r\n" . 
 				"--" . $content->getPart(0)->getSeparator() . "\r\n" .
 				"Content-Type: text/plain; charset=UTF-8\r\n" .
@@ -402,7 +388,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"Content-Type: text/plain\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
 				"Content-Disposition: inline;\r\n" .
-				"   filename=\"cid-123\"\r\n" .
+				" filename=\"cid-123\"\r\n" .
 				"Content-ID: <cid-123>\r\n" .
 				"\r\n" .
 				self::$_fatt_content_b64 . "\r\n" .

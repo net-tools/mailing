@@ -156,14 +156,14 @@ class MailMultipart extends MailContent {
 		parent::__construct("multipart/$type");
 	
 		$this->_type = $type;
-		$this->_separator = "MailMultipart-${type}-" . sha1(uniqid());
+		$this->_separator = "---" . md5(uniqid());
 		$this->_parts = $parts;
 	}
 	
 	
 	public function getHeaders()
 	{
-		return 	"Content-Type: " . $this->getContentType() . ";\r\n   boundary=\"" . $this->_separator . "\"";
+		return 	"Content-Type: " . $this->getContentType() . ";\r\n boundary=\"" . $this->_separator . "\"";
 	}
 	
 	

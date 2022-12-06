@@ -178,9 +178,9 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"textplain content\r\n" .
 				"\r\n" .
 				"--" . $obj->getSeparator() . "\r\n" .
-				"Content-Type: text/plain;\r\n   name=\"attach.txt\"\r\n" .
+				"Content-Type: text/plain;\r\n name=\"attach.txt\"\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: attachment;\r\n   filename=\"attach.txt\"\r\n" .
+				"Content-Disposition: attachment;\r\n filename=\"attach.txt\"\r\n" .
 				"\r\n" .
 				self::$_fatt_content_b64 . "\r\n" .
 				"\r\n" .
@@ -241,7 +241,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"--" . $obj->getSeparator() . "\r\n" .
 				"Content-Type: text/plain\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: inline;\r\n   filename=\"cid-123\"\r\n" .
+				"Content-Disposition: inline;\r\n filename=\"cid-123\"\r\n" .
 				"Content-ID: <cid-123>\r\n" .
 				"\r\n" .
 				self::$_fatt_content_b64 . "\r\n" .
@@ -293,14 +293,14 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('From: user@domain.tld', Mailer::addHeader('From: user@domain.tld', ''));
 		$this->assertEquals("From: user@domain.tld\r\nTo: other@domain.tld", Mailer::addHeader('From: user@domain.tld', 'To: other@domain.tld'));
 		$this->assertEquals("From: other-user@domain.tld\r\nBcc: bcc-user@domain.tld", Mailer::addHeader("From: user@domain.tld\r\nBcc: bcc-user@domain.tld", 'From: other-user@domain.tld'));
-		$this->assertEquals("Content-Type: multipart/mixed;\r\n   boundary=\"xyz1234\"\r\nFrom: user@domain.tld", 
-                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n   boundary=\"xyz1234\"", 'From: user@domain.tld'));
+		$this->assertEquals("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"\r\nFrom: user@domain.tld", 
+                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"", 'From: user@domain.tld'));
 		$this->assertEquals("Content-Type: text/plain; charset=UTF-8", 
-                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n   boundary=\"xyz1234\"", "Content-Type: text/plain; charset=UTF-8"));
-		$this->assertEquals("Content-Type: multipart/mixed;\r\n   boundary=\"abc5678\"",
-                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n   boundary=\"xyz1234\"", "Content-Type: multipart/mixed;\r\n   boundary=\"abc5678\""));
-		$this->assertEquals("Content-Type: multipart/mixed;\r\n   boundary=\"abc5678\"\r\nFrom: user@domain.tld",
-                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n   boundary=\"xyz1234\"\r\n   other=\"testfolding\"\r\nFrom: user@domain.tld", "Content-Type: multipart/mixed;\r\n   boundary=\"abc5678\""));
+                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"", "Content-Type: text/plain; charset=UTF-8"));
+		$this->assertEquals("Content-Type: multipart/mixed;\r\n boundary=\"abc5678\"",
+                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"", "Content-Type: multipart/mixed;\r\n boundary=\"abc5678\""));
+		$this->assertEquals("Content-Type: multipart/mixed;\r\n boundary=\"abc5678\"\r\nFrom: user@domain.tld",
+                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"\r\n other=\"testfolding\"\r\nFrom: user@domain.tld", "Content-Type: multipart/mixed;\r\n boundary=\"abc5678\""));
     }
     
     
@@ -313,16 +313,16 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     
     public function testHeadersToArray()
     {
-		$this->assertEquals(array('From'=>'user@domain.tld', 'Content-Type'=>"multipart/mixed;\r\n   boundary=\"abc5678\""),
-                            Mailer::headersToArray("From: user@domain.tld\r\nContent-Type: multipart/mixed;\r\n   boundary=\"abc5678\""));
+		$this->assertEquals(array('From'=>'user@domain.tld', 'Content-Type'=>"multipart/mixed;\r\n boundary=\"abc5678\""),
+                            Mailer::headersToArray("From: user@domain.tld\r\nContent-Type: multipart/mixed;\r\n boundary=\"abc5678\""));
 		$this->assertEquals(array(), Mailer::headersToArray(""));
     }
     
     
     public function testArrayToHeaders()
     {
-		$this->assertEquals("From: user@domain.tld\r\nContent-Type: multipart/mixed;\r\n   boundary=\"abc5678\"",
-                            Mailer::arrayToHeaders(array('From'=>'user@domain.tld', 'Content-Type'=>"multipart/mixed;\r\n   boundary=\"abc5678\"")));
+		$this->assertEquals("From: user@domain.tld\r\nContent-Type: multipart/mixed;\r\n boundary=\"abc5678\"",
+                            Mailer::arrayToHeaders(array('From'=>'user@domain.tld', 'Content-Type'=>"multipart/mixed;\r\n boundary=\"abc5678\"")));
 		$this->assertEquals("", Mailer::arrayToHeaders(array()));
     }
     
@@ -370,13 +370,11 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertEquals( 
 				"Content-Type: multipart/mixed;\r\n" .
-				"   boundary=\"" . $obj->getSeparator() . "\"\r\n" .
+				" boundary=\"" . $obj->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
 				"To: unit-test-recipient@php.com\r\n" .
 				"Subject: Mail subject\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: unit-test-recipient@php.com\r\n" .
 				"\r\n" .  
 				"--" . $obj->getSeparator() . "\r\n" .
@@ -386,9 +384,9 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"textplain content\r\n" .
 				"\r\n" .
 				"--" . $obj->getSeparator() . "\r\n" .
-				"Content-Type: text/plain;\r\n   name=\"attach.txt\"\r\n" .
+				"Content-Type: text/plain;\r\n name=\"attach.txt\"\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: attachment;\r\n   filename=\"attach.txt\"\r\n" .
+				"Content-Disposition: attachment;\r\n filename=\"attach.txt\"\r\n" .
 				"\r\n" .
 				self::$_fatt_content_b64 . "\r\n" .
 				"\r\n" .
@@ -414,8 +412,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"From: unit-test@php.com\r\n" .
 				"To: user1@test.com\r\n" .
 				"Subject: test subject\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: user1@test.com\r\n" .
 				"\r\n" .
 				"textplain content",
@@ -429,8 +425,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"From: unit-test@php.com\r\n" .
 				"To: user2@test.com\r\n" .
 				"Subject: test subject\r\n" .
-				"X-Priority: 1\r\n" .
-				"Importance: High\r\n" . 
 				"Delivered-To: user2@test.com\r\n" .
 				"\r\n" .
 				"textplain content",

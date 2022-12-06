@@ -76,9 +76,9 @@ class MailAttachment extends MailMixedContent {
 
 	public function getHeaders()
 	{
-		return 	"Content-Type: " . $this->getContentType() . ";\r\n   name=\"" . $this->_filename . "\"\r\n" .
+		return 	"Content-Type: " . $this->getContentType() . ";\r\n name=\"" . $this->_filename . "\"\r\n" .
 				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: attachment;\r\n   filename=\"" . $this->_filename . "\"";
+				"Content-Disposition: attachment;\r\n filename=\"" . $this->_filename . "\"";
 	}
 }
 

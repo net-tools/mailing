@@ -304,7 +304,7 @@ class EmlReader
                 // the body of the multipart begin with the boundary (=separator for splitting). We ignore this empty value.
                 // we know that the last boundary separator ends with '--', and that after each separator line, there's a carriage return. We delete only this
                 // newline (except if last separator ending with --). We know that the newline can be \n or \r\n
-				$parts = preg_split("/--${boundary}(--)?[\\r]?[\\n]?/", $body);
+				$parts = preg_split("/--{$boundary}(--)?[\\r]?[\\n]?/", $body);
 				if ( count($parts) < 3 )
 					return self::_error("Decoding of '$contentType' is impossible because of the unsupported parts number (1).");
 

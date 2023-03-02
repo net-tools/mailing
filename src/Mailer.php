@@ -822,6 +822,7 @@ final class Mailer {
 		foreach ( $to as $recipient )
 			try
 			{
+				$headers = self::addHeaders($headers, ['Message-ID' => '<' . sha1(uniqid()) . '@lelivrerelie.fr>', 'Date' => date("r")]);
 				$this->getMailSender()->send($recipient, $subject, $mail, $headers);
 			}
 			catch ( \Nettools\Mailing\Exception $e )

@@ -478,7 +478,7 @@ final class Mailer {
 	 * Add several headers to existing headers string
 	 * 
 	 * @param string $headers Headers string
-	 * @param string[] $hs Array of headers string `name: value`
+	 * @param string $hs Headers string to append 'header: value<new line>header2: value2'
 	 * @return string New headers string
 	 */
 	public static function addHeaders($headers, $hs)
@@ -822,7 +822,7 @@ final class Mailer {
 		foreach ( $to as $recipient )
 			try
 			{
-				$headers = self::addHeaders($headers, ['Message-ID' => '<' . sha1(uniqid()) . '@lelivrerelie.fr>', 'Date' => date("r")]);
+				$headers = self::addHeaders($headers, 'Message-ID: <' . sha1(uniqid()) . "@lelivrerelie.fr>\r\nDate: " . date("r"));
 				$this->getMailSender()->send($recipient, $subject, $mail, $headers);
 			}
 			catch ( \Nettools\Mailing\Exception $e )

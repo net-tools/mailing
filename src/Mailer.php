@@ -822,7 +822,16 @@ final class Mailer {
 		foreach ( $to as $recipient )
 			try
 			{
-				$headers = self::addHeaders($headers, 'Message-ID: <' . sha1(uniqid()) . "@lelivrerelie.fr>\r\nDate: " . date("r"));
+				unset($regs);
+				
+				
+				// chercher le nom de domaine From: xxx@domain.tld
+				if ( preg_match('/From:[^@]+(@[^>\\n]+)/', $headers, $regs) )
+					$mid = 'Message-ID: <' . sha1(uniqid()) . $regs[1] . '>';
+				else
+					$mid = 'Message-ID: <' . sha1(uniqid()) . '@' . md5(time()) . '.com>';
+				
+				$headers = self::addHeaders($headers, "$mid\r\nDate: " . date("r"));
 				$this->getMailSender()->send($recipient, $subject, $mail, $headers);
 			}
 			catch ( \Nettools\Mailing\Exception $e )

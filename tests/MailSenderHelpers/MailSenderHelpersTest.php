@@ -319,10 +319,10 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		// guess Message-ID and Date headers
 		$regs = [];
-		$this->assertTrue(preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
+		$this->assertEquals(1, preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
 		$mid = $regs[0];
 		$regs = [];
-		$this->assertTrue(preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
+		$this->assertEquals(1, preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
 		$dt = $regs[0];
 		
 		

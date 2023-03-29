@@ -304,7 +304,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 												)
 											)
 										
-										);	// tester chainage
+										);	
 		
 		
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
@@ -315,11 +315,23 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$content = $amsh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
 		$sent = $ml->getMailSender()->getSent();
-		$this->assertCount(1, $sent);								// aucun mail réellement envoyé, puisqu'on utilise une file
+		$this->assertCount(1, $sent);								
+		
+		// guess Message-ID and Date headers
+		$regs = [];
+		$this->assertTrue(preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
+		$mid = $regs[0];
+		$regs = [];
+		$this->assertTrue(preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
+		$dt = $regs[0];
+		
+		
 		$this->assertEquals( 
 				"Content-Type: multipart/mixed;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
+				"$mid\r\n" .
+				"$dt\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .
@@ -385,7 +397,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 												)
 											)
 										
-										);	// tester chainage
+										);	
 		
 		
 
@@ -396,11 +408,22 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$content = $amsh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
 		$sent = $ml->getMailSender()->getSent();
-		$this->assertCount(1, $sent);								// aucun mail réellement envoyé, puisqu'on utilise une file
+		$this->assertCount(1, $sent);							
+
+		// guess Message-ID and Date headers
+		$regs = [];
+		$this->assertTrue(preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
+		$mid = $regs[0];
+		$regs = [];
+		$this->assertTrue(preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
+		$dt = $regs[0];
+		
 		$this->assertEquals(
 				"Content-Type: multipart/related;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
+				"$mid\r\n" .
+				"$dt\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .

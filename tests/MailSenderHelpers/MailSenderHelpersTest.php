@@ -136,7 +136,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(2, $sent);								// BCC + mail
-		$this->assertStringStartsWith( 
+		/*$this->assertStringStartsWith( 
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
 				"MIME-Version: 1.0\r\n" . 
@@ -147,51 +147,86 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"\r\n" . 
 				"--" . $content->getSeparator() . "\r\n",
 		
-				$sent[0]);
-
-		$this->assertEquals(true, is_int(strpos($sent[0], 'msh content')));
-		$this->assertStringStartsWith( 
+				$sent[0]);*/
+		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
 				"MIME-Version: 1.0\r\n" . 
-				"From: unit-test@php.com\r\n" .
+				"From: unit-test@php.com\r\n"
+				, $sent[0]);
+
+		$this->assertStringContainsString(
+				"To: user-to@php.com\r\n" .
+				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Delivered-To: bcc-user@php.com\r\n" .
+				"\r\n" . 
+				"--" . $content->getSeparator() . "\r\n"
+				, $sent[0]);
+		
+		//Message-ID: <131a80b284e5622502a179f0a6f6b0fe55edff0b@php.com>
+		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0]);
+		//Date: Wed, 29 Mar 2023 09:11:52 +0200\r\n
+		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \\+[0-9]{4}/', $sent[0]);
+
+		
+		
+		$this->assertEquals(true, is_int(strpos($sent[0], 'msh content')));
+		$this->assertStringContainsString(
+				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
+				"Reply-To: reply-to-user@php.com\r\n" .
+				"MIME-Version: 1.0\r\n" . 
+				"From: unit-test@php.com\r\n",
+				$sent[1]);
+		
+		$this->assertStringContainsString(
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" . 
 				"--" . $content->getSeparator() . "\r\n",
-		
 				$sent[1]);
+		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[1]);
+		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \\+[0-9]{4}/', $sent[1]);
 
+		
 		$msh->setToOverride('override-user@php.com');
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$msh->send($content, 'user-to@php.com');
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(2, $sent);								// BCC + mail
-		$this->assertStringStartsWith( 
+		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
 				"MIME-Version: 1.0\r\n" . 
-				"From: unit-test@php.com\r\n" .
+				"From: unit-test@php.com\r\n",
+				$sent[0]);
+
+		$this->assertStringContainsString(
 				"To: override-user@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
 				"Delivered-To: bcc-user@php.com\r\n" .
 				"\r\n" .
-				"--" . $content->getSeparator() . "\r\n",
-		
+				"--" . $content->getSeparator() . "\r\n",		
 				$sent[0]);
-		$this->assertStringStartsWith( 
+		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0]);
+		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \\+[0-9]{4}/', $sent[0]);
+		
+		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
 				"MIME-Version: 1.0\r\n" . 
-				"From: unit-test@php.com\r\n" .
+				"From: unit-test@php.com\r\n",
+				$sent[1]);
+			
+		$this->assertStringContainsString(
 				"To: override-user@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
 				"Delivered-To: override-user@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n",
-		
 				$sent[1]);
+		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[1]);
+		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \\+[0-9]{4}/', $sent[1]);
 				
 				
 
@@ -223,18 +258,22 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// one mail from queue sent
 		$this->assertEquals(true, is_int(strpos($sent[0], 'my template : msh content')));
-		$this->assertStringStartsWith( 
+		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
-				"X-MailSenderQueue: " . $q->id . "\r\n" .
+				"X-MailSenderQueue: " . $q->id . "\r\n",
+				$sent[0]);
+
+		$this->assertStringContainsString(
 				"To: user-to@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n",
-		
 				$sent[0]);
+		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0]);
+		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} \\+[0-9]{4}/', $sent[0]);
 				
 				
 		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject');

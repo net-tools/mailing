@@ -368,11 +368,22 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $obj = Mailer::addAttachment(new MailTextPlainContent('textplain content'), self::$_fatt, 'attach.txt', 'text/plain');
 		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
 		$sent = $ml->getMailSender()->getSent();
+		
+		// guess Message-ID and Date headers
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
+		$mid = $regs[0];
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
+		$dt = $regs[0];
+
 		$this->assertEquals( 
 				"Content-Type: multipart/mixed;\r\n" .
 				" boundary=\"" . $obj->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
+				"$mid\r\n" .
+				"$dt\r\n" .
 				"To: unit-test-recipient@php.com\r\n" .
 				"Subject: Mail subject\r\n" .
 				"Delivered-To: unit-test-recipient@php.com\r\n" .
@@ -405,11 +416,29 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), Mailer::addHeader($obj->getFullHeaders(), 'From: unit-test@php.com'), false); 
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));
+		
+		// guess Message-ID and Date headers
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
+		$mid1 = $regs[0];
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
+		$dt1 = $regs[0];
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[1], $regs));
+		$mid2 = $regs[0];
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[1], $regs));
+		$dt2 = $regs[0];
+
+		
 		$this->assertEquals(
 				"Content-Type: text/plain; charset=UTF-8\r\n" .
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
+				"$mid1\r\n" .
+				"$dt1\r\n" .
 				"To: user1@test.com\r\n" .
 				"Subject: test subject\r\n" .
 				"Delivered-To: user1@test.com\r\n" .
@@ -423,6 +452,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
+				"$mid2\r\n" .
+				"$dt2\r\n" .
 				"To: user2@test.com\r\n" .
 				"Subject: test subject\r\n" .
 				"Delivered-To: user2@test.com\r\n" .

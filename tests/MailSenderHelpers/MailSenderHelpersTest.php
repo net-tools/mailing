@@ -166,7 +166,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		//Message-ID: <131a80b284e5622502a179f0a6f6b0fe55edff0b@php.com>
 		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0]);
 		//Date: Wed, 29 Mar 2023 09:11:52 +0200\r\n
-		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0]);
+		$this->assertMatchesRegularExpression('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0]);
 
 		
 		
@@ -186,7 +186,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"--" . $content->getSeparator() . "\r\n",
 				$sent[1]);
 		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[1]);
-		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[1]);
+		$this->assertMatchesRegularExpression('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[1]);
 
 		
 		$msh->setToOverride('override-user@php.com');
@@ -209,7 +209,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"--" . $content->getSeparator() . "\r\n",		
 				$sent[0]);
 		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0]);
-		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0]);
+		$this->assertMatchesRegularExpression('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0]);
 		
 		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
@@ -226,7 +226,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"--" . $content->getSeparator() . "\r\n",
 				$sent[1]);
 		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[1]);
-		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[1]);
+		$this->assertMatchesRegularExpression('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[1]);
 				
 				
 
@@ -273,7 +273,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"--" . $content->getSeparator() . "\r\n",
 				$sent[0]);
 		$this->assertMatchesRegularExpression('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0]);
-		$this->assertMatchesRegularExpression('/Date:[A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0]);
+		$this->assertMatchesRegularExpression('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0]);
 				
 				
 		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject');

@@ -826,7 +826,7 @@ final class Mailer {
 				
 				
 				// chercher le nom de domaine From: xxx@domain.tld
-				if ( preg_match('/From:[^@]+(@[^>\\n]+)/', $headers, $regs) )
+				if ( preg_match('/From:[^@]+(@[^>\\r\\n]+)/', $headers, $regs) )
 					$mid = 'Message-ID: <' . sha1(uniqid()) . $regs[1] . '>';
 				else
 					$mid = 'Message-ID: <' . sha1(uniqid()) . '@' . md5(time()) . '.com>';

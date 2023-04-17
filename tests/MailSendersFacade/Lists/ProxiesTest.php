@@ -12,7 +12,7 @@ use \Nettools\Mailing\MailSender;
 
 
 
-class ProxyListTest extends \PHPUnit\Framework\TestCase
+class ProxiesTest extends \PHPUnit\Framework\TestCase
 {
 	public function testProxy()
 	{

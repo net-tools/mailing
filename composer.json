@@ -9,7 +9,7 @@
 		"php": ">= 7.2.0",
         "pear/mail" : "^1.5.0",
 		"pear/net_smtp":"^1.10.0",
-        "net-tools/auth_sasl" : "^1.0.0",
+        "net-tools/pear_auth_sasl" : "^1.0.0",
 		"net-tools/core" : "^1.0.0"
     },
 	

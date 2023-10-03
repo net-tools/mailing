@@ -86,17 +86,6 @@ class SMTP extends MailSender
 			$this->params['persist'] = FALSE;
 		
 		
-		// test that required libraries are available
-		if ( 
-				(strpos(get_include_path(), 'net-tools/auth_sasl') === FALSE)
-				/*||
-				(strpos(get_include_path(), 'pear/mail') === FALSE)
-				||
-				(strpos(get_include_path(), 'pear/net_smtp') === FALSE)*/
-			)
-			throw new \Nettools\Mailing\Exception("Composer libraries missing : pear/mail or pear/net_smtp or net-tools/auth_sasl");
-
-		
 		
 		// create connection
 		$this->smtp = \Mail::factory('smtp', 

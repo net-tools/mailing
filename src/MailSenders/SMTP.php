@@ -50,7 +50,7 @@ class SMTP extends MailSender
      */
 	protected function _doSend($to, $mail, $headers)
 	{
-		$ret = $this->smtp->send($to, $headers, $mail);
+		$ret = @$this->smtp->send($to, $headers, $mail);
 		if ( $ret === TRUE )
 			return;
 		else

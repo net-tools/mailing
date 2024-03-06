@@ -72,14 +72,20 @@ abstract class MailSender implements MailSenderIntf{
 	{
 		if ( $bcc = Mailer::getHeader($headers, 'Bcc') )
 		{
-			// remove Bcc header
+			// remove Bcc and To header
 			$headers = Mailer::removeHeader($headers, 'Bcc');
+			$htmp = Mailer::removeHeader($headers, 'To');
 			
 			// for all Bcc recipients, send them a 'normal' email with their email in a To header
 			$bcc_to = explode(',', $bcc);
 			foreach ( $bcc_to as $bcc )
+			{
+				// add To header with bcc recipient
+				$h = Mailer::addHeader($htmp, "To: " . trim($bcc));
+			
 				// envoyer avec BCC comme destinataire ; headers est privé de son champ BCC
-				$this->doSend(trim($bcc), $subject, $mail, $headers);
+				$this->doSend(trim($bcc), $subject, $mail, $h);
+			}
 		}
 	}
 

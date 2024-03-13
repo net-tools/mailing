@@ -205,6 +205,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(
 				"To: override-user@php.com\r\n" .
 				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Bcc: bcc-user@php.com\r\n" . 
 				"Delivered-To: bcc-user@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n",		

@@ -115,7 +115,8 @@ abstract class MailSender {
 				//$h = Mailer::addHeader($htmp, "To: " . trim($bcc));
 			
 				// envoyer avec BCC comme destinataire ; headers est privé de son champ BCC
-				$this->doSend(trim($bcc), $subject, $mail, $headers);
+				$h = Mailer::addHeader($headers, "Bcc: " . trim($bcc));
+				$this->doSend(trim($bcc), $subject, $mail, $h);
 			}
 			
 			

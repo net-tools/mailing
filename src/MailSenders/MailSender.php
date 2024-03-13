@@ -102,20 +102,25 @@ abstract class MailSender {
 	{
 		if ( $bcc = Mailer::getHeader($headers, 'Bcc') )
 		{
-			// remove Bcc and To header
+			// remove Bcc and To header (previously set)
 			$headers = Mailer::removeHeader($headers, 'Bcc');
-			$htmp = Mailer::removeHeader($headers, 'To');
+			//$htmp = Mailer::removeHeader($headers, 'To');
+			
 			
 			// for all Bcc recipients, send them a 'normal' email with their email in a To header
 			$bcc_to = explode(',', $bcc);
 			foreach ( $bcc_to as $bcc )
 			{
 				// add To header with bcc recipient
-				$h = Mailer::addHeader($htmp, "To: " . trim($bcc));
+				//$h = Mailer::addHeader($htmp, "To: " . trim($bcc));
 			
 				// envoyer avec BCC comme destinataire ; headers est privé de son champ BCC
-				$this->doSend(trim($bcc), $subject, $mail, $h);
+				$this->doSend(trim($bcc), $subject, $mail, $headers);
 			}
+			
+			
+			// revert original To header
+			//$headers = Mailer::addHeader($htmp, "To: " . trim($to));
 		}
 	}
 

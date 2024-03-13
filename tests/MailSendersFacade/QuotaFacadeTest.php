@@ -13,11 +13,12 @@ use \Nettools\Mailing\MailSendersFacade\Factories\QuotaCreator;
 class QIF implements \Nettools\Mailing\MailSendersFacade\Quotas\QuotaInterface
 {
 	public $cleanCalled = false;
+	public $sent = 0;
 	
 	
 	function add($name, $time)
 	{
-		
+		$this->sent++;
 	}
 	
 	
@@ -70,6 +71,24 @@ class QuotaFacadeTest extends \PHPUnit\Framework\TestCase
 		$quotas = $f->compute();
 		$this->assertEquals((object)['PHPMail'=>75], $quotas);
 		$this->assertEquals(true, $qif->cleanCalled);
+	}
+    
+	
+	public function testFacadeSentEvent()
+	{
+		$qif = new QIF();
+		$f = \Nettools\Mailing\MailSendersFacade\QuotaFacade::facadeQuotaProxiesFromJson(['Virtual'], '{"Virtual":{"name":"Virtual", "quota":"40:d"}}', 'Virtual', $qif);
+		
+		$this->assertEquals(true, is_array($f->getProxies()));
+		$this->assertEquals(1, count($f->getProxies()));
+		$this->assertEquals(\Nettools\Mailing\MailSendersFacade\Proxies\Quota::class, get_class($f->getProxies()[0]));
+		$this->assertEquals('Virtual', $f->getActiveProxy()->name);
+		
+		$ms = $f->getActiveMailSender();
+		$this->assertEquals(\Nettools\Mailing\MailSenders\Virtual::class, get_class($ms));
+		$this->assertEquals(0, $qif->sent);
+		$ms->send('recipient@here.org', 'test subject', 'mail content', 'From: sender@me.com');			
+		$this->assertEquals(1, $qif->sent);	
 	}
     
 }

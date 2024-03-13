@@ -68,7 +68,7 @@ class Facade{
 	/** 
 	 * Get the mailsender concrete object from active mailsender proxy
 	 *
-	 * @return \Nettools\Mailing\MailSenders\MailSenderIntf
+	 * @return \Nettools\Mailing\MailSenders\MailSender
 	 */
 	public function getActiveMailSender()
 	{

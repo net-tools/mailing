@@ -13,7 +13,7 @@ namespace Nettools\Mailing\MailSendersFacade\Proxies;
 
 
 
-use \Nettools\Mailing\MailSendersFacade\Quotas\MailSender;
+use \Nettools\Mailing\MailSendersFacade\Quotas\SentHandler;
 use \Nettools\Mailing\MailSendersFacade\Quotas\QuotaInterface;
 
 
@@ -26,6 +26,7 @@ class Quota extends Proxy{
 	
 	protected $qi;
 	const QUOTA = 'quota';
+	
 	
 	
 	/**
@@ -48,15 +49,17 @@ class Quota extends Proxy{
 	/**
 	 * Get a concrete MailSender instance from this mail sender proxy
 	 * 
-	 * @return \Nettools\Mailing\MailSenderQuota
+	 * @return \Nettools\Mailing\MailSenders\MailSender
 	 */
 	public function getMailSender()
 	{
 		// get concrete mailsender through parent call
 		$subc = parent::getMailSender();		
 		
-		// decorate it with a new Mailsender instance with quota handling		
-		return new \Nettools\Mailing\MailSendersFacade\Quotas\MailSender($this->name, $subc, $this->qi);
+		// set event handler
+		$subc->setSentEventHandler(new SentHandler($this->name, $this->qi));
+		
+		return $subc;
 	}
 	
 	

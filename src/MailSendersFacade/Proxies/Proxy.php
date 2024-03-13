@@ -13,6 +13,9 @@ namespace Nettools\Mailing\MailSendersFacade\Proxies;
 
 
 
+
+
+
 /**
  * Class for an email sending strategy proxy (proxies a real strategy during back-office facade stuff such as quotas, create the concrete sending strategy)
  */
@@ -49,7 +52,7 @@ class Proxy{
 	/**
 	 * Get a concrete MailSender instance from this mail sender proxy
 	 * 
-	 * @return \Nettools\Mailing\MailSenders\MailSenderIntf
+	 * @return \Nettools\Mailing\MailSenders\MailSender
 	 */
 	public function getMailSender()
 	{

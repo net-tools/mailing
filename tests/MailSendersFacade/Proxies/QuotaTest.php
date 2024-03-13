@@ -5,7 +5,6 @@ namespace Nettools\Mailing\Tests;
 
 
 use \Nettools\Mailing\MailSendersFacade\Proxies\Quota;
-use \Nettools\Mailing\MailSendersFacade\Quotas\MailSender;
 
 
 
@@ -37,7 +36,8 @@ class QuotaTest extends \PHPUnit\Framework\TestCase
 	public function testProxy()
 	{
 		$p = new Quota('PHPMail', 'PHPMail', (object)['quota'=>'40:d'], new QI());
-		$this->assertEquals(true, $p->getMailSender() instanceof \Nettools\Mailing\MailSendersFacade\Quotas\MailSender);
+		$this->assertEquals(true, $p->getMailSender() instanceof \Nettools\Mailing\MailSenders\MailSender);
+		$this->assertEquals(true, $p->getMailSender()->getSentEventHandler() instanceof \Nettools\Mailing\MailSendersFacade\Quotas\SentHandler);
 		
 		$this->assertEquals(75, $p->computeQuota());
 	}

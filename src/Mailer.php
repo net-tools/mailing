@@ -19,7 +19,7 @@ use \Nettools\Mailing\MailPieces\MailEmbedding;
 use \Nettools\Mailing\MailPieces\MailMultipart;
 use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
 use \Nettools\Mailing\MailPieces\MailTextPlainContent;
-use \Nettools\Mailing\MailSenders\MailSenderIntf;
+use \Nettools\Mailing\MailSenders\MailSender;
 use \Nettools\Core\Helpers\EncodingHelper;
 use \Nettools\Core\Helpers\FileHelper;
 
@@ -695,9 +695,9 @@ final class Mailer {
 	/**
 	 * Constructor
 	 * 
-	 * @param \Nettools\Mailing\MailSenders\MailSenderIntf $mailsender Email sending strategy
+	 * @param \Nettools\Mailing\MailSenders\MailSender $mailsender Email sending strategy
 	 */
-	public function __construct(MailSenderIntf $mailsender)
+	public function __construct(MailSender $mailsender)
 	{
 		$this->setMailSender($mailsender);
 	}
@@ -706,10 +706,10 @@ final class Mailer {
 	/** 
 	 * Set the email sending strategy
 	 * 
-	 * @param \Nettools\Mailing\MailSenders\MailSenderIntf $mailsender Email sending strategy
+	 * @param \Nettools\Mailing\MailSenders\MailSender $mailsender Email sending strategy
 	 * @return bool Returns TRUE if mail sending strategy is ready after its creation, or not 
 	 */
-	public function setMailSender(MailSenderIntf $mailsender)
+	public function setMailSender(MailSender $mailsender)
 	{
 		$this->mailsender = $mailsender;
 		
@@ -729,7 +729,7 @@ final class Mailer {
 	/**
 	 * Get current email sending strategy, or create a default one
 	 *
-	 * @return \Nettools\Mailing\MailSenders\MailSenderIntf Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
+	 * @return \Nettools\Mailing\MailSenders\MailSender Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
 	 */
 	public function getMailSender()
 	{

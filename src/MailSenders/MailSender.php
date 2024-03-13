@@ -16,15 +16,21 @@ use \Nettools\Mailing\Mailer;
 
 
 
+
+
+
 /**
  * Base class for an email sending strategy (PHP Mail function, SMTP, etc.)
  */
-abstract class MailSender implements MailSenderIntf{
+abstract class MailSender {
 
 	// [----- PROTECTED -----
 	
     /** @var string[] Array of strategy parameters */
 	protected $params = NULL;
+	
+	/** @var \Nettools\Mailing\Mailer\SentHandlers\Handler $sentEvent Event handler for `sent` notification */
+	protected $sentEvent = NULL;
 	
 	// ----- PROTECTED -----]
 	
@@ -38,6 +44,30 @@ abstract class MailSender implements MailSenderIntf{
 	function __construct($params = NULL)
 	{
 		$this->params = is_null($params)?array():$params;
+	}
+	
+	
+	
+	/**
+	 * Set event handler
+	 *
+	 * @param \Nettools\Mailing\Mailer\SentHandlers\Handler $sentEvent Event handler for `sent` notification
+	 */
+	function setSentEventHandler(?SentHandlers\Handler $sentEvent)
+	{
+		$this->sentEvent = $sentEvent;
+	}
+	
+
+	
+	/**
+	 * Get event handler
+	 *
+	 * @return \Nettools\Mailing\Mailer\SentHandlers\Handler Event handler for `sent` notification
+	 */
+	function getSentEventHandler()
+	{
+		return $this->sentEvent;
 	}
 	
 
@@ -112,6 +142,21 @@ abstract class MailSender implements MailSenderIntf{
 	
 	
 	/**
+     * `Sent` event notify
+     *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $headers Email headers
+     */
+	function handleSentEvent($to, $subject, $headers)
+	{
+		if ( $this->sentEvent )
+			$this->sentEvent->notify($to, $subject, $headers);
+	}
+	
+	
+	
+	/**
      * Add the To and Subject headers to the headers string
      * 
      * @param string $to Recipient
@@ -179,6 +224,9 @@ abstract class MailSender implements MailSenderIntf{
 			
 			// send
 			$this->handleSend($to, $subject, $mail, $headers);
+			
+			// event
+			$this->handleSentEvent($to, $subject, $headers);
 		}
 		else
 			throw new \Nettools\Mailing\Exception(__CLASS__ . ' not ready for sending email');

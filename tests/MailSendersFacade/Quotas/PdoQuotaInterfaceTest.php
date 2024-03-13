@@ -5,7 +5,7 @@ namespace Nettools\Mailing\Tests;
 
 
 use \Nettools\Mailing\MailSendersFacade\Quotas\QuotaInterface;
-use \Nettools\Mailing\MailSenders\Virtual;
+
 
 
 

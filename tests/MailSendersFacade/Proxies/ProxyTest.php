@@ -2,33 +2,11 @@
 
 namespace Nettools\Mailing\MailSenders
 {
-	class TestMailSender implements \Nettools\Mailing\MailSenders\MailSenderIntf
+	class TestMailSender extends \Nettools\Mailing\MailSenders\MailSender
 	{
-		public $parameters;
-		public $name;
-		
-		
-
-		function send($to, $subject, $mail, $headers)
+		function doSend($to, $subject, $mail, $headers)
 		{
-		}
-
-
-		function ready()
-		{
-			return true;
-		}
-
-
-		function destruct()
-		{
-		}
-
-
-
-    	function __construct($params = NULL)
-		{
-			$this->parameters = $params;
+			
 		}
 	}
 }
@@ -37,9 +15,9 @@ namespace Nettools\Mailing\MailSenders
 
 namespace Nettools\Mailing\Tests{
 	
-use \Nettools\Mailing\MailSendersFacade\Proxies\Proxy;
-use \Nettools\Mailing\MailSender;
+	use \Nettools\Mailing\MailSendersFacade\Proxies\Proxy;
 
+	
 
 	class ProxyTest extends \PHPUnit\Framework\TestCase
 	{
@@ -53,8 +31,7 @@ use \Nettools\Mailing\MailSender;
 			$this->assertEquals($params, $p->params);
 
 			$ms = $p->getMailSender();
-			$this->assertEquals(true, $ms instanceof \Nettools\Mailing\MailSenders\MailSenderIntf);
-			$this->assertEquals(['k1'=>'value1'], $ms->parameters);
+			$this->assertEquals(true, $ms instanceof \Nettools\Mailing\MailSenders\MailSender);
 		}
 		
 		

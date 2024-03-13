@@ -17,7 +17,7 @@ namespace Nettools\Mailing\MailSendersFacade\Quotas;
 /**
  * Event handler for `sent` event of a MailSender strategy
  */
-class SentHandler extends Nettools\Mailing\MailSenders\SentHandlers\Handler
+class SentHandler extends \Nettools\Mailing\MailSenders\SentHandlers\Handler
 {
 	protected $qi;
 	protected $name;

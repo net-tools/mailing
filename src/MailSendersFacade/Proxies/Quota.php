@@ -57,7 +57,7 @@ class Quota extends Proxy{
 		$subc = parent::getMailSender();		
 		
 		// set event handler
-		$subc->setSentEventHandler(new SentHandler($this->name, $this->qi));
+		$subc->addSentEventHandler(new SentHandler($this->name, $this->qi));
 		
 		return $subc;
 	}

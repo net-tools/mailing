@@ -29,8 +29,8 @@ abstract class MailSender {
     /** @var string[] Array of strategy parameters */
 	protected $params = NULL;
 	
-	/** @var \Nettools\Mailing\Mailer\SentHandlers\Handler $sentEvent Event handler for `sent` notification */
-	protected $sentEvent = NULL;
+	/** @var \Nettools\Mailing\Mailer\SentHandlers\Handler[] $sentEvent Event handler list for `sent` notification */
+	protected $sentEvents = array();
 	
 	// ----- PROTECTED -----]
 	
@@ -49,25 +49,37 @@ abstract class MailSender {
 	
 	
 	/**
-	 * Set event handler
+	 * Register an event handler
 	 *
 	 * @param \Nettools\Mailing\Mailer\SentHandlers\Handler $sentEvent Event handler for `sent` notification
 	 */
-	function setSentEventHandler(?SentHandlers\Handler $sentEvent)
+	function addSentEventHandler(SentHandlers\Handler $sentEvent)
 	{
-		$this->sentEvent = $sentEvent;
+		$this->sentEvents[] = $sentEvent;
 	}
 	
 
 	
 	/**
-	 * Get event handler
+	 * Unregister an event handler
 	 *
-	 * @return \Nettools\Mailing\Mailer\SentHandlers\Handler Event handler for `sent` notification
+	 * @param \Nettools\Mailing\Mailer\SentHandlers\Handler $sentEvent Event handler for `sent` notification
 	 */
-	function getSentEventHandler()
+	function removeSentEventHandler(SentHandlers\Handler $evt)
 	{
-		return $this->sentEvent;
+		$this->sentEvents = array_filter($this->sentEvents, function($h) use ($evt) { return $h != $evt; });
+	}
+	
+
+	
+	/**
+	 * Get event handler list
+	 *
+	 * @return \Nettools\Mailing\Mailer\SentHandlers\Handler[] Event handler list
+	 */
+	function getSentEventHandlers()
+	{
+		return $this->sentEvents;
 	}
 	
 
@@ -156,8 +168,10 @@ abstract class MailSender {
      */
 	function handleSentEvent($to, $subject, $headers)
 	{
-		if ( $this->sentEvent )
-			$this->sentEvent->notify($to, $subject, $headers);
+		$evts = $this->getSentEventHandlers();
+		
+		foreach ( $evts as $evt )
+			$evt->notify($to, $subject, $headers);
 	}
 	
 	

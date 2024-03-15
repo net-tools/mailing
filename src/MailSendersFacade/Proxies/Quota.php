@@ -67,7 +67,7 @@ class Quota extends Proxy{
 	/** 
 	 * Compute quotas
 	 *
-	 * @return int Returns the percentage used of quota
+	 * @return object Returns an object litteral with `pct` (percentage of quota usage), `value` (number of items), `quota` (max number of items allow for quota) and `period` (quota per day[d] or hour[h]) properties 
 	 */
 	public function computeQuota()
 	{
@@ -95,17 +95,17 @@ class Quota extends Proxy{
 					
 				default:
 					// quota period is not defined
-					return 0;
+					return (object)[ 'pct' => 0, 'value' => 0, 'quota' => 0, 'period' => ''];
 			}
 			
 
 			// computing quota through QuotaInterface
 			$q = $this->qi->compute($this->name, $dt1, $dt2);
-			return floor(100*$q/$quota);
+			return (object)[ 'pct' => floor(100*$q/$quota), 'value' => $q, 'quota' => $quota, 'period' => $period];
 		}
 		
 		
-		return 0;
+		return (object)[ 'pct' => 0, 'value' => 0, 'quota' => 0, 'period' => ''];
 	}
 }
 

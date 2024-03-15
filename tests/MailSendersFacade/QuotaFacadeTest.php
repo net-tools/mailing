@@ -53,7 +53,7 @@ class QuotaFacadeTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('PHPMail', $f->getActiveProxy()->name);
 	
 		$quotas = $f->compute();
-		$this->assertEquals((object)['PHPMail'=>75], $quotas);
+		$this->assertEquals((object)['PHPMail'=> (object)[ 'pct' => 75, 'value' => 30, 'quota' => 40, 'period' => 'd']], $quotas);
 		$this->assertEquals(true, $qif->cleanCalled);
 	}
     
@@ -69,7 +69,7 @@ class QuotaFacadeTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('PHPMail', $f->getActiveProxy()->name);
 	
 		$quotas = $f->compute();
-		$this->assertEquals((object)['PHPMail'=>75], $quotas);
+		$this->assertEquals((object)['PHPMail'=> (object)[ 'pct' => 75, 'value' => 30, 'quota' => 40, 'period' => 'd']], $quotas);
 		$this->assertEquals(true, $qif->cleanCalled);
 	}
     
@@ -89,6 +89,8 @@ class QuotaFacadeTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(0, $qif->sent);
 		$ms->send('recipient@here.org', 'test subject', 'mail content', 'From: sender@me.com');			
 		$this->assertEquals(1, $qif->sent);	
+		$ms->send('recipient@here.org', 'test subject', 'mail content', "From: sender@me.com\r\nBcc: bcc@here.org");
+		$this->assertEquals(1+2, $qif->sent);	
 	}
     
 }

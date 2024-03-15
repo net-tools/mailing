@@ -98,6 +98,25 @@ abstract class MailSender {
 
 	
 	/**
+     * Send the email to a recipient and notify about sent event
+     *
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+     */
+	function sendTo($to, $subject, $mail, $headers)
+	{
+		// send the email
+		$this->doSend($to, $subject, $mail, $headers);
+		
+		// event : 1 mail sent
+		$this->handleSentEvent($to, $subject, $headers);
+	}
+	
+
+	
+	/**
      * Handle Bcc 
      *
      * With a BCC header, we must do specific things. SMTP does not handle Bcc. When having a Bcc header, we must send 
@@ -114,26 +133,23 @@ abstract class MailSender {
 	{
 		if ( $bcc = Mailer::getHeader($headers, 'Bcc') )
 		{
-			// remove Bcc and To header (previously set)
+			// remove Bcc header
 			$headers = Mailer::removeHeader($headers, 'Bcc');
-			//$htmp = Mailer::removeHeader($headers, 'To');
 			
 			
-			// for all Bcc recipients, send them a 'normal' email with their email in a To header
+			// For all Bcc recipients, send a copy of the email ; 
+			//
+			// 1. We remind that bcc recipients are regular recipients ; `to` and `bcc` headers are only for information purposes
+			// 2. If we deal with SMTP, it's the RCPT-TO smtp command that sets the real recipient. This is the same as the name on the enveloppe (RCPT-TO) and the
+			// name on the letter inside the enveloppe (To and Bcc headers, that are not seen by mail carriers)
+			// 3. Bcc headers are often removed by MTAs ; some, like Gmail, don't remove them. So we set the Bcc header.
 			$bcc_to = explode(',', $bcc);
 			foreach ( $bcc_to as $bcc )
 			{
-				// add To header with bcc recipient
-				//$h = Mailer::addHeader($htmp, "To: " . trim($bcc));
-			
-				// envoyer avec BCC comme destinataire ; headers est privé de son champ BCC
+				// add bcc recipient one by one
 				$h = Mailer::addHeader($headers, "Bcc: " . trim($bcc));
-				$this->doSend(trim($bcc), $subject, $mail, $h);
+				$this->sendTo(trim($bcc), $subject, $mail, $h);
 			}
-			
-			
-			// revert original To header
-			//$headers = Mailer::addHeader($htmp, "To: " . trim($to));
 		}
 	}
 
@@ -154,7 +170,7 @@ abstract class MailSender {
 		$this->handleBcc($to, $subject, $mail, $headers);
 		
 		// send the email
-		$this->doSend($to, $subject, $mail, $headers);
+		$this->sendTo($to, $subject, $mail, $headers);
 	}
 	
 	
@@ -244,14 +260,12 @@ abstract class MailSender {
 			
 			// send
 			$this->handleSend($to, $subject, $mail, $headers);
-			
-			// event
-			$this->handleSentEvent($to, $subject, $headers);
 		}
 		else
 			throw new \Nettools\Mailing\Exception(__CLASS__ . ' not ready for sending email');
 	}	
 
+	
 
 	/**
      * Is the sending strategy ready (all required parameters set) ?
@@ -259,6 +273,7 @@ abstract class MailSender {
      * @return bool Returns TRUE if strategy if ready
      */
 	function ready() { return true; }
+	
 	
 	
 	/**

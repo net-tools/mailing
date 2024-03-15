@@ -48,7 +48,7 @@ class QuotaFacade extends Facade{
 	/** 
 	 * Compute quotas for all mailsenders proxies
 	 * 
-	 * @return object Returns an object litteral whose keys are mailsender proxy names and values the quota (%) for each proxy
+	 * @return object Returns an object litteral whose keys are mailsender proxy names and values object litterals for quota values `pct`, `value`, `quota`, `period` properties)
 	 */
 	public function compute()
 	{

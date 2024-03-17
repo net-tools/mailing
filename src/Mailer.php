@@ -361,7 +361,7 @@ final class Mailer {
 		{
 			// if begin of line is a space or tab, this is a folded header ; concatenate it to the previous header line read
 			if ( preg_match("/^[ ]|\t/", $line) && $last )
-				$pheaders[$last] .= "\r\n " . $line;
+				$pheaders[$last] .= "\r\n" . $line;
 			else
 			{
 				// default case : explode header name/value

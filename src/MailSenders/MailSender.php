@@ -147,7 +147,7 @@ abstract class MailSender {
 			foreach ( $bcc_to as $bcc )
 			{
 				// add bcc recipient one by one
-				$h = Mailer::addHeader($headers, "Bcc: " . trim($bcc));
+				$h = Mailer::addHeader($headers, "Bcc: " . mb_encode_mimeheader(trim($bcc)));
 				$this->sendTo(trim($bcc), $subject, $mail, $h);
 			}
 		}
@@ -242,6 +242,20 @@ abstract class MailSender {
 	
 	
 	/**
+     * Handle headers encoding (to/subject) and update arguments
+     * 
+     * @param string $to Recipient
+     * @param string $subject Subject ; must be encoded if necessary
+     */
+	function handleHeadersEncoding(&$to, &$subject)
+	{
+		$to = mb_encode_mimeheader($to);
+		$subject = mb_encode_mimeheader($subject);
+	}
+	
+	
+	
+	/**
      * Send the email
      *
      * @param string $to Recipient
@@ -255,6 +269,9 @@ abstract class MailSender {
 		// if init OK
 		if ( $this->ready() )
 		{
+			// handle encoding for `to` and `subject` headers and update $to and $subject
+			$this->handleHeadersEncoding($to, $subject);
+			
 			// handle headers processing
 			$this->handleHeaders($to, $subject, $mail, $headers);
 			

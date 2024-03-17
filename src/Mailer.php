@@ -493,18 +493,6 @@ final class Mailer {
 
 
 	/**
-	 * Encode a subject to UTF8 + BASE64
-	 *
-	 * @param string $sub Subject to encode
-	 * @return string Subject encoded with UTF8 charset and BASE64 transfer-encoding
-	 */
-	public static function encodeSubject($sub)
-	{
-		return '=?utf-8?B?'.base64_encode($sub).'?=';
-	}
-	
-	
-	/**
 	 * Patch the email after it has been constructed.
 	 * 
 	 * May be used to add tracking data to links after building process.
@@ -745,7 +733,7 @@ final class Mailer {
 	 *
 	 * @param string $content String with content (HTML or plain text)
 	 * @param string $from Email sender
-	 * @param string $to Email recipient
+	 * @param string $to Email recipient ; if multiple recipients, use a comma "," between addresses
 	 * @param string $subject Email subject
 	 * @param string[] $attachments Array of filepaths
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
@@ -788,7 +776,7 @@ final class Mailer {
 	 *
 	 * @param MailPieces\MailContent $mail Mail object to send
 	 * @param string $from Email sender
-	 * @param string $to Email recipient
+	 * @param string $to Email recipient ; if multiple recipients, use a comma "," between addresses
 	 * @param string $subject Email subject
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
 	 * @throws \Nettools\Mailing\Exception
@@ -805,7 +793,7 @@ final class Mailer {
 	/**
 	 * Send raw mail
 	 *
-	 * @param string $to Email recipient
+	 * @param string $to Email recipient ; if multiple recipients, use a comma "," between addresses
 	 * @param string $subject Email subject
 	 * @param string $mail Email body as text
 	 * @param string $headers Headers string

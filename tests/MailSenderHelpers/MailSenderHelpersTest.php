@@ -142,7 +142,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"To: user-to@php.com\r\n" .
-				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Subject: test subject\r\n" .
 				"Delivered-To: bcc-user@php.com\r\n" .
 				"\r\n" . 
 				"--" . $content->getSeparator() . "\r\n",
@@ -157,7 +157,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertStringContainsString(
 				"To: user-to@php.com\r\n" .
-				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Subject: test subject\r\n" .
 				"Bcc: bcc-user@php.com\r\n" . 
 				"Delivered-To: bcc-user@php.com\r\n" .
 				"\r\n" . 
@@ -181,7 +181,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		$this->assertStringContainsString(
 				"To: user-to@php.com\r\n" .
-				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Subject: test subject\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" . 
 				"--" . $content->getSeparator() . "\r\n",
@@ -204,7 +204,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertStringContainsString(
 				"To: override-user@php.com\r\n" .
-				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Subject: test subject\r\n" .
 				"Bcc: bcc-user@php.com\r\n" . 
 				"Delivered-To: bcc-user@php.com\r\n" .
 				"\r\n" .
@@ -222,7 +222,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 			
 		$this->assertStringContainsString(
 				"To: override-user@php.com\r\n" .
-				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Subject: test subject\r\n" .
 				"Delivered-To: override-user@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n",
@@ -269,7 +269,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertStringContainsString(
 				"To: user-to@php.com\r\n" .
-				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Subject: test subject\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n",
@@ -335,7 +335,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"$mid\r\n" .
 				"$dt\r\n" .
 				"To: user-to@php.com\r\n" .
-				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Subject: test subject\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n" .
@@ -427,7 +427,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"$mid\r\n" .
 				"$dt\r\n" .
 				"To: user-to@php.com\r\n" .
-				"Subject: " . Mailer::encodeSubject('test subject') . "\r\n" .
+				"Subject: test subject\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .
 				"\r\n" .
 				"--" . $content->getSeparator() . "\r\n" .

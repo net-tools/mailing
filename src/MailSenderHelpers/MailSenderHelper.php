@@ -90,7 +90,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 		$this->mail = $mail;
 		$this->mailContentType = $mailContentType;
 		$this->from = $from;
-		$this->subject = $subject ? Mailer::encodeSubject($subject) : NULL;
+		$this->subject = $subject ? $subject : NULL;
 
 		
 		// optionnal parameters

@@ -45,10 +45,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('Nettools\Core\Containers\Cache', Mailer::getEmbeddingsCache());
         
         
-        // encodeSubject
-		$this->assertEquals('=?utf-8?B?'.base64_encode('Title with accents : é').'?=', Mailer::encodeSubject('Title with accents : é'));
-
-		
         // htmlMinify
 		$this->assertEquals('ab cd ef gh ij', Mailer::htmlMinify("ab\r\ncd   ef\tgh\nij"));
 		

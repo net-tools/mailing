@@ -286,7 +286,7 @@ abstract class MailSender {
 	function handleHeadersEncoding(&$to, &$subject)
 	{
 		$to = $this->encodeAddress($to);
-		$subject = $this->encodeAddress($subject);
+		$subject = mb_encode_mimeheader($subject);
 	}
 	
 	

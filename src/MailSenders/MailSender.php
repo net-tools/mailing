@@ -250,7 +250,29 @@ abstract class MailSender {
 	function handleFromHeaderEncoding(&$headers)
 	{
 		$h = mb_encode_mimeheader(Mailer::getHeader($headers, 'From'));
-		$headers = Mailer::addHeader($headers, "From: $h");
+		$headers = Mailer::addHeader($headers, "From: " . $this->encodeAddress($h));
+	}
+	
+	
+	
+	/**
+	 * Encode address
+	 * 
+	 * @param string $to Email address in format `friendly name <recipient@domain.tld>`
+	 * @return string Email address string encoded
+	 */
+	function encodeAddress($to)
+	{
+		// if email address in format "friendlyname <address>"
+		if ( preg_match("/(.*)<(.*)>/", $to, $regs) )
+		{
+			$friendly = trim($regs[1]);
+			$addr = trim($regs[2]);
+			
+			return mb_encode_mimeheader($friendly) . " <$addr>";
+		}
+		else
+			return $to;
 	}
 	
 	
@@ -263,8 +285,8 @@ abstract class MailSender {
      */
 	function handleHeadersEncoding(&$to, &$subject)
 	{
-		$to = mb_encode_mimeheader($to);
-		$subject = mb_encode_mimeheader($subject);
+		$to = $this->encodeAddress($to);
+		$subject = $this->encodeAddress($subject);
 	}
 	
 	

@@ -404,6 +404,64 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
     
     
+    public function testEncoding()
+    {
+		$ml = new Mailer(new Virtual());
+
+        $obj = Mailer::createText('textplain content');
+		$ml->sendmail($obj, 'from <unit-test@php.com>', 'to <unit-test-recipient@php.com>', 'Mail subject', false);
+		$sent = $ml->getMailSender()->getSent();
+		
+		// guess Message-ID and Date headers
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
+		$mid = $regs[0];
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
+		$dt = $regs[0];
+
+		$this->assertStringContainsString( 
+				"From: from <unit-test@php.com>\r\n" .
+				"$mid\r\n" .
+				"$dt\r\n" .
+				"To: to <unit-test-recipient@php.com>\r\n" .
+				"Subject: Mail subject\r\n" .
+				"Delivered-To: unit-test-recipient@php.com\r\n",
+            
+                $sent[0]
+			);
+    }
+    
+    
+    public function testEncoding2()
+    {
+		$ml = new Mailer(new Virtual());
+
+        $obj = Mailer::createText('textplain content');
+		$ml->sendmail($obj, 'é <unit-test@php.com>', 'à <unit-test-recipient@php.com>', 'Mail subject with accents éè inside the string', false);
+		$sent = $ml->getMailSender()->getSent();
+		
+		// guess Message-ID and Date headers
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
+		$mid = $regs[0];
+		$regs = [];
+		$this->assertEquals(1, preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
+		$dt = $regs[0];
+
+		$this->assertStringContainsString( 
+				"From: =?UTF-8?B?w6k=?= <unit-test@php.com>\r\n" .
+				"$mid\r\n" .
+				"$dt\r\n" .
+				"To: =?UTF-8?B?w6A=?= <unit-test-recipient@php.com>\r\n" .
+				"Subject: Mail subject with accents =?UTF-8?B?w6nDqCBpbnNpZGUgdGhlIHN0cmluZw==?=\r\n" .
+				"Delivered-To: unit-test-recipient@php.com\r\n",
+            
+                $sent[0]
+			);
+    }
+    
+    
     public function testSendmail_raw()
     {
 		$obj = new MailTextPlainContent('textplain content');

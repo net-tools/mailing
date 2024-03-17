@@ -178,8 +178,8 @@ abstract class MailSender {
 	/**
      * `Sent` event notify
      *
-     * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $to Recipient ; must be already encoded if required
+     * @param string $subject Subject ; must be already encoded if required
      * @param string $headers Email headers
      */
 	function handleSentEvent($to, $subject, $headers)
@@ -187,7 +187,7 @@ abstract class MailSender {
 		$evts = $this->getSentEventHandlers();
 		
 		foreach ( $evts as $evt )
-			$evt->notify($to, $subject, $headers);
+			$evt->notify(mb_decode_mimeheader($to), mb_decode_mimeheader($subject), $headers);
 	}
 	
 	
@@ -195,8 +195,8 @@ abstract class MailSender {
 	/**
      * Add the To and Subject headers to the headers string
      * 
-     * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $to Recipient ; must be already encoded if required
+     * @param string $subject Subject ; must be encoded if required
      * @param string $mail String containing the email data
      * @param string $headers Email headers
      */
@@ -211,8 +211,8 @@ abstract class MailSender {
 	/**
      * Handle priority ; we always set high priorty at the moment
      * 
-     * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $to Recipient ; must be already encoded if required
+     * @param string $subject Subject ; must be already encoded if required
      * @param string $mail String containing the email data
      * @param string $headers Email headers
      */
@@ -228,15 +228,20 @@ abstract class MailSender {
 	/**
      * Handle headers modifications (to/subject/priority)
      * 
-     * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $to Recipient ; must be already encoded if required
+     * @param string $subject Subject ; must be already encoded if required
      * @param string $mail String containing the email data
      * @param string $headers Email headers
      */
 	function handleHeaders($to, $subject, $mail, &$headers)
 	{
+		// encode From header if required
 		$this->handleFromHeaderEncoding($headers);
+		
+		// add To and Subject headers
 		$this->handleHeaders_ToSubject($to, $subject, $mail, $headers);
+		
+		// handle priority headers
 		$this->handleHeaders_Priority($to, $subject, $mail, $headers);
 	}
 	
@@ -283,7 +288,7 @@ abstract class MailSender {
      * @param string $to Recipient
      * @param string $subject Subject ; must be encoded if necessary
      */
-	function handleHeadersEncoding(&$to, &$subject)
+	function handleToSubjectEncoding(&$to, &$subject)
 	{
 		$to = $this->encodeAddress($to);
 		$subject = mb_encode_mimeheader($subject);
@@ -325,7 +330,7 @@ abstract class MailSender {
 			$torecipient = $to;
 			
 			// handle encoding for `to` and `subject` headers and update $to and $subject
-			$this->handleHeadersEncoding($to, $subject);
+			$this->handleToSubjectEncoding($to, $subject);
 			
 			// handle headers processing
 			$this->handleHeaders($to, $subject, $mail, $headers);

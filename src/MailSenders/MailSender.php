@@ -108,7 +108,7 @@ abstract class MailSender {
 	function sendTo($to, $subject, $mail, $headers)
 	{
 		// send the email
-		$this->doSend($to, $subject, $mail, $headers);
+		$this->doSend($this->extractRecipient($to), $subject, $mail, $headers);
 		
 		// event : 1 mail sent
 		$this->handleSentEvent($to, $subject, $headers);
@@ -270,6 +270,22 @@ abstract class MailSender {
 	
 	
 	/**
+	 * From a mail recipient that may be formatted as `"friendly name" <recipient@domain.tld>`, extract email part
+	 *
+	 * @param string $to Full email recipient, including friendy name
+	 * @return string Returns email recipient
+	 */
+	function extractRecipient($to)
+	{
+		if ( preg_match("/<(.*)>/", $to, $regs) )
+			return $regs[1];
+		else
+			return $to;
+	}
+	
+	
+	
+	/**
      * Send the email
      *
      * @param string $to Recipient
@@ -283,6 +299,9 @@ abstract class MailSender {
 		// if init OK
 		if ( $this->ready() )
 		{
+			// backup $torecipient before it's encoded
+			$torecipient = $to;
+			
 			// handle encoding for `to` and `subject` headers and update $to and $subject
 			$this->handleHeadersEncoding($to, $subject);
 			
@@ -290,7 +309,7 @@ abstract class MailSender {
 			$this->handleHeaders($to, $subject, $mail, $headers);
 			
 			// send
-			$this->handleSend($to, $subject, $mail, $headers);
+			$this->handleSend($torecipient, $subject, $mail, $headers);
 		}
 		else
 			throw new \Nettools\Mailing\Exception(__CLASS__ . ' not ready for sending email');

@@ -226,9 +226,9 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 		
 		
 		// resend a mail
-		$q->resend($mailer, 0, null, 'new_recipient@here.com');
+		$q->resend($mailer, 0, null, 'newrecipient@here.com');
 		$this->assertEquals(3, count($ms->getSent()));
-		$this->assertStringContainsString('new_recipient@here.com', $ms->getSent()[2]);
+		$this->assertStringContainsString('newrecipient@here.com', $ms->getSent()[2]);
 		
 		
 		$q->delete();

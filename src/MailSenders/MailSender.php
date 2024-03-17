@@ -249,8 +249,8 @@ abstract class MailSender {
      */
 	function handleFromHeaderEncoding(&$headers)
 	{
-		$h = mb_encode_mimeheader(Mailer::getHeader($headers, 'From'));
-		$headers = Mailer::addHeader($headers, "From: " . $this->encodeAddress($h));
+		$h = $this->encodeAddress(Mailer::getHeader($headers, 'From'));
+		$headers = Mailer::addHeader($headers, "From: $h");
 	}
 	
 	

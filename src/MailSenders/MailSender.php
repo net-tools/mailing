@@ -235,8 +235,22 @@ abstract class MailSender {
      */
 	function handleHeaders($to, $subject, $mail, &$headers)
 	{
+		$this->handleFromHeaderEncoding($headers);
 		$this->handleHeaders_ToSubject($to, $subject, $mail, $headers);
 		$this->handleHeaders_Priority($to, $subject, $mail, $headers);
+	}
+	
+	
+	
+	/**
+     * Handle from header encoding
+     * 
+     * @param string $headers Email headers
+     */
+	function handleFromHeaderEncoding(&$headers)
+	{
+		$h = mb_encode_mimeheader(Mailer::getHeader($headers, 'From'));
+		$headers = Mailer::addHeader($headers, "From: $h");
 	}
 	
 	

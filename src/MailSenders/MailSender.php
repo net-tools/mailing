@@ -147,7 +147,7 @@ abstract class MailSender {
 			foreach ( $bcc_to as $bcc )
 			{
 				// add bcc recipient one by one
-				$h = Mailer::addHeader($headers, "Bcc: " . mb_encode_mimeheader(trim($bcc)));
+				$h = Mailer::addHeader($headers, "Bcc: " . $this->encodeAddress(trim($bcc)));
 				$this->sendTo(trim($bcc), $subject, $mail, $h);
 			}
 		}

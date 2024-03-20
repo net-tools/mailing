@@ -24,7 +24,7 @@ class MailReaderTest extends \PHPUnit\Framework\TestCase
 		
 		$this->assertEquals(
 			array(
-				'Content-Type' 	=> "multipart/alternative;\r\n	boundary=\"----=_Part_13585_2454228.1420641166034",
+				'Content-Type' 	=> "multipart/alternative; boundary=\"----=_Part_13585_2454228.1420641166034\"",
 				'From'			=> 'sent from éric <from_eric@here.com>',
 				'Subject'		=> 'This is a subject with accents éà'
 			),

@@ -1,6 +1,6 @@
 <?php
 /**
- * Mailer
+ * MailReaderEngine
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -12,50 +12,28 @@
 namespace Nettools\Mailing;
 
 
-use \Nettools\Mailing\MailPieces\MailTextPlainContent;
-use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
-use \Nettools\Mailing\MailPieces\MailMultipart;
-use \Nettools\Mailing\MailPieces\MailContent;
-use \Nettools\Mailing\MailPieces\MailAttachment;
-use \Nettools\Mailing\MailPieces\MailEmbedding;
 
 
 
 
 /**
- * Class to parse an EML file et get a MailContent object
+ * Class to parse an email content 
  */
-class EmlReader
+class MailReaderEngine
 {
-	/** @var string Last error encountered **/
-	static public $lastError = NULL;
-	
-	
-	/** 
-	 * Sets error message
-	 *
-	 * @param string $msg Error message
-	 */
-	static protected function _error($msg)
-	{
-		self::$lastError = $msg;
-		return NULL;
-	}
-	
-	
 	/**
 	 * Clear temp files used for embeddings and attachments
 	 * 
 	 * @param MailPieces\MailContent $mail Mail object to process
 	 */
-	static function destroy(MailContent $mail)
+	static function clean(MailContent $mail)
 	{
 		// traiter par récursion
 		if ( $mail instanceof \Nettools\Mailing\MailPieces\MailMultipart )
 		{
 			$partsl = $mail->getCount();
 			for ( $i = 0 ; $i < $partsl ; $i++ )
-				self::destroy($mail->getPart($i));
+				self::clean($mail->getPart($i));
 		}
 		
 		
@@ -67,6 +45,7 @@ class EmlReader
 				unlink($f);
 		}
 	}
+	
 	
 	
 	/**
@@ -113,12 +92,14 @@ class EmlReader
 	}
 	
 	
+	
 	/**
 	* Decode body with content-transfer-encoding (usually, quoted printable or base64)
 	* 
 	* @param string $body Content to decode
 	* @param string $encoding Content-Transfer-Encoding for the `$body`
-	* @return string|NULL Body decoded or NULL if an error occured
+	* @return string Body decoded 
+	* @throws MailReaderError
 	*/
 	static function decodeBody($body, $encoding)
 	{
@@ -141,8 +122,10 @@ class EmlReader
 				return base64_decode(/*str_replace('_', '/', str_replace('-', '+', */$body);
 		}
 		
-		return self::_error("Content-Transfer-Encoding '$encoding' not supported");
+		
+		throw new MailReaderError("Content-Transfer-Encoding '$encoding' not supported");
 	}
+	
 	
 	
 	/** 
@@ -150,19 +133,21 @@ class EmlReader
 	 * 
 	 * @param string $body Body string to decode
 	 * @param string $charset Charset to use to decode
-	 * @return string|NULL Body decoded or NULL if an error occured
+	 * @return string Body decoded
+     * @throws MailReaderError
 	 */
 	static function decodeCharset($body, $charset)
 	{
 		if ( !$charset ) 
 			return $body;
+		
 
 		// convert to utf8
 		if ( strtolower($charset) != 'utf-8' ) 		
 		{	
 			$s = iconv(strtolower($charset), 'utf-8', $body);
 			if ( $s === FALSE )
-				return self::_error("Decoding from charset '$charset' to UTF-8 error.");
+				throw new MailReaderError("Decoding from charset '$charset' to UTF-8 error.");
 			else
 				return $s;
 		}
@@ -171,12 +156,14 @@ class EmlReader
 	}
 	
 	
+	
 	/** 
 	 * Decode body content according to it's content-type to UTF-8
 	 *
 	 * @param string $body Body to decode
 	 * @param string $ct Content-Type header from which the charset will be extracted and use for decoding
-	 * @return string|NULL The body with charset decoded to UTF-8 or NULL if an error occured
+	 * @return string The body with charset decoded to UTF-8 
+	 * @throws MailReaderError
 	 */
 	static function decodeCharsetFromContentTypeHeader($body, $ct)
 	{
@@ -186,6 +173,7 @@ class EmlReader
 		// decode
 		return self::decodeCharset($body, $charset);
 	}
+	
 	
 	
 	/** 
@@ -201,7 +189,8 @@ class EmlReader
 	 * @param string $body Body to decode
 	 * @param string[] $headers Headers array
 	 * @param string $contentType Content-Type header value
-	 * @return MailPieces\MailContent|NULL Returns the part decoded to a MailContent instance or NULL if an error occured
+	 * @return MailPieces\MailContent Returns the part decoded to a MailContent instance 
+	 * @throws MailReaderError	 
 	 */
 	static function decodeContent($body, $headers, $contentType)
 	{
@@ -228,7 +217,8 @@ class EmlReader
 					return new MailTextHtmlContent($body);
 			}
 			
-			return self::_error("Content-type '$contentType' not supported.");
+			
+			throw new MailReaderError("Content-type '$contentType' not supported.");
 		}
 		else
 			// if attachment or embedding
@@ -247,14 +237,15 @@ class EmlReader
 					// if embedding, extract content-ID
 					$cid = self::decodeHeader($headers['Content-ID']);
 					if ( !$cid )
-						return self::_error('Content-ID not found.');
+						throw new MailReaderError('Content-ID not found.');
 						
 					return new MailEmbedding($fname, $contentType, trim(str_replace(array('<', '>', '"'), '', $cid)), true);
 				}
 			}
 			else
-				return self::_error("Body with Content-Disposition '$contentDisposition' not supported.");
+				throw new MailReaderError("Body with Content-Disposition '$contentDisposition' not supported.");
 	}
+	
 	
 	
 	/**
@@ -263,7 +254,8 @@ class EmlReader
 	 * @param string $ct Content-Type header value
 	 * @param string[] $headers Headers array
 	 * @param string $body Body to decode
-	 * @return MailPieces\MailContent|NULL A MailContent object constructed or NULL if an error occured
+	 * @return MailPieces\MailContent
+  	 * @throws MailReaderError
 	 */
 	static function fromContentType($ct, $headers, $body)
 	{
@@ -278,13 +270,13 @@ class EmlReader
 			case 'text/html' : 
 				// decode body text content depending on its transfer-encoding header
 				$decodedBody = self::decodeBody($body, self::decodeHeader($headers['Content-Transfer-Encoding']));
-				if (!$decodedBody )
-					return NULL;
+/*				if (!$decodedBody )
+					return NULL;*/
 					
 				// maybe we need to decode the charset to utf-8
 				$decodedBody = self::decodeCharsetFromContentTypeHeader($decodedBody, $ct);
-				if (!$decodedBody )
-					return NULL;
+/*				if (!$decodedBody )
+					return NULL;*/
 
 				// get the MailContent object with extracted/converted body, headers and contenttype
 				return self::decodeContent($decodedBody, $headers, $contentType);
@@ -297,7 +289,7 @@ class EmlReader
 				// if multipart, we must read the boundary parameter
 				$boundary = self::decodeHeader($ct, 'boundary');
 				if ( !$boundary )
-					return self::_error("Error when extracting boundary from '$contentType'.");
+					throw new MailReaderError("Error when extracting boundary from '$contentType'.");
 				
 				
                 // decoding the multipart ; when splitting, we get 3 values (even if the multipart has 2 parts, a content and a attachment, for example), because
@@ -306,7 +298,7 @@ class EmlReader
                 // newline (except if last separator ending with --). We know that the newline can be \n or \r\n
 				$parts = preg_split("/--{$boundary}(--)?[\\r]?[\\n]?/", $body);
 				if ( count($parts) < 3 )
-					return self::_error("Decoding of '$contentType' is impossible because of the unsupported parts number (1).");
+					throw new MailReaderError("Decoding of '$contentType' is impossible because of the unsupported parts number (1).");
 
 				// skip first empty
 				$parts = array_slice($parts, 1);
@@ -321,16 +313,16 @@ class EmlReader
 						break;
 					}
 						
-					// decode this part ; detect an error and break process if an error occured
-					$partObject = EmlReader::fromString($part);
-					if ( !$partObject )
-						return NULL;
+					// decode this part
+					$partObject = MailReader::fromString($part)->email;
+					/*if ( !$partObject )
+						return NULL;*/
 						
 					$parts[$k] = $partObject;
 				}
 
 				if ( count($parts) < 2 )
-					return self::_error("Decoding of '$contentType' is impossible because of the unsupported parts number (2).");
+					throw new MailReaderError("Decoding of '$contentType' is impossible because of the unsupported parts number (2).");
 					
 				return MailMultipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
 					
@@ -338,13 +330,14 @@ class EmlReader
 			// default case, decode with the transfer-encoding
 			default:
 				$decodedBody = self::decodeBody($body, self::decodeHeader($headers['Content-Transfer-Encoding']));
-				if ( !$decodedBody )
-					return NULL;
+				/*if ( !$decodedBody )
+					return NULL;*/
 					
 				// decoding content
 				return self::decodeContent($decodedBody, $headers, $contentType);
 		}
 	}
+	
 	
 	
 	/**
@@ -381,11 +374,31 @@ class EmlReader
 	}
 	
 	
+	
+	/** 
+	 * Decode header data that may have been encoded with mb_encode_mimeheader (such as `to`, `from`, `subject` etc.)
+	 *
+	 * @param string[] $headers
+	 * @return string[]
+	 */
+	static function decodeHeaders(array $headers)
+	{
+		$ret = [];
+		
+		foreach ( $headers as $k=>$h )
+			$ret[$k] = mb_decode_mimeheader($h);
+		
+		return $ret;
+	}
+	
+	
+	
 	/**
 	* Decode email from a string
 	* 
 	* @param string $data Email string to decode
-	* @return MailPieces\MailContent|NULL MailContent object constructed or NULL if an error occured
+	* @return object Returns an object litteral with properties `email` and `headers` (of type MailPieces\MailContent and string[])
+	* @throws MailReaderError
 	*/
 	static function fromString($data)
 	{
@@ -395,7 +408,7 @@ class EmlReader
 		$body = substr($data, strlen($headers . $linefeed . $linefeed));
 		$headers = trim($headers);
 		if ( !$headers )
-			return self::_error('Headers cannot be extracted.');
+			throw new MailReaderError('Headers cannot be extracted.');
 		
 		// convert headers string to array
 		$headers = Mailer::headersToArray($headers);
@@ -403,24 +416,27 @@ class EmlReader
 		
 		// handle content according to it's content-type
 		if ( !array_key_exists('Content-Type', $headers) )
-			return self::_error('Header \'Content-Type\' missing.');
+			throw new MailReaderError('Header \'Content-Type\' missing.');
 	
-		return self::fromContentType($headers['Content-Type'], $headers, $body);
+		
+		return (object)[ 'email' => self::fromContentType($headers['Content-Type'], $headers, $body), 'headers' => $headers ];
 	}
+	
 	
 	
 	/**
 	* Decode email from a file
 	* 
 	* @param string $file Path to email to read
-	* @return MailPieces\MailContent| MailContent object constructed or NULL if an error occured
+	* @return object Returns an object litteral with properties `email` and `headers` (of type MailPieces\MailContent and string[])
+	* @throws MailReaderError
 	*/
 	static function fromFile($file)
 	{
 		if ( file_exists($file) )
 			return self::fromString(file_get_contents($file));
 		else
-			return self::_error('File not found.');
+			throw new MailReaderError("File '$file' not found.");
 	}
 }
 

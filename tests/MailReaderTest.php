@@ -22,17 +22,14 @@ class MailReaderTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailContent', $mail->email);
 		$this->assertTrue(is_array($mail->headers));
 		
-		$this->assertEquals(<<<HEREDOC
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_13585_2454228.1420641166034"
-
-------=_Part_13585_2454228.1420641166034
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-From: sent from éric <from_eric@here.com>
-Subject: This is a subject with accents éà
-HEREDOC
-			, implode('\r\n', $mail->headers));
+		$this->assertEquals(
+"Content-Type: multipart/alternative;\r\n	boundary=\"----=_Part_13585_2454228.1420641166034\"\r\n" .
+"\r\n" .
+"------=_Part_13585_2454228.1420641166034\r\n" .
+"Content-Type: text/plain; charset=iso-8859-1\r\n" . 
+"Content-Transfer-Encoding: quoted-printable\r\n" .
+"From: sent from éric <from_eric@here.com>\r\n" .
+"Subject: This is a subject with accents éà", implode('\r\n', $mail->headers));
 	}
 
 }

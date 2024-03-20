@@ -324,7 +324,7 @@ class MailReaderEngine
 				if ( count($parts) < 2 )
 					throw new MailReaderError("Decoding of '$contentType' is impossible because of the unsupported parts number (2).");
 					
-				return MailMultipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
+				return \Nettools\Mailing\MailPieces\MailMultipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
 					
 					
 			// default case, decode with the transfer-encoding

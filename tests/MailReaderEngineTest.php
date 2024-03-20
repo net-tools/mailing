@@ -17,7 +17,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		// we test headers with simple values and headers with multiple values (separated by ';')
 		// we test headers with folding, with or without quotes (")
 		// we test iso-8859-1 charset converted to utf8
-        $mail = MailReaderEngine::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.plainhtml.eml');
+        $mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.plainhtml.eml'));
 		$this->assertNotNull($mail->email);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
 		$this->assertEquals('alternative', $mail->email->getType());
@@ -41,7 +41,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 
 		// multipart/related (embedding)
 		// content-disposition is not present, we guess it thanks to the content-id attribute
-        $mail = MailReaderEngine::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.inline.eml');
+        $mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.inline.eml'));
 		$this->assertNotNull($mail->email);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email->getPart(0));		
@@ -58,7 +58,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 
 		// multipart/mixed
 		// attachment with text/plain content and CRLF newlines
-		$mail = MailReaderEngine::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.eml');
+		$mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.eml'));
 		$this->assertNotNull($mail->email);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->email->getPart(0));
@@ -82,7 +82,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		
 		// multipart/mixed
 		// attachment with text/plain content and LF newlines
-		$mail = MailReaderEngine::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.eml');
+		$mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.eml'));
 		$this->assertNotNull($mail->email);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->email->getPart(0));
@@ -105,7 +105,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 
 		
 		// multipart/mixed with 2 attachments (no multipart/alternative html part)
-		$mail = MailReaderEngine::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_LF_attachments.eml');
+		$mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_LF_attachments.eml'));
 		$this->assertNotNull($mail);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->email->getPart(0));

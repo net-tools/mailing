@@ -34,7 +34,7 @@ class MailReader
 	 * @param MailPieces\MailContent $mail
 	 * @param string[] $headers
 	 */
-	function __construct(MailContent $mail, array $headers)
+	function __construct(MailContent $email, array $headers)
 	{
 		$this->email = $email;
 		$this->headers = $headers;

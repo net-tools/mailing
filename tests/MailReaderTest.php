@@ -4,7 +4,7 @@ namespace Nettools\Mailing\Tests;
 
 
 
-use \Nettools\Mailing\MailReaderEngine;
+use \Nettools\Mailing\MailReader;
 
 
 

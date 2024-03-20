@@ -26,7 +26,7 @@ class MailReaderEngine
 	 * 
 	 * @param MailPieces\MailContent $mail Mail object to process
 	 */
-	static function clean(MailContent $mail)
+	static function clean(\Nettools\Mailing\MailPieces\MailContent $mail)
 	{
 		// traiter par récursion
 		if ( $mail instanceof \Nettools\Mailing\MailPieces\MailMultipart )
@@ -212,9 +212,9 @@ class MailReaderEngine
 			switch ( $contentType )
 			{
 				case 'text/plain' :
-					return new MailTextPlainContent($body);
+					return new \Nettools\Mailing\MailPieces\MailTextPlainContent($body);
 				case 'text/html' :
-					return new MailTextHtmlContent($body);
+					return new \Nettools\Mailing\MailPieces\MailTextHtmlContent($body);
 			}
 			
 			
@@ -231,7 +231,7 @@ class MailReaderEngine
 				fclose($f);
 				
 				if ( $contentDisposition == 'attachment' )
-					return new MailAttachment($fname, basename($fname), $contentType, true);
+					return new \Nettools\Mailing\MailPieces\MailAttachment($fname, basename($fname), $contentType, true);
 				else
 				{
 					// if embedding, extract content-ID
@@ -239,7 +239,7 @@ class MailReaderEngine
 					if ( !$cid )
 						throw new MailReaderError('Content-ID not found.');
 						
-					return new MailEmbedding($fname, $contentType, trim(str_replace(array('<', '>', '"'), '', $cid)), true);
+					return new \Nettools\Mailing\MailPieces\MailEmbedding($fname, $contentType, trim(str_replace(array('<', '>', '"'), '', $cid)), true);
 				}
 			}
 			else
@@ -324,7 +324,7 @@ class MailReaderEngine
 				if ( count($parts) < 2 )
 					throw new MailReaderError("Decoding of '$contentType' is impossible because of the unsupported parts number (2).");
 					
-				return MailMultipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
+				return \Nettools\Mailing\MailPieces\MailMultipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
 					
 					
 			// default case, decode with the transfer-encoding

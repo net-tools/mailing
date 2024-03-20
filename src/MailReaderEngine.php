@@ -324,7 +324,7 @@ class MailReaderEngine
 				if ( count($parts) < 2 )
 					throw new MailReaderError("Decoding of '$contentType' is impossible because of the unsupported parts number (2).");
 					
-				return \Nettools\Mailing\MailPieces\MailMultipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
+				return MailMultipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
 					
 					
 			// default case, decode with the transfer-encoding
@@ -420,24 +420,7 @@ class MailReaderEngine
 	
 		
 		return (object)[ 'email' => self::fromContentType($headers['Content-Type'], $headers, $body), 'headers' => $headers ];
-	}
-	
-	
-	
-	/**
-	* Decode email from a file
-	* 
-	* @param string $file Path to email to read
-	* @return object Returns an object litteral with properties `email` and `headers` (of type MailPieces\MailContent and string[])
-	* @throws MailReaderError
-	*/
-	static function fromFile($file)
-	{
-		if ( file_exists($file) )
-			return self::fromString(file_get_contents($file));
-		else
-			throw new MailReaderError("File '$file' not found.");
-	}
+	}	
 }
 
 ?>

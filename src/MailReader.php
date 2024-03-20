@@ -76,7 +76,10 @@ class MailReader
 	*/
 	static function fromFile($file)
 	{
-		return self::fromString($file);
+		if ( file_exists($file) )
+			return self::fromString(file_get_contents($file));
+		else
+			throw new MailReaderError("File '$file' not found.");
 	}
 }
 

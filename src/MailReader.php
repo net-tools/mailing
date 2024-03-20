@@ -23,8 +23,8 @@ use \Nettools\Mailing\MailPieces\MailContent;
  */
 class MailReader
 {
-	protected $email = null;
-	protected $headers = [];
+	public $email = null;
+	public $headers = [];
 	
 	
 	

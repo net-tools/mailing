@@ -51,7 +51,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailEmbedding', $mail->email->getPart(1));
 		$fname = $mail->email->getPart(1)->getFile();
 		$this->assertFileEquals(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.inline.png', $fname);
-		MailReaderEngine::clean($mail);
+		MailReaderEngine::clean($mail->email);
 		$this->assertFileDoesNotExist($fname);	// destroy a supprimé le fichier temporaire
 		
 
@@ -75,7 +75,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		$fname = $mail->email->getPart(1)->getFile();
         // gzdecode because GIT or FTP software may convert CRLF to LF
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
-		MailReaderEngine::clean($mail);
+		MailReaderEngine::clean($mail->email);
 		$this->assertFileDoesNotExist($fname);	
 
 		
@@ -99,7 +99,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		$fname = $mail->email->getPart(1)->getFile();
         // gzdecode because GIT or FTP software may convert CRLF to LF
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.bin.gz')), file_get_contents($fname)); 
-		MailReaderEngine::clean($mail);
+		MailReaderEngine::clean($mail->email);
 		$this->assertFileDoesNotExist($fname);	
 		
 
@@ -119,7 +119,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
 		$fname2 = $mail->email->getPart(2)->getFile();
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.bin.gz')), file_get_contents($fname2)); 
-		MailReaderEngine::clean($mail);
+		MailReaderEngine::clean($mail->email);
 		$this->assertFileDoesNotExist($fname);	
 		$this->assertFileDoesNotExist($fname2);
 	}

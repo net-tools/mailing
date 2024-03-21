@@ -74,11 +74,17 @@ class MailAttachment extends MailMixedContent {
 	public function setFileName($f) { $this->_filename = $f; }
 	
 
+	/** 
+     * Get headers for this part ; abstract method to implemented in child classes
+     *
+     * @return string[] Mandatory headers for this part
+     */
 	public function getHeaders()
 	{
-		return 	"Content-Type: " . $this->getContentType() . ";\r\n name=\"" . $this->_filename . "\"\r\n" .
-				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: attachment;\r\n filename=\"" . $this->_filename . "\"";
+		return 	[	'Content-Type' 				=> $this->getContentType() . ";\r\n name=\"" . $this->_filename . "\"",
+				 	'Content-Transfer-Encoding'	=> 'base64',
+					'Content-Disposition'		=> "attachment;\r\n filename=\"" . $this->_filename . "\""
+				 ];
 	}
 }
 

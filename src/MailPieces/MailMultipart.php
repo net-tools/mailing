@@ -161,9 +161,14 @@ class MailMultipart extends MailContent {
 	}
 	
 	
+	/** 
+     * Get headers for this part ; abstract method to implemented in child classes
+     *
+     * @return string[] Mandatory headers for this part
+     */
 	public function getHeaders()
 	{
-		return 	"Content-Type: " . $this->getContentType() . ";\r\n boundary=\"" . $this->_separator . "\"";
+		return 	[ 'Content-Type' => $this->getContentType() . ";\r\n boundary=\"$this->_separator\"" ];
 	}
 	
 	

@@ -26,9 +26,9 @@ abstract class Handler
 	 *
      * @param string $to Recipient
      * @param string $subject Subject ; must be encoded if necessary
-     * @param string $headers Email headers
+     * @param string[] $headers Email headers
 	 */
-	abstract function notify($to, $subject, $headers);
+	abstract function notify($to, $subject, array $headers);
 }
 
 

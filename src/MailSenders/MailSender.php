@@ -103,12 +103,12 @@ abstract class MailSender {
      * @param string $to Recipient
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
-     * @param string $headers Email headers
+     * @param string[] $headers Email headers
      */
-	function sendTo($to, $subject, $mail, $headers)
+	function sendTo($to, $subject, $mail, array $headers)
 	{
 		// send the email
-		$this->doSend($this->extractRecipient($to), $subject, $mail, $headers);
+		$this->doSend($this->extractRecipient($to), $subject, $mail, Mailer::arrayToHeaders($headers));
 		
 		// event : 1 mail sent
 		$this->handleSentEvent($to, $subject, $headers);
@@ -129,7 +129,7 @@ abstract class MailSender {
      * @param string $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
 	 */
-	function handleBcc($to, $subject, $mail, &$headers)
+	function handleBcc($to, $subject, $mail, array &$headers)
 	{
 		if ( $bcc = Mailer::getHeader($headers, 'Bcc') )
 		{
@@ -147,7 +147,7 @@ abstract class MailSender {
 			foreach ( $bcc_to as $bcc )
 			{
 				// add bcc recipient one by one
-				$h = Mailer::addHeader($headers, "Bcc: " . $this->encodeAddress(trim($bcc)));
+				$h = Mailer::addHeader($headers, 'Bcc', $this->encodeAddress(trim($bcc)));
 				$this->sendTo(trim($bcc), $subject, $mail, $h);
 			}
 		}
@@ -161,10 +161,10 @@ abstract class MailSender {
      * @param string $to Recipient
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
-     * @param string $headers Email headers
+     * @param string[] $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
-	function handleSend($to, $subject, $mail, $headers)
+	function handleSend($to, $subject, $mail, array $headers)
 	{
 		// handle Bcc ; headers array may be modified after the call (Bcc line removed)
 		$this->handleBcc($to, $subject, $mail, $headers);
@@ -180,9 +180,9 @@ abstract class MailSender {
      *
      * @param string $to Recipient ; must be already encoded if required
      * @param string $subject Subject ; must be already encoded if required
-     * @param string $headers Email headers
+     * @param string[] $headers Email headers
      */
-	function handleSentEvent($to, $subject, $headers)
+	function handleSentEvent($to, $subject, array $headers)
 	{
 		$evts = $this->getSentEventHandlers();
 		
@@ -198,12 +198,12 @@ abstract class MailSender {
      * @param string $to Recipient ; must be already encoded if required
      * @param string $subject Subject ; must be encoded if required
      * @param string $mail String containing the email data
-     * @param string $headers Email headers
+     * @param string[] $headers Email headers
      */
-	function handleHeaders_ToSubject($to, $subject, $mail, &$headers)
+	function handleHeaders_ToSubject($to, $subject, $mail, array &$headers)
 	{
-		$headers = Mailer::addHeader($headers, "To: $to");
-		$headers = Mailer::addHeader($headers, "Subject: $subject");
+		$headers = Mailer::addHeader($headers, 'To', $to);
+		$headers = Mailer::addHeader($headers, 'Subject', $subject);
 	}
 	
 	
@@ -214,9 +214,9 @@ abstract class MailSender {
      * @param string $to Recipient ; must be already encoded if required
      * @param string $subject Subject ; must be already encoded if required
      * @param string $mail String containing the email data
-     * @param string $headers Email headers
+     * @param string[] $headers Email headers
      */
-	function handleHeaders_Priority($to, $subject, $mail, &$headers)
+	function handleHeaders_Priority($to, $subject, $mail, array &$headers)
 	{
 		//$headers = Mailer::addHeader($headers, "X-Priority: 1");
 //		$headers = Mailer::addHeader($headers, "X-MSMail-Priority: High"); //nécessite X-MimeOLE qui indique que le message a été rédigé avec outlook
@@ -231,9 +231,9 @@ abstract class MailSender {
      * @param string $to Recipient ; must be already encoded if required
      * @param string $subject Subject ; must be already encoded if required
      * @param string $mail String containing the email data
-     * @param string $headers Email headers
+     * @param string $headers[] Email headers
      */
-	function handleHeaders($to, $subject, $mail, &$headers)
+	function handleHeaders($to, $subject, $mail, array &$headers)
 	{
 		// encode From header if required
 		$this->handleFromHeaderEncoding($headers);
@@ -250,12 +250,12 @@ abstract class MailSender {
 	/**
      * Handle from header encoding
      * 
-     * @param string $headers Email headers
+     * @param string[] $headers Email headers
      */
-	function handleFromHeaderEncoding(&$headers)
+	function handleFromHeaderEncoding(array &$headers)
 	{
 		$h = $this->encodeAddress(Mailer::getHeader($headers, 'From'));
-		$headers = Mailer::addHeader($headers, "From: $h");
+		$headers = Mailer::addHeader($headers, 'From', $h);
 	}
 	
 	
@@ -318,10 +318,10 @@ abstract class MailSender {
      * @param string $to Recipient
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
-     * @param string $headers Email headers
+     * @param string[] $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
-	function send($to, $subject, $mail, $headers)
+	function send($to, $subject, $mail, array $headers)
 	{
 		// if init OK
 		if ( $this->ready() )

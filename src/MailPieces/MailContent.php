@@ -26,8 +26,8 @@ abstract class MailContent {
     /** @var string Mime type of this part */
     protected $_content_type = NULL;
 	
-    /** @var string String of custom headers (set by the user) for this part */
-    protected $_custom_headers = "";
+    /** @var string[] Array of custom headers (set by the user) for this part */
+    protected $_custom_headers = [];
 
 // ----- PROTECTED -----]
 
@@ -72,7 +72,7 @@ abstract class MailContent {
      */
 	public function toString()
 	{
-		return $this->getFullHeaders() . "\r\n\r\n" . $this->getContent() . "\r\n\r\n";
+		return Mailer::arrayToHeaders($this->getAllHeaders()) . "\r\n\r\n" . $this->getContent() . "\r\n\r\n";
 	}
 	
 	
@@ -82,9 +82,9 @@ abstract class MailContent {
      * To add one header at a time call addCustomHeader()
      * 
      * @see MailContent::addCustomHeader
-     * @param string $h String of headers to set
+     * @param string[] $h Array of headers
      */
-	public function setCustomHeaders($h)
+	public function setCustomHeaders(array $h)
 	{
 		$this->_custom_headers = $h;
 	}
@@ -93,18 +93,19 @@ abstract class MailContent {
 	/**
      * Add a custom header
      *
-     * @param string $h One header to set (header: value)
+     * @param string $k Header name to set
+     * @param string $h Header value
      */
-	public function addCustomHeader($h)
+	public function addCustomHeader($n, $h)
 	{
-		$this->_custom_headers = Mailer::addHeader($this->_custom_headers, $h);
+		$this->_custom_headers[$n] = $h;
 	}
 
 
 	/**
      * Get custom headers
      * 
-     * @return string Get custom headers for this part
+     * @return string[] Get custom headers for this part
      */
 	public function getCustomHeaders()
 	{
@@ -115,7 +116,7 @@ abstract class MailContent {
 	/** 
      * Get headers for this part ; abstract method to implemented in child classes
      *
-     * @return string Mandatory headers for this part
+     * @return string[] Mandatory headers for this part
      */
 	abstract public function getHeaders();
 	
@@ -125,11 +126,11 @@ abstract class MailContent {
      * 
      * All headers are returned, both mandatory headers and user-defined custom headers
      *
-     * @return string The headers of this part
+     * @return string[] The headers of this part
      */
-	public function getFullHeaders()
+	public function getAllHeaders()
 	{
-		return Mailer::addHeader($this->getHeaders(), $this->getCustomHeaders());
+		return array_merge($this->getHeaders(), $this->getCustomHeaders());
 	}
 	
 	

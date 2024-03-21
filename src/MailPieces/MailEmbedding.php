@@ -77,14 +77,20 @@ class MailEmbedding extends MailMixedContent {
      */
 	public function setCid($c) { $this->_cid = $c; }
 	
-	
 
+
+	/** 
+     * Get headers for this part ; abstract method to implemented in child classes
+     *
+     * @return string[] Mandatory headers for this part
+     */
 	public function getHeaders()
 	{
-		return 	"Content-Type: " . $this->getContentType() . "\r\n" .
-				"Content-Transfer-Encoding: base64\r\n" .
-				"Content-Disposition: inline;\r\n filename=\"" . $this->_cid . "\"\r\n" .
-				"Content-ID: <" . $this->_cid . ">";
+		return [	'Content-Type'					=> $this->getContentType(),
+					'Content-Transfer-Encoding'		=> 'base64',
+					'Content-Disposition'			=> "inline;\r\n filename=\"" . $this->_cid . "\"",
+					'Content-ID'					=> "<$this->_cid>"
+				];
 	}
 }
 

@@ -24,7 +24,7 @@ class PHPMail extends MailSender
      * 
      * For PHPMail strategy, we do not have to set To and Subject headers, as this is php Mail() function that sets them internally
      */
-	function handleHeaders_ToSubject($to, $subject, $mail, &$headers)
+	function handleHeaders_ToSubject($to, $subject, $mail, array &$headers)
 	{
 	}
 	
@@ -34,7 +34,7 @@ class PHPMail extends MailSender
      *
      * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Bcc headers and send bcc emails accordingly
      */
-	function handleBcc($to, $subject, $mail, &$headers)
+	function handleBcc($to, $subject, $mail, array &$headers)
 	{
 	}
 	

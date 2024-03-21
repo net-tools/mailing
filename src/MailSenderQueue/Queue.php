@@ -39,10 +39,10 @@ class Queue {
 	 * @param int $index 0-index of email to sent in queue
 	 * @param string $bcc Optionnal bcc recipient to add
 	 * @param string $to Overriding `To` recipient 
-     * @param string $suppl_headers Optionnal supplementary headers
+     * @param string[] $suppl_headers Optionnal supplementary headers
      * @throws \Nettools\Mailing\Exception
 	 */
-	private function _sendFromQueue(Mailer $mailer, $index, $bcc = NULL, $to = NULL, $suppl_headers = "")
+	private function _sendFromQueue(Mailer $mailer, $index, $bcc = NULL, $to = NULL, $suppl_headers = [])
 	{
 		$err = null;
 		$root = $this->root;
@@ -54,11 +54,11 @@ class Queue {
 		
 		
 		// create a copy of headers (as we may add a BCC, but we don't want to update the original headers)
-		$headers = $mail->data->headers;
+		$headers = Mailer::headersToArray($mail->data->headers);
 		
 		// handle bcc 
 		if ( !is_null($bcc) )
-			$headers = Mailer::addHeader($headers, "Bcc: $bcc");
+			$headers = Mailer::addHeader($headers, 'Bcc', $bcc);
 
 		// if supplementary headers
 		if ( $suppl_headers )
@@ -131,7 +131,11 @@ class Queue {
 				
 		
 		// write headers and data
-		$data->headers = Mailer::addHeader($data->headers, "X-MailSenderQueue: $qid");
+		if ( $data->headers )
+			$data->headers .= "\r\nX-MailSenderQueue: $qid";
+		else 
+			$data->headers = "X-MailSenderQueue: $qid";
+		
 		$d = new Data($this, $mid);
 		$d->from($data);
 		$d->write();
@@ -310,14 +314,14 @@ class Queue {
 		// read email from queue et get a string for an EML file
 		$mail = $this->_mailFromQueue($index);
 		
-		$eml = $mail->data->headers . "\r\n" .
-				"To: " . $mail->data->to . "\r\n" .
-				"Subject: " . $mail->data->subject . "\r\n" .
-				"\r\n" .
-				$mail->email->content;
 		
+		// append to existing headers
+		$h = $mail->data->headers ? $mail->data->headers . "\r\n" : '';
 		
-		return $eml;
+		$h .=	"To: " . $mail->data->to . "\r\n" .
+				"Subject: " . $mail->data->subject;
+		
+		return $h . "\r\n\r\n" . $mail->email->content;
 	}
 	
 	
@@ -339,10 +343,10 @@ class Queue {
 		$this->_push(
 						$mail->getContent(), 
 						(object)[ 
-							'to'		=>$to, 
-							'subject'	=>$subject,
-							'status'	=>Data::STATUS_TOSEND,
-							'headers'	=>Mailer::addHeader($mail->getFullHeaders(), "From: $from")
+							'to'		=> $to, 
+							'subject'	=> $subject,
+							'status'	=> Data::STATUS_TOSEND,
+							'headers'	=> Mailer::arrayToHeaders(Mailer::addHeader($mail->getAllHeaders(), 'From', $from))
 						]
 					);
 	}
@@ -353,10 +357,10 @@ class Queue {
      * Send a batch of email through a Mailer instance, and optionnally add headers
      *
      * @param Mailer $mailer Mailer instance to send email through
-     * @param string $suppl_headers Optionnal supplementary headers
+     * @param string[] $suppl_headers Optionnal supplementary headers
      * @throws \Nettools\Mailing\Exception
      */
-	function send(Mailer $mailer, $suppl_headers = "")
+	function send(Mailer $mailer, $suppl_headers = [])
 	{
 		// are the emails to sent ?
 		if ( $this->sendOffset < $this->count )

@@ -37,18 +37,24 @@ class MailTextPlainContentTest extends \PHPUnit\Framework\TestCase
 
 
 		$mc = new MailTextPlainContent('Test é.');
-		$this->assertEquals("Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: quoted-printable", $mc->getHeaders());
+		$this->assertEquals( [
+			'Content-Type'	=> 'text/plain; charset=UTF-8',
+			'Content-Transfer-Encoding' => 'quoted-printable' ], $mc->getHeaders());
 
 
 		$mc = new MailTextPlainContent('Test é.');
-		$mc->addCustomHeader('Bcc: user1@gmail.com');
-		$mc->addCustomHeader('Bcc: user2@gmail.com'); // overrides previously defined header
-		$this->assertEquals("Bcc: user2@gmail.com", $mc->getCustomHeaders());
+		$mc->addCustomHeader('Bcc', 'user1@gmail.com');
+		$mc->addCustomHeader('Bcc', 'user2@gmail.com'); // overrides previously defined header
+		$this->assertEquals( [ 'Bcc' => 'user2@gmail.com' ], $mc->getCustomHeaders());
 
 
 		$mc = new MailTextPlainContent('Test é.');
-		$mc->addCustomHeader('Bcc: user2@gmail.com');
-		$this->assertEquals("Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: quoted-printable\r\nBcc: user2@gmail.com", $mc->getFullHeaders());
+		$mc->addCustomHeader('Bcc', 'user2@gmail.com');
+		$this->assertEquals([
+			'Content-Type'	=> 'text/plain; charset=UTF-8',
+			'Content-Transfer-Encoding' => 'quoted-printable',
+			'Bcc' => 'user2@gmail.com'
+			], $mc->getFullHeaders());
 
 
 		$mc = new MailTextPlainContent('Test é.');

@@ -285,25 +285,27 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     
     public function testAddHeader()
     {
-		$this->assertEquals('From: user@domain.tld', Mailer::addHeader('', 'From: user@domain.tld'));
-		$this->assertEquals('From: user@domain.tld', Mailer::addHeader('From: user@domain.tld', ''));
-		$this->assertEquals("From: user@domain.tld\r\nTo: other@domain.tld", Mailer::addHeader('From: user@domain.tld', 'To: other@domain.tld'));
-		$this->assertEquals("From: other-user@domain.tld\r\nBcc: bcc-user@domain.tld", Mailer::addHeader("From: user@domain.tld\r\nBcc: bcc-user@domain.tld", 'From: other-user@domain.tld'));
-		$this->assertEquals("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"\r\nFrom: user@domain.tld", 
-                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"", 'From: user@domain.tld'));
-		$this->assertEquals("Content-Type: text/plain; charset=UTF-8", 
-                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"", "Content-Type: text/plain; charset=UTF-8"));
-		$this->assertEquals("Content-Type: multipart/mixed;\r\n boundary=\"abc5678\"",
-                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"", "Content-Type: multipart/mixed;\r\n boundary=\"abc5678\""));
-		$this->assertEquals("Content-Type: multipart/mixed;\r\n boundary=\"abc5678\"\r\nFrom: user@domain.tld",
-                                Mailer::addHeader("Content-Type: multipart/mixed;\r\n boundary=\"xyz1234\"\r\n other=\"testfolding\"\r\nFrom: user@domain.tld", "Content-Type: multipart/mixed;\r\n boundary=\"abc5678\""));
+		$this->assertEquals(['From' => 'user@domain.tld' ], Mailer::addHeader([], 'From', 'user@domain.tld'));
+		$this->assertEquals(['From' => 'user@domain.tld' ], Mailer::addHeader(['From' => 'user@domain.tld'], []));
+		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld' ], Mailer::addHeader(['From', 'user@domain.tld'], ['To', 'other@domain.tld']));
+		$this->assertEquals(['From' => 'other-user@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], Mailer::addHeader(['From' => 'user@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], ['From' => 'other-user@domain.tld']));
+		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\"", 'From' => 'user@domain.tld'], 
+                                Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""], ['From' => 'user@domain.tld']));
+		$this->assertEquals(['Content-Type' => 'text/plain; charset=UTF-8' ], 
+                                Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""], ['Content-Type' => 'text/plain; charset=UTF-8']));
+		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\"" ],
+                                Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""], ['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\""]));
+		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\"", 'From' => 'user@domain.tld'],
+                                Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\"\r\n other=\"testfolding\"", 'From' => 'user@domain.tld'], 
+												  ['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\""]));
     }
     
     
     public function testAddHeaders()
     {
-		$this->assertEquals('From: user@domain.tld', Mailer::addHeaders('', 'From: user@domain.tld'));
-		$this->assertEquals("From: user@domain.tld\r\nTo: other@domain.tld\r\nBcc: bcc-user@domain.tld", Mailer::addHeaders('From: user@domain.tld', "To: other@domain.tld\r\nBcc: bcc-user@domain.tld"));
+		$this->assertEquals(['From' => 'user@domain.tld'], Mailer::addHeaders([], ['From' => 'user@domain.tld']));
+		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld', 'Bcc' => 'bcc-user@domain.tld'],
+							Mailer::addHeaders(['From' => 'user@domain.tld'], ['To' => 'other@domain.tld', 'Bcc' => 'bcc-user@domain.tld']));
     }
     
     
@@ -325,11 +327,11 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     
     public function testRemoveHeader()
     {
-		$this->assertEquals('From: user@domain.tld', Mailer::removeHeader("From: user@domain.tld\r\nBcc: user-bcc@domain.tld", 'Bcc'));
-		$this->assertEquals("From: user@domain.tld\r\nBcc: user-bcc@domain.tld", Mailer::removeHeader("From: user@domain.tld\r\nBcc: user-bcc@domain.tld", NULL));
-		$this->assertEquals("", Mailer::removeHeader("", 'Bcc'));
-		$this->assertEquals("From: user@domain.tld", Mailer::removeHeader("From: user@domain.tld", 'Content-Type'));
-		$this->assertEquals("", Mailer::removeHeader("", ''));
+		$this->assertEquals(['From' => 'user@domain.tld'], Mailer::removeHeader(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld'], 'Bcc'));
+		$this->assertEquals(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld'], Mailer::removeHeader(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld'], NULL));
+		$this->assertEquals([], Mailer::removeHeader([], 'Bcc'));
+		$this->assertEquals(['From' => 'user@domain.tld'], Mailer::removeHeader(['From' => 'user@domain.tld'], 'Content-Type'));
+		$this->assertEquals([], Mailer::removeHeader([], ''));
     }
     
     
@@ -521,7 +523,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         // by setting the mailsender, we create another strategy; previously sent emails are lost
         $ml->setMailSender(new Virtual());
 		Mailer::render($obj);
-		$ml->sendmail_raw(array('user1@test.com','user2@test.com'), 'test subject', $obj->getContent(), Mailer::addHeader($obj->getFullHeaders(), 'From: unit-test@php.com'), false); 
+		$ml->sendmail_raw(array('user1@test.com','user2@test.com'), 'test subject', $obj->getContent(), Mailer::addHeader($obj->getAllHeaders(), 'From', 'unit-test@php.com'), false); 
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));    
     }

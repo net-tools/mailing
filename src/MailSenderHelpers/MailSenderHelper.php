@@ -270,12 +270,12 @@ class MailSenderHelper implements MailSenderHelperIntf
 		
 		// dealing with BCC
 		if ( $this->bcc )
-			$mail->addCustomHeader("Bcc: " . $this->bcc);
+			$mail->addCustomHeader('Bcc', $this->bcc);
 
 		
 		// dealing with replyTo
 		if ( $this->replyTo )
-			$mail->addCustomHeader("Reply-To: " . $this->replyTo);
+			$mail->addCustomHeader('Reply-To', $this->replyTo);
 
 		
 		// checking a subject is defined, either in constructor parameters or in this method argument

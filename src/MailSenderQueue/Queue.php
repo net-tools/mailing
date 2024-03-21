@@ -108,7 +108,7 @@ class Queue {
 		
 	
 	/**
-	 * Add anemail to the queue
+	 * Add an email to the queue
 	 *
 	 * @param string $rawmail Mail content as a string
 	 * @param object $data Data object with `to`, `subject`, `status` and `headers` properties
@@ -131,10 +131,7 @@ class Queue {
 				
 		
 		// write headers and data
-		if ( $data->headers )
-			$data->headers .= "\r\nX-MailSenderQueue: $qid";
-		else 
-			$data->headers = "X-MailSenderQueue: $qid";
+		$data->headers = Mailer::arrayToHeaders(Mailer::addHeaders(Mailer::headersToArray($data->headers), [ 'From' => $from, 'X-MailSenderQueue' => $qid ]));
 		
 		$d = new Data($this, $mid);
 		$d->from($data);

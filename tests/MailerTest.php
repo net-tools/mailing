@@ -287,7 +287,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
 		$this->assertEquals(['From' => 'user@domain.tld' ], Mailer::addHeader([], 'From', 'user@domain.tld'));
 		$this->assertEquals(['From' => 'user@domain.tld' ], Mailer::addHeader(['From' => 'user@domain.tld'], '', ''));
-		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld' ], Mailer::addHeader(['From', 'user@domain.tld'], 'To', 'other@domain.tld'));
+		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld' ], Mailer::addHeader(['From' => 'user@domain.tld'], 'To', 'other@domain.tld'));
 		$this->assertEquals(['From' => 'other-user@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], Mailer::addHeader(['From' => 'user@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], 'From', 'other-user@domain.tld'));
 		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\"", 'From' => 'user@domain.tld'], 
                                 Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""], 'From', 'user@domain.tld'));

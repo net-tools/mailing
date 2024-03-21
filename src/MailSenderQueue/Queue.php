@@ -131,7 +131,7 @@ class Queue {
 				
 		
 		// write headers and data
-		$data->headers = Mailer::arrayToHeaders(Mailer::addHeaders(Mailer::headersToArray($data->headers), [ 'From' => $from, 'X-MailSenderQueue' => $qid ]));
+		$data->headers = Mailer::arrayToHeaders(Mailer::addHeader(Mailer::headersToArray($data->headers), 'X-MailSenderQueue', $qid));
 		
 		$d = new Data($this, $mid);
 		$d->from($data);

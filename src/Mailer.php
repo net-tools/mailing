@@ -751,7 +751,7 @@ final class Mailer {
 		// add required technical headers
 		self::render($mail);
 		
-		$this->sendmail_raw($to, $subject, $mail->getContent(), self::addHeader($mail->getAllHeaders(), ['From' => $from ]), $destruct);
+		$this->sendmail_raw($to, $subject, $mail->getContent(), self::addHeader($mail->getAllHeaders(), 'From', $from), $destruct);
 	}
 	
 	

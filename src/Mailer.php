@@ -417,7 +417,7 @@ final class Mailer {
 	 */
 	public static function removeHeader(array $headers, $hkey)
 	{
-		if ( count($headers) = 0 )
+		if ( count($headers) == 0 )
 			return [];
 		
 		if ( $hkey && array_key_exists($hkey, $headers) )

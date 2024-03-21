@@ -355,7 +355,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
 		$obj = Mailer::createText('textplain content');
 		Mailer::render($obj);
-		$this->assertMatchesRegularExpression('/MIME-Version: 1\\.0/', $obj->getFullHeaders());
+		$this->assertMatchesRegularExpression('/MIME-Version: 1\\.0/', implode("|", $obj->getAllHeaders()));
     }
     
     
@@ -469,7 +469,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$obj = new MailTextPlainContent('textplain content');
 		$ml = new Mailer(new Virtual());
 		Mailer::render($obj);
-		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), Mailer::addHeader($obj->getFullHeaders(), 'From: unit-test@php.com'), false); 
+		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), Mailer::addHeader($obj->getAllHeaders(), 'From' , 'unit-test@php.com'), false); 
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));
 		

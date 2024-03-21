@@ -634,7 +634,7 @@ final class Mailer {
 	 */
 	public static function render(MailContent $mail)
 	{
-		$mail->addCustomHeader("MIME-Version: 1.0");
+		$mail->addCustomHeader('MIME-Version', '1.0');
 		return $mail;
 	}
 	

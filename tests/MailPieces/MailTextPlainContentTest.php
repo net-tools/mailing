@@ -54,7 +54,7 @@ class MailTextPlainContentTest extends \PHPUnit\Framework\TestCase
 			'Content-Type'	=> 'text/plain; charset=UTF-8',
 			'Content-Transfer-Encoding' => 'quoted-printable',
 			'Bcc' => 'user2@gmail.com'
-			], $mc->getFullHeaders());
+			], $mc->getAllHeaders());
 
 
 		$mc = new MailTextPlainContent('Test é.');

@@ -20,7 +20,7 @@ class MailReaderTest extends \PHPUnit\Framework\TestCase
         $mail = MailReader::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.plainhtml.eml');
 		$this->assertInstanceOf('Nettools\Mailing\MailReader', $mail);
 		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailContent', $mail->email);
-		$this->assertTrue(is_array($mail->headers));
+		$this->assertTrue($mail->headers instanceof \Nettools\Mailing\MailPieces\Headers);
 		
 		$this->assertEquals(
 			array(
@@ -29,7 +29,7 @@ class MailReaderTest extends \PHPUnit\Framework\TestCase
 				'Subject'		=> 'This is a subject with accents éà'
 			),
 			
-			$mail->headers);
+			$mail->headers->toArray());
 	}
 
 }

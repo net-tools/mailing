@@ -397,7 +397,7 @@ class MailReaderEngine
 	* Decode email from a string
 	* 
 	* @param string $data Email string to decode
-	* @return object Returns an object litteral with properties `email` and `headers` (of type MailPieces\MailContent and string[])
+	* @return object Returns an object litteral with properties `email` and `headers` (of type MailPieces\MailContent and MailPieces\Headers)
 	* @throws MailReaderError
 	*/
 	static function fromString($data)
@@ -411,15 +411,16 @@ class MailReaderEngine
 			throw new MailReaderError('Headers cannot be extracted.');
 		
 		// convert headers string to array
-		$headers = Mailer::headersToArray($headers);
+		$hobj = MailPieces\Headers::fromString($headers);
 
 		
 		// handle content according to it's content-type
-		if ( !array_key_exists('Content-Type', $headers) )
+		$ct = $hobj->get('Content-Type');
+		if ( !$ct ) 
 			throw new MailReaderError('Header \'Content-Type\' missing.');
 	
 		
-		return (object)[ 'email' => self::fromContentType($headers['Content-Type'], $headers, $body), 'headers' => $headers ];
+		return (object)[ 'email' => self::fromContentType($ct, $headers, $body), 'headers' => $hobj ];
 	}	
 }
 

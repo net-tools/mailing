@@ -781,7 +781,7 @@ final class Mailer {
 				unset($regs);
 				
 				
-				$h2 = new Headers(['Date', date('r')]);
+				$h2 = new Headers(['Date' => date('r')]);
 				
 				// look for domain name From: xxx@domain.tld
 				// get From header, if defined

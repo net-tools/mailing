@@ -12,7 +12,10 @@
 namespace Nettools\Mailing\MailSenders;
 
 
-use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailPieces\Headers;
+
+
+
 
 
 
@@ -146,7 +149,7 @@ class SMTP extends MailSender
 	function doSend($to, $subject, $mail, $headers)
 	{
 		// PEAR SMTP::send expects headers to be an associative array
-		$this->_doSend($to, $mail, Mailer::headersToArray($headers));
+		$this->_doSend($to, $mail, Headers::fromString($headers)->toArray());
 	}
 }
 ?>

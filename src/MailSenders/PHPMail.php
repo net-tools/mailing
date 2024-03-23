@@ -12,6 +12,11 @@
 namespace Nettools\Mailing\MailSenders;
 
 
+use \Nettools\Mailing\MailPieces\Headers;
+
+
+
+
 
 
 /** 

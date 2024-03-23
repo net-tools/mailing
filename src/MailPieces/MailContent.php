@@ -85,7 +85,7 @@ abstract class MailContent {
      */
 	public function addCustomHeader($n, $h)
 	{
-		$this->_custom_headers->add($n, $h);
+		$this->_custom_headers->set($n, $h);
 	}
 
 

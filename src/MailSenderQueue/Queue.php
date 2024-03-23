@@ -44,7 +44,7 @@ class Queue {
      * @param \Nettools\Mailing\MailPieces\Headers $suppl_headers Optionnal supplementary headers
      * @throws \Nettools\Mailing\Exception
 	 */
-	private function _sendFromQueue(Mailer $mailer, $index, $bcc = NULL, $to = NULL, ?\Nettools\Mailing\MailPieces\Headers $suppl_headers)
+	private function _sendFromQueue(Mailer $mailer, $index, $bcc = NULL, $to = NULL, ?\Nettools\Mailing\MailPieces\Headers $suppl_headers = NULL)
 	{
 		$err = null;
 		$root = $this->root;
@@ -359,7 +359,7 @@ class Queue {
      * @param \Nettools\Mailing\MailPieces\Headers $suppl_headers Optionnal supplementary headers
      * @throws \Nettools\Mailing\Exception
      */
-	function send(Mailer $mailer, ?Headers $suppl_headers)
+	function send(Mailer $mailer, ?Headers $suppl_headers = NULL)
 	{
 		// are the emails to sent ?
 		if ( $this->sendOffset < $this->count )

@@ -420,7 +420,7 @@ class MailReaderEngine
 			throw new MailReaderError('Header \'Content-Type\' missing.');
 	
 		
-		return (object)[ 'email' => self::fromContentType($ct, $headers, $body), 'headers' => $hobj ];
+		return (object)[ 'email' => self::fromContentType($ct, $hobj->toArray(), $body), 'headers' => $hobj ];
 	}	
 }
 

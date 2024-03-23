@@ -327,8 +327,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				" boundary=\"" . $obj->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
-				"$mid\r\n" .
 				"$dt\r\n" .
+				"$mid\r\n" .
 				"To: unit-test-recipient@php.com\r\n" .
 				"Subject: Mail subject\r\n" .
 				"Delivered-To: unit-test-recipient@php.com\r\n" .
@@ -371,8 +371,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertStringContainsString( 
 				"From: from <unit-test@php.com>\r\n" .
-				"$mid\r\n" .
 				"$dt\r\n" .
+				"$mid\r\n" .
 				"To: to <unit-test-recipient@php.com>\r\n" .
 				"Subject: Mail subject\r\n" .
 				"Delivered-To: unit-test-recipient@php.com\r\n",
@@ -400,8 +400,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 
 		$this->assertStringContainsString( 
 				"From: =?UTF-8?B?w6k=?= <unit-test@php.com>\r\n" .
-				"$mid\r\n" .
 				"$dt\r\n" .
+				"$mid\r\n" .
 				"To: =?UTF-8?B?w6A=?= <unit-test-recipient@php.com>\r\n" .
 				"Subject: Mail subject with accents =?UTF-8?B?w6nDqCBpbnNpZGUgdGhlIHN0cmluZw==?=\r\n" .
 				"Delivered-To: unit-test-recipient@php.com\r\n",
@@ -440,8 +440,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
-				"$mid1\r\n" .
 				"$dt1\r\n" .
+				"$mid1\r\n" .
 				"To: user1@test.com\r\n" .
 				"Subject: test subject\r\n" .
 				"Delivered-To: user1@test.com\r\n" .
@@ -455,8 +455,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
-				"$mid2\r\n" .
 				"$dt2\r\n" .
+				"$mid2\r\n" .
 				"To: user2@test.com\r\n" .
 				"Subject: test subject\r\n" .
 				"Delivered-To: user2@test.com\r\n" .

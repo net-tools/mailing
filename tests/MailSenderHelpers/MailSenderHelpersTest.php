@@ -332,8 +332,8 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"Content-Type: multipart/mixed;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
-				"$mid\r\n" .
 				"$dt\r\n" .
+				"$mid\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: test subject\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .
@@ -424,8 +424,8 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 				"Content-Type: multipart/related;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
-				"$mid\r\n" .
 				"$dt\r\n" .
+				"$mid\r\n" .
 				"To: user-to@php.com\r\n" .
 				"Subject: test subject\r\n" .
 				"Delivered-To: user-to@php.com\r\n" .

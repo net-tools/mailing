@@ -10,6 +10,8 @@
 namespace Nettools\Mailing\MailSendersFacade\Quotas;
 
 
+use \Nettools\Mailing\MailPieces\Headers;
+
 
 
 
@@ -43,9 +45,9 @@ class SentHandler extends \Nettools\Mailing\MailSenders\SentHandlers\Handler
 	 *
      * @param string $to Recipient
      * @param string $subject Subject ; must be encoded if necessary
-     * @param string $headers Email headers
+     * @param Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 */
-	function notify($to, $subject, $headers)
+	function notify($to, $subject, Headers $headers)
 	{
 		$this->qi->add($this->name, time());
 	}

@@ -78,19 +78,19 @@ class MailHeadersTest extends \PHPUnit\Framework\TestCase
     public function testRemoveHeader()
     {
 		$h = new Headers(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld']);
-		$h->removeHeader('Bcc');
+		$h->remove('Bcc');
 		$this->assertEquals(['From' => 'user@domain.tld'], $h->toArray());
 		
 		$h = new Headers([]);
-		$h->removeHeader('Bcc');
+		$h->remove('Bcc');
 		$this->assertEquals([], $h->toArray());
 		
 		$h = new Headers(['From' => 'user@domain.tld']);
-		$h->removeHeader('Content-Type');
+		$h->remove('Content-Type');
 		$this->assertEquals(['From' => 'user@domain.tld'], $h->toArray());
 
 		$h = new Headers([]);
-		$h->removeHeader('');
+		$h->remove('');
 		$this->assertEquals([], $h->toArray());
     }
 	

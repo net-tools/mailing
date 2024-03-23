@@ -42,7 +42,8 @@ class Headers {
 	 */
 	function add($name, $value)
 	{
-		$this->_data[$name] = $value;
+		if ( $name )
+			$this->_data[$name] = $value;
 	}
 	
 	
@@ -54,7 +55,7 @@ class Headers {
 	 */
 	function merge(array $headers)
 	{
-		$this->_data[$name] = array_merge($this->_data, $headers);
+		$this->_data = array_merge($this->_data, $headers);
 	}
 	
 	
@@ -66,10 +67,10 @@ class Headers {
 	 */
 	function remove($name)
 	{
-		if ( count($this->_data) == 0 )
+		if ( !$name || (count($this->_data) == 0) )
 			return;
 		
-		if ( $name && array_key_exists($name, $this->_data) )
+		if ( array_key_exists($name, $this->_data) )
 			unset($this->_data[$name]);
 	}
 	
@@ -83,7 +84,7 @@ class Headers {
 	 */
 	function get($name)
 	{
-		return array_key_exists($name, $this->_data) ? $this->_data[$name] : null;
+		return $name && array_key_exists($name, $this->_data) ? $this->_data[$name] : null;
 	}
 	
 	

@@ -35,15 +35,19 @@ class Headers {
 	
 	
 	/**
-	 * Add a header (if already in `$_data`, value is replaced)
+	 * Set a header (if already in `$_data`, value is replaced)
 	 *
 	 * @param string $name
 	 * @param string $value
+	 * @return Header Return $this for chaining calls
 	 */
-	function add($name, $value)
+	function set($name, $value)
 	{
 		if ( $name )
 			$this->_data[$name] = $value;
+		
+		
+		return $this;
 	}
 	
 	
@@ -52,10 +56,29 @@ class Headers {
 	 * Add headers
 	 *
 	 * @param string[] $headers Associative array of headers to merge with `$_data`
+	 * @return Header Return $this for chaining calls
 	 */
 	function merge(array $headers)
 	{
 		$this->_data = array_merge($this->_data, $headers);
+		
+		
+		return $this;
+	}
+	
+	
+	
+	/**
+	 * Add headers from another object
+	 *
+	 * @param Headers $headers Other objet of class Headers
+	 * @return Header Return $this for chaining calls
+	 */
+	function mergeWith(Headers $headers)
+	{
+		$this->_data = array_merge($this->_data, $headers->toArray());
+		
+		return $this;
 	}
 	
 	
@@ -64,6 +87,7 @@ class Headers {
 	 * Remove a header 
 	 *
 	 * @param string $name
+	 * @return Header Return $this for chaining calls
 	 */
 	function remove($name)
 	{
@@ -72,6 +96,9 @@ class Headers {
 		
 		if ( array_key_exists($name, $this->_data) )
 			unset($this->_data[$name]);
+		
+		
+		return $this;
 	}
 	
 	
@@ -98,6 +125,19 @@ class Headers {
 	function __get($name)
 	{
 		return $this->get($name);
+	}
+	
+	
+	
+	/**
+	 * Magic setter
+	 *
+	 * @param string $name
+	 * @param string $value
+	 */
+	function __set($name, $value)
+	{
+		return $this->set($name, $value);
 	}
 	
 	
@@ -135,6 +175,19 @@ class Headers {
 	static function fromString($headers)
 	{
 		return new Headers(self::string2array($headers));
+	}
+	
+	
+	
+	/**
+	 * Create an Headers object from another object (clone)
+	 *
+	 * @param Headers $headers
+	 * @return Headers
+	 */
+	static function fromObject($headers)
+	{
+		return new Headers($headers->toArray());
 	}
 	
 	

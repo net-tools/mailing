@@ -22,6 +22,7 @@ use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailSenders\MailSender;
 use \Nettools\Core\Helpers\EncodingHelper;
 use \Nettools\Core\Helpers\FileHelper;
+use \Nettools\Mailing\MailPieces\Headers;
 
 
 
@@ -346,7 +347,7 @@ final class Mailer {
 	 * @param string $headers String of headers
 	 * @return string[] Return an array of headers
 	 */
-	public static function headersToArray($headers)
+	/*public static function headersToArray($headers)
 	{
 		// if no header, return empty array
 		if ( !$headers )
@@ -373,7 +374,7 @@ final class Mailer {
 		
 		
 		return $pheaders;
-	}
+	}*/
 	
 	
 	/**
@@ -382,7 +383,7 @@ final class Mailer {
 	 * @param string[] $headers Array of headers
 	 * @return string Return a string of headers
 	 */
-	public static function arrayToHeaders($headers)
+	/*public static function arrayToHeaders($headers)
 	{
 		// empty array : empty string returned
 		if ( count($headers) == 0 )
@@ -392,7 +393,7 @@ final class Mailer {
 			$headers[$kh] = "$kh: $h";
 			
 		return implode("\r\n", array_values($headers));
-	}
+	}*/
 	
 	
 	/**
@@ -402,10 +403,10 @@ final class Mailer {
 	 * @param string $hkey Header name
 	 * @return string|NULL Returns the value of header `$hkey` or NULL if header does not exists
 	 */
-	public static function getHeader(array $headers, $hkey)
+	/*public static function getHeader(array $headers, $hkey)
 	{
 		return array_key_exists($hkey, $headers) ? $headers[$hkey] : null;
-	}
+	}*/
 	
 	
 	/**
@@ -415,7 +416,7 @@ final class Mailer {
 	 * @param string $hkey Header name
 	 * @return string[] New headers array
 	 */
-	public static function removeHeader(array $headers, $hkey)
+	/*public static function removeHeader(array $headers, $hkey)
 	{
 		if ( count($headers) == 0 )
 			return [];
@@ -424,7 +425,7 @@ final class Mailer {
 			unset($headers[$hkey]);
 
 		return $headers;
-	}
+	}*/
 
 	
 	/**
@@ -435,13 +436,13 @@ final class Mailer {
 	 * @param string $value Header value
 	 * @return string[] New headers array
 	 */
-	public static function addHeader(array $headers, $name, $value)
+	/*public static function addHeader(array $headers, $name, $value)
 	{
 		if ( $name && $value )
 			$headers[$name] = $value;
 
 		return $headers;
-	}
+	}*/
 
 
 	/**
@@ -451,10 +452,10 @@ final class Mailer {
 	 * @param string[] $hs Headers array to append
 	 * @return string[] New headers array
 	 */
-	public static function addHeaders(array $headers, array $hs)
+	/*public static function addHeaders(array $headers, array $hs)
 	{
 		return array_merge($headers, $hs);
-	}
+	}*/
 
 
 	/**
@@ -751,7 +752,7 @@ final class Mailer {
 		// add required technical headers
 		self::render($mail);
 		
-		$this->sendmail_raw($to, $subject, $mail->getContent(), self::addHeader($mail->getAllHeaders(), 'From', $from), $destruct);
+		$this->sendmail_raw($to, $subject, $mail->getContent(), $mail->getAllHeaders()->set('From', $from), $destruct);
 	}
 	
 	
@@ -761,11 +762,11 @@ final class Mailer {
 	 * @param string|string[] $to Email recipient ; if multiple recipients, use a comma "," between addresses
 	 * @param string $subject Email subject
 	 * @param string $mail Email body as text
-	 * @param string[] $headers Headers array
+	 * @param \Nettools\Mailing\MailPieces\Headers $headers Headers array
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
 	 * @throws \Nettools\Mailing\Exception
 	 */
-	public function sendmail_raw($to, $subject, $mail, array $headers, $destruct = false)
+	public function sendmail_raw($to, $subject, $mail, Headers $headers, $destruct = false)
 	{
 		// if recipients is not an array, converting it to an array of recipients
 		if ( !is_array($to) )
@@ -780,17 +781,18 @@ final class Mailer {
 				unset($regs);
 				
 				
-				// chercher le nom de domaine From: xxx@domain.tld
-				$h2 = [];
-				if ( array_key_exists('From', $headers) && preg_match('/[^@]+(@[^>\\r\\n]+)/', $headers['From'], $regs) )
-					$h2['Message-ID'] = '<' . sha1(uniqid()) . $regs[1] . '>';
-				else
-					$h2['Message-ID'] = '<' . sha1(uniqid()) . '@' . md5(time()) . '.com>';
-								
-				$h2['Date'] = date("r");
+				$h2 = new Headers(['Date', date('r')]);
 				
+				// look for domain name From: xxx@domain.tld
+				// get From header, if defined
+				$from = $headers->get('From');
+				if ( $from && preg_match('/[^@]+(@[^>\\r\\n]+)/', $from, $regs) )
+					$h2->set('Message-ID', '<' . sha1(uniqid()) . $regs[1] . '>');
+				else
+					$h2->set('Message-ID', '<' . sha1(uniqid()) . '@' . md5(time()) . '.com>');				
 								
-				$this->getMailSender()->send($recipient, $subject, $mail, self::addHeaders($headers, $h2));
+				// sending mail with appropriate headers
+				$this->getMailSender()->send($recipient, $subject, $mail, Headers::fromObject($headers)->mergeWith($h2));
 			}
 			catch ( \Nettools\Mailing\Exception $e )
 			{

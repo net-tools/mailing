@@ -43,6 +43,7 @@ abstract class MailContent {
 	public function __construct($content_type)
 	{
 		$this->_content_type = $content_type;
+		$this->_custom_headers = new Headers([]);
 	}
 	
 	
@@ -72,40 +73,26 @@ abstract class MailContent {
      */
 	public function toString()
 	{
-		return Mailer::arrayToHeaders($this->getAllHeaders()) . "\r\n\r\n" . $this->getContent() . "\r\n\r\n";
+		return $this->getAllHeaders()->toString() . "\r\n\r\n" . $this->getContent() . "\r\n\r\n";
 	}
 	
 	
-	/**
-     * Set custom headers 
-     *
-     * To add one header at a time call addCustomHeader()
-     * 
-     * @see MailContent::addCustomHeader
-     * @param string[] $h Array of headers
-     */
-	public function setCustomHeaders(array $h)
-	{
-		$this->_custom_headers = $h;
-	}
-
-
 	/**
      * Add a custom header
      *
-     * @param string $k Header name to set
+     * @param string $n Header name to set
      * @param string $h Header value
      */
 	public function addCustomHeader($n, $h)
 	{
-		$this->_custom_headers[$n] = $h;
+		$this->_custom_headers->add($n, $h);
 	}
 
 
 	/**
-     * Get custom headers
+     * Get custom headers object
      * 
-     * @return string[] Get custom headers for this part
+     * @return Headers
      */
 	public function getCustomHeaders()
 	{
@@ -116,7 +103,7 @@ abstract class MailContent {
 	/** 
      * Get headers for this part ; abstract method to implemented in child classes
      *
-     * @return string[] Mandatory headers for this part
+     * @return Headers Mandatory headers for this part
      */
 	abstract public function getHeaders();
 	
@@ -126,11 +113,11 @@ abstract class MailContent {
      * 
      * All headers are returned, both mandatory headers and user-defined custom headers
      *
-     * @return string[] The headers of this part
+     * @return Headers The headers of this part
      */
 	public function getAllHeaders()
 	{
-		return array_merge($this->getHeaders(), $this->getCustomHeaders());
+		return Headers::fromObject($this->getHeaders())->mergeWith($this->_custom_headers);
 	}
 	
 	

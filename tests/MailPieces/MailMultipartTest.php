@@ -45,7 +45,7 @@ class MailMultipartTest extends \PHPUnit\Framework\TestCase
 
 
         // getHeaders
-		$this->assertEquals( [ 'Content-Type' => "multipart/alternative;\r\n boundary=\"" . $mcalt->getSeparator() . "\"" ], $mcalt->getHeaders());
+		$this->assertEquals( [ 'Content-Type' => "multipart/alternative;\r\n boundary=\"" . $mcalt->getSeparator() . "\"" ], $mcalt->getHeaders()->toArray());
 		
 		
 		// getContent

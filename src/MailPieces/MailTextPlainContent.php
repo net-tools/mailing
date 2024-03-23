@@ -66,9 +66,10 @@ class MailTextPlainContent extends MailContent {
      */
 	public function getHeaders()
 	{
-		return [	'Content-Type'				=> $this->getContentType() . "; charset=UTF-8",
+		return new Headers(
+				[	'Content-Type'				=> $this->getContentType() . "; charset=UTF-8",
 					'Content-Transfer-Encoding'	=> 'quoted-printable'
-				];
+				]);
 	}
 	
 	

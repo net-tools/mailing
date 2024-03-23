@@ -283,58 +283,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
     
     
-    public function testAddHeader()
-    {
-		$this->assertEquals(['From' => 'user@domain.tld' ], Mailer::addHeader([], 'From', 'user@domain.tld'));
-		$this->assertEquals(['From' => 'user@domain.tld' ], Mailer::addHeader(['From' => 'user@domain.tld'], '', ''));
-		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld' ], Mailer::addHeader(['From' => 'user@domain.tld'], 'To', 'other@domain.tld'));
-		$this->assertEquals(['From' => 'other-user@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], Mailer::addHeader(['From' => 'user@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], 'From', 'other-user@domain.tld'));
-		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\"", 'From' => 'user@domain.tld'], 
-                                Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""], 'From', 'user@domain.tld'));
-		$this->assertEquals(['Content-Type' => 'text/plain; charset=UTF-8' ], 
-                                Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""], 'Content-Type', 'text/plain; charset=UTF-8'));
-		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\"" ],
-                                Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""], 'Content-Type', "multipart/mixed;\r\n boundary=\"abc5678\""));
-		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\"", 'From' => 'user@domain.tld'],
-                                Mailer::addHeader(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\"\r\n other=\"testfolding\"", 'From' => 'user@domain.tld'], 
-												  'Content-Type', "multipart/mixed;\r\n boundary=\"abc5678\""));
-    }
-    
-    
-    public function testAddHeaders()
-    {
-		$this->assertEquals(['From' => 'user@domain.tld'], Mailer::addHeaders([], ['From' => 'user@domain.tld']));
-		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld', 'Bcc' => 'bcc-user@domain.tld'],
-							Mailer::addHeaders(['From' => 'user@domain.tld'], ['To' => 'other@domain.tld', 'Bcc' => 'bcc-user@domain.tld']));
-    }
-    
-    
-    public function testHeadersToArray()
-    {
-		$this->assertEquals(array('From'=>'user@domain.tld', 'Content-Type'=>"multipart/mixed;\r\n boundary=\"abc5678\""),
-                            Mailer::headersToArray("From: user@domain.tld\r\nContent-Type: multipart/mixed;\r\n boundary=\"abc5678\""));
-		$this->assertEquals(array(), Mailer::headersToArray(""));
-    }
-    
-    
-    public function testArrayToHeaders()
-    {
-		$this->assertEquals("From: user@domain.tld\r\nContent-Type: multipart/mixed;\r\n boundary=\"abc5678\"",
-                            Mailer::arrayToHeaders(array('From'=>'user@domain.tld', 'Content-Type'=>"multipart/mixed;\r\n boundary=\"abc5678\"")));
-		$this->assertEquals("", Mailer::arrayToHeaders(array()));
-    }
-    
-    
-    public function testRemoveHeader()
-    {
-		$this->assertEquals(['From' => 'user@domain.tld'], Mailer::removeHeader(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld'], 'Bcc'));
-		$this->assertEquals(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld'], Mailer::removeHeader(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld'], NULL));
-		$this->assertEquals([], Mailer::removeHeader([], 'Bcc'));
-		$this->assertEquals(['From' => 'user@domain.tld'], Mailer::removeHeader(['From' => 'user@domain.tld'], 'Content-Type'));
-		$this->assertEquals([], Mailer::removeHeader([], ''));
-    }
-    
-    
     public function testPatch()
     {
 		$obj = Mailer::addAttachment(
@@ -349,13 +297,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('<a href="http://www.web.com">texthtml</a> with appended value=nodata.', $obj->getPart(0)->getPart(1)->getHtml());
     }
     
-    
 
     public function testRender()
     {
 		$obj = Mailer::createText('textplain content');
 		Mailer::render($obj);
-		$this->assertMatchesRegularExpression('/MIME-Version: 1\\.0/', Mailer::arrayToHeaders($obj->getAllHeaders()));
+		$this->assertMatchesRegularExpression('/MIME-Version: 1\\.0/', $obj->getAllHeaders()->toString());
     }
     
     
@@ -469,7 +416,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$obj = new MailTextPlainContent('textplain content');
 		$ml = new Mailer(new Virtual());
 		Mailer::render($obj);
-		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), Mailer::addHeader($obj->getAllHeaders(), 'From' , 'unit-test@php.com'), false); 
+		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), $obj->getAllHeaders()->set('From', 'unit-test@php.com'), false); 
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));
 		
@@ -523,7 +470,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         // by setting the mailsender, we create another strategy; previously sent emails are lost
         $ml->setMailSender(new Virtual());
 		Mailer::render($obj);
-		$ml->sendmail_raw(array('user1@test.com','user2@test.com'), 'test subject', $obj->getContent(), Mailer::addHeader($obj->getAllHeaders(), 'From', 'unit-test@php.com'), false); 
+		$ml->sendmail_raw(array('user1@test.com','user2@test.com'), 'test subject', $obj->getContent(), $obj->getAllHeaders()->set('From', 'unit-test@php.com'), false); 
 		$sent = $ml->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));    
     }

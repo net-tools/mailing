@@ -30,7 +30,7 @@ class MailTextHtmlContentTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals( [
 								'Content-Type' => 'text/html; charset=UTF-8',
 								'Content-Transfer-Encoding' => 'quoted-printable'
-							], $mc->getHeaders());
+							], $mc->getHeaders()->toArray());
 
 
 		$mc = new MailTextHtmlContent('<b>Test</b> é.');

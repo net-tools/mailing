@@ -14,40 +14,44 @@ class MailHeadersTest extends \PHPUnit\Framework\TestCase
     public function testAddHeader()
     {
 		$h = new Headers([]);
-		$h->add('From', 'user@domain.tld');		
+		$h->set('From', 'user@domain.tld');		
+		$this->assertEquals(['From' => 'user@domain.tld' ], $h->toArray());
+
+		$h = new Headers([]);
+		$h->From = 'user@domain.tld';
 		$this->assertEquals(['From' => 'user@domain.tld' ], $h->toArray());
 
 		$h = new Headers(['From' => 'user@domain.tld']);
-		$h->add('', '');		
+		$h->set('', '');		
 		$this->assertEquals(['From' => 'user@domain.tld' ], $h->toArray());
 		
 		$h = new Headers(['From' => 'user@domain.tld']);
-		$h->add('To', 'other@domain.tld');		
+		$h->set('To', 'other@domain.tld');		
 		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld' ], $h->toArray());
 
 		$h = new Headers(['From' => 'user@domain.tld', 'Bcc' => 'bcc-user@domain.tld']);
-		$h->add('From', 'other-user@domain.tld');		
+		$h->set('From', 'other-user@domain.tld');		
 		$this->assertEquals(['From' => 'other-user@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], $h->toArray());
 
 		$h = new Headers(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""]);
-		$h->add('From', 'other-user@domain.tld');		
+		$h->set('From', 'user@domain.tld');		
 		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\"", 'From' => 'user@domain.tld'], $h->toArray());
 							
 		$h = new Headers(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""]);
-		$h->add('Content-Type', 'text/plain; charset=UTF-8');		
+		$h->set('Content-Type', 'text/plain; charset=UTF-8');		
 		$this->assertEquals(['Content-Type' => 'text/plain; charset=UTF-8'], $h->toArray()); 
 		
 		$h = new Headers(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\""]);
-		$h->add('Content-Type', "multipart/mixed;\r\n boundary=\"abc5678\"");		
+		$h->set('Content-Type', "multipart/mixed;\r\n boundary=\"abc5678\"");		
 		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\""], $h->toArray());
 
 		$h = new Headers(['Content-Type' => "multipart/mixed;\r\n boundary=\"xyz1234\"\r\n other=\"testfolding\"", 'From' => 'user@domain.tld']);
-		$h->add('Content-Type', "multipart/mixed;\r\n boundary=\"abc5678\"");		
+		$h->set('Content-Type', "multipart/mixed;\r\n boundary=\"abc5678\"");		
 		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\"", 'From' => 'user@domain.tld'], $h->toArray());
     }
     
     
-    public function testAddHeaders()
+    public function testMerge()
     {
 		$h = new Headers();
 		$h->merge(['From' => 'user@domain.tld']);
@@ -56,6 +60,18 @@ class MailHeadersTest extends \PHPUnit\Framework\TestCase
 		$h = new Headers(['From' => 'user@domain.tld']);
 		$h->merge(['To' => 'other@domain.tld', 'Bcc' => 'bcc-user@domain.tld']);		
 		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], $h->toArray());
+    }
+    
+    
+    public function testMergeWith()
+    {
+		$h = new Headers();
+		$h2 = new Headers(['From' => 'user@domain.tld']);
+		$this->assertEquals(['From' => 'user@domain.tld'], $h->mergeWith($h2)->toArray());
+		
+		$h = new Headers(['From' => 'user@domain.tld']);
+		$h2 = new Headers(['To' => 'other@domain.tld', 'Bcc' => 'bcc-user@domain.tld']);
+		$this->assertEquals(['From' => 'user@domain.tld', 'To' => 'other@domain.tld', 'Bcc' => 'bcc-user@domain.tld'], $h->mergeWith($h2)->toArray());
     }
     
     
@@ -118,6 +134,16 @@ class MailHeadersTest extends \PHPUnit\Framework\TestCase
 	{
 		$h = Headers::fromString("From: user@domain.tld\r\nBcc: user-bcc@domain.tld");
 		$this->assertEquals(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld'], $h->toArray());
+	}
+    
+    
+	public function testFromObject()
+	{
+		$h = Headers::fromString("From: user@domain.tld\r\nBcc: user-bcc@domain.tld");
+		$h2 = Headers::fromObject($h);		
+		$h2->set('From', 'me@here.com');
+		$this->assertEquals(['From' => 'user@domain.tld', 'Bcc' => 'user-bcc@domain.tld'], $h->toArray());
+		$this->assertEquals(['From' => 'me@here.com', 'Bcc' => 'user-bcc@domain.tld'], $h2->toArray());
 	}
     
     

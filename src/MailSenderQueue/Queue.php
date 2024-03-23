@@ -5,6 +5,8 @@ namespace Nettools\Mailing\MailSenderQueue;
 
 
 use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailPieces\Headers;
+
 
 
 
@@ -39,10 +41,10 @@ class Queue {
 	 * @param int $index 0-index of email to sent in queue
 	 * @param string $bcc Optionnal bcc recipient to add
 	 * @param string $to Overriding `To` recipient 
-     * @param string[] $suppl_headers Optionnal supplementary headers
+     * @param \Nettools\Mailing\MailPieces\Headers $suppl_headers Optionnal supplementary headers
      * @throws \Nettools\Mailing\Exception
 	 */
-	private function _sendFromQueue(Mailer $mailer, $index, $bcc = NULL, $to = NULL, $suppl_headers = [])
+	private function _sendFromQueue(Mailer $mailer, $index, $bcc = NULL, $to = NULL, ?\Nettools\Mailing\MailPieces\Headers $suppl_headers)
 	{
 		$err = null;
 		$root = $this->root;
@@ -53,16 +55,16 @@ class Queue {
 		$mail = $this->_mailFromQueue($index);
 		
 		
-		// create a copy of headers (as we may add a BCC, but we don't want to update the original headers)
-		$headers = Mailer::headersToArray($mail->data->headers);
+		// read headers string 
+		$headers = Headers::fromString($mail->data->headers);
 		
 		// handle bcc 
 		if ( !is_null($bcc) )
-			$headers = Mailer::addHeader($headers, 'Bcc', $bcc);
+			$headers->set('Bcc', $bcc);
 
 		// if supplementary headers
-		if ( $suppl_headers )
-			$headers = Mailer::addHeaders($headers, $suppl_headers);
+		if ( !is_null($suppl_headers) )
+			$headers->mergeWith($suppl_headers);
 
 		
 
@@ -131,7 +133,7 @@ class Queue {
 				
 		
 		// write headers and data
-		$data->headers = Mailer::arrayToHeaders(Mailer::addHeader(Mailer::headersToArray($data->headers), 'X-MailSenderQueue', $qid));
+		$data->headers = Headers::fromString($data->headers)->set('X-MailSenderQueue', $qid)->toString();
 		
 		$d = new Data($this, $mid);
 		$d->from($data);
@@ -343,7 +345,7 @@ class Queue {
 							'to'		=> $to, 
 							'subject'	=> $subject,
 							'status'	=> Data::STATUS_TOSEND,
-							'headers'	=> Mailer::arrayToHeaders(Mailer::addHeader($mail->getAllHeaders(), 'From', $from))
+							'headers'	=> $mail->getAllHeaders()->set('From', $from)->toString()
 						]
 					);
 	}
@@ -354,10 +356,10 @@ class Queue {
      * Send a batch of email through a Mailer instance, and optionnally add headers
      *
      * @param Mailer $mailer Mailer instance to send email through
-     * @param string[] $suppl_headers Optionnal supplementary headers
+     * @param \Nettools\Mailing\MailPieces\Headers $suppl_headers Optionnal supplementary headers
      * @throws \Nettools\Mailing\Exception
      */
-	function send(Mailer $mailer, $suppl_headers = [])
+	function send(Mailer $mailer, ?Headers $suppl_headers)
 	{
 		// are the emails to sent ?
 		if ( $this->sendOffset < $this->count )

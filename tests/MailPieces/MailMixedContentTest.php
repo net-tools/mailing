@@ -87,7 +87,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 					'Content-Disposition' 		=> "attachment;\r\n filename=\"att.txt\""
 				],
 				
-                $matt->getHeaders()
+                $matt->getHeaders()->toArray()
 			);
 		
 		
@@ -120,7 +120,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 					'Content-Disposition' 		=> "attachment;\r\n filename=\"att.txt\""
 				],
 				
-                $matt->getHeaders()
+                $matt->getHeaders()->toArray()
 			);
 		
 		
@@ -154,7 +154,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 				 	'Content-ID'				=> '<cid-456>'
 				],
             
-				$membed->getHeaders()
+				$membed->getHeaders()->toArray()
 			);
 				
 				
@@ -188,7 +188,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 				 	'Content-ID'				=> '<cid-456>'
 				],
             
-				$membed->getHeaders()
+				$membed->getHeaders()->toArray()
 			);
 
 		

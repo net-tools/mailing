@@ -14,6 +14,10 @@ namespace Nettools\Mailing\MailSenders\SentHandlers;
 
 
 
+use \Nettools\Mailing\MailPieces\Headers;
+
+
+
 
 
 /** 
@@ -26,9 +30,9 @@ abstract class Handler
 	 *
      * @param string $to Recipient
      * @param string $subject Subject ; must be encoded if necessary
-     * @param string[] $headers Email headers
+     * @param Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 */
-	abstract function notify($to, $subject, array $headers);
+	abstract function notify($to, $subject, Headers $headers);
 }
 
 

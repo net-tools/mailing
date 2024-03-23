@@ -63,13 +63,14 @@ class MailTextHtmlContent extends MailContent {
 	/** 
      * Get headers for this part ; abstract method to implemented in child classes
      *
-     * @return string[] Mandatory headers for this part
+     * @return Headers Mandatory headers for this part
      */
 	public function getHeaders()
 	{
-		return 	[ 	'Content-Type'				=> $this->getContentType() . "; charset=UTF-8",
+		return new Headers ([
+					'Content-Type'				=> $this->getContentType() . "; charset=UTF-8",
 					'Content-Transfer-Encoding'	=> 'quoted-printable'
-				 ];
+				 ]);
 	}
 	
 	

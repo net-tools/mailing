@@ -12,6 +12,9 @@
 namespace Nettools\Mailing;
 
 
+use \Nettools\Mailing\MailPieces\Headers;
+
+
 
 
 
@@ -376,19 +379,19 @@ class MailReaderEngine
 	
 	
 	/** 
-	 * Decode header data that may have been encoded with mb_encode_mimeheader (such as `to`, `from`, `subject` etc.)
+	 * Decode headers object whose data may have been encoded with mb_encode_mimeheader (such as `to`, `from`, `subject` etc.)
 	 *
-	 * @param string[] $headers
-	 * @return string[]
+	 * @param Nettools\Mailing\MailPieces\Headers $headers
+	 * @return Nettools\Mailing\MailPieces\Headers
 	 */
-	static function decodeHeaders(array $headers)
+	static function decodeHeaders(Headers $headers)
 	{
 		$ret = [];
 		
-		foreach ( $headers as $k=>$h )
+		foreach ( $headers->toArray() as $k=>$h )
 			$ret[$k] = mb_decode_mimeheader($h);
 		
-		return $ret;
+		return new Headers($ret);
 	}
 	
 	
@@ -411,7 +414,7 @@ class MailReaderEngine
 			throw new MailReaderError('Headers cannot be extracted.');
 		
 		// convert headers string to array
-		$hobj = MailPieces\Headers::fromString($headers);
+		$hobj = Headers::fromString($headers);
 
 		
 		// handle content according to it's content-type

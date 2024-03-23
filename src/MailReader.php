@@ -13,6 +13,7 @@ namespace Nettools\Mailing;
 
 
 use \Nettools\Mailing\MailPieces\MailContent;
+use \Nettools\Mailing\MailPieces\Headers;
 
 
 
@@ -24,7 +25,7 @@ use \Nettools\Mailing\MailPieces\MailContent;
 class MailReader
 {
 	public $email = null;
-	public $headers = [];
+	public $headers = null;
 	
 	
 	
@@ -34,7 +35,7 @@ class MailReader
 	 * @param MailPieces\MailContent $mail
 	 * @param string[] $headers
 	 */
-	function __construct(MailContent $email, array $headers)
+	function __construct(MailContent $email, Headers $headers)
 	{
 		$this->email = $email;
 		$this->headers = $headers;

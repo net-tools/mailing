@@ -58,6 +58,10 @@ class MailHeadersTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(['From' => '=?UTF-8?B?w6lyaWM=?= <user@domain.tld>' ], $h->toArray());
 
 		$h = new Headers([]);
+		$h->setEncodedRecipient('From', 'me <me@domain.tld>');
+		$this->assertEquals(['From' => 'me <me@domain.tld>' ], $h->toArray());
+
+		$h = new Headers([]);
 		$h->set('Subject', 'message to éric', true);
 		$this->assertEquals(['Subject' => 'message to =?UTF-8?B?w6lyaWM=?=' ], $h->toArray());
 

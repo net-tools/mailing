@@ -44,9 +44,7 @@ class Headers {
 	 */
 	function set($name, $value, $encode = false)
 	{
-		$value = is_null($value) ? '' : $value;
-		
-		if ( $name )
+		if ( !is_null($value) && $name )
 			$this->_data[$name] = $encode ? mb_encode_mimeheader($value) : $value;
 		
 		
@@ -79,13 +77,16 @@ class Headers {
 	function setEncodedRecipient($name, $value)
 	{
 		// if email address in format "friendlyname <address>"
-		if ( !is_null($value) && preg_match("/(.*)<(.*)>/", $value, $regs) )
-		{
-			$friendly = trim($regs[1]);
-			$addr = trim($regs[2]);
+		if ( !is_null($value) )
+			if ( preg_match("/(.*)<(.*)>/", $value, $regs) )
+			{
+				$friendly = trim($regs[1]);
+				$addr = trim($regs[2]);
 
-			$this->set($name, mb_encode_mimeheader($friendly) . " <$addr>");
-		}
+				$this->set($name, mb_encode_mimeheader($friendly) . " <$addr>");
+			}
+			else
+				$this->set($name, $value);		
 		
 		
 		return $this;

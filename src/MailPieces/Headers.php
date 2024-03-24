@@ -47,7 +47,7 @@ class Headers {
 		$value = is_null($value) ? '' : $value;
 		
 		if ( $name )
-			$this->_data[$name] = $encode ? $value : mb_encode_mimeheader($value);
+			$this->_data[$name] = $encode ? mb_encode_mimeheader($value) : $value;
 		
 		
 		return $this;

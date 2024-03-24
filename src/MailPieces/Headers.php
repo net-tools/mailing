@@ -76,8 +76,8 @@ class Headers {
 	 */
 	function setEncodedRecipient($name, $value)
 	{
-		// if email address in format "friendlyname <address>"
 		if ( !is_null($value) )
+			// if email address in format "friendlyname <address>"
 			if ( preg_match("/(.*)<(.*)>/", $value, $regs) )
 			{
 				$friendly = trim($regs[1]);
@@ -85,6 +85,8 @@ class Headers {
 
 				$this->set($name, mb_encode_mimeheader($friendly) . " <$addr>");
 			}
+		
+			// email address has no friendly name part, setting the value without any encoding
 			else
 				$this->set($name, $value);		
 		

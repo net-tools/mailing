@@ -109,7 +109,7 @@ abstract class MailSender {
 	function sendTo($to, $subject, $mail, Headers $headers)
 	{
 		// send the email
-		$this->doSend($this->extractRecipient($to), mb_encode_mimeheader($subject), $mail, $headers->toString());
+		$this->doSend(Mailer::getAddress($to), mb_encode_mimeheader($subject), $mail, $headers->toString());
 		
 		// event : 1 mail sent
 		$this->handleSentEvent($to, $subject, $headers);
@@ -220,9 +220,9 @@ abstract class MailSender {
      */
 	function handleHeaders_Priority($to, $subject, $mail, Headers $headers)
 	{
-		//$headers = Mailer::addHeader($headers, "X-Priority: 1");
-//		$headers = Mailer::addHeader($headers, "X-MSMail-Priority: High"); //nécessite X-MimeOLE qui indique que le message a été rédigé avec outlook
-		//$headers = Mailer::addHeader($headers, "Importance: High");
+/*		$headers->set('X-Priority', '1')
+				->set('X-MSMail-Priority', '1')
+				->set('Importance', 'High');*/
 	}
 	
 	
@@ -257,22 +257,6 @@ abstract class MailSender {
 	function handleFromHeaderEncoding(Headers $headers)
 	{
 		$headers->encodeRecipient('From');
-	}
-	
-	
-	
-	/**
-	 * From a mail recipient that may be formatted as `"friendly name" <recipient@domain.tld>`, extract email part
-	 *
-	 * @param string $to Full email recipient, including friendy name
-	 * @return string Returns email recipient
-	 */
-	function extractRecipient($to)
-	{
-		if ( preg_match("/<(.*)>/", $to, $regs) )
-			return $regs[1];
-		else
-			return $to;
 	}
 	
 	

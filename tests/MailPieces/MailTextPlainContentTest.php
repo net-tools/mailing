@@ -43,13 +43,13 @@ class MailTextPlainContentTest extends \PHPUnit\Framework\TestCase
 
 
 		$mc = new MailTextPlainContent('Test é.');
-		$mc->addCustomHeader('Bcc', 'user1@gmail.com');
-		$mc->addCustomHeader('Bcc', 'user2@gmail.com'); // overrides previously defined header
-		$this->assertEquals( [ 'Bcc' => 'user2@gmail.com' ], $mc->getCustomHeaders()->toArray());
+		$mc->headers->set('Bcc', 'user1@gmail.com');
+		$mc->headers->set('Bcc', 'user2@gmail.com'); // overrides previously defined header
+		$this->assertEquals( [ 'Bcc' => 'user2@gmail.com' ], $mc->headers->toArray());
 
 
 		$mc = new MailTextPlainContent('Test é.');
-		$mc->addCustomHeader('Bcc', 'user2@gmail.com');
+		$mc->headers->set('Bcc', 'user2@gmail.com');
 		$this->assertEquals([
 			'Content-Type'	=> 'text/plain; charset=UTF-8',
 			'Content-Transfer-Encoding' => 'quoted-printable',

@@ -26,8 +26,8 @@ abstract class MailContent {
     /** @var string Mime type of this part */
     protected $_content_type = NULL;
 	
-    /** @var string[] Array of custom headers (set by the user) for this part */
-    protected $_custom_headers = [];
+    /** @var Headers Object holding headers for this mail part */
+    public $headers = NULL;
 
 // ----- PROTECTED -----]
 
@@ -43,7 +43,7 @@ abstract class MailContent {
 	public function __construct($content_type)
 	{
 		$this->_content_type = $content_type;
-		$this->_custom_headers = new Headers([]);
+		$this->headers = new Headers([]);
 	}
 	
 	
@@ -77,31 +77,10 @@ abstract class MailContent {
 	}
 	
 	
-	/**
-     * Add a custom header
-     *
-     * @param string $n Header name to set
-     * @param string $h Header value
-     */
-	public function addCustomHeader($n, $h)
-	{
-		$this->_custom_headers->set($n, $h);
-	}
-
-
-	/**
-     * Get custom headers object
-     * 
-     * @return Headers
-     */
-	public function getCustomHeaders()
-	{
-		return $this->_custom_headers;
-	}
-
-
 	/** 
      * Get headers for this part ; abstract method to implemented in child classes
+	 *
+	 * Must not be misunderstood with $headers property, which is for user-defined headers
      *
      * @return Headers Mandatory headers for this part
      */
@@ -111,13 +90,13 @@ abstract class MailContent {
 	/** 
      * Get all headers for this part
      * 
-     * All headers are returned, both mandatory headers and user-defined custom headers
+     * All headers are returned, both mandatory headers and user-defined headers
      *
      * @return Headers The headers of this part
      */
 	public function getAllHeaders()
 	{
-		return Headers::fromObject($this->getHeaders())->mergeWith($this->_custom_headers);
+		return Headers::fromObject($this->getHeaders())->mergeWith($this->headers);
 	}
 	
 	

@@ -340,123 +340,6 @@ final class Mailer {
 		return MailMultipart::fromArray("related", $mail, $objs);
 	}
 	
-	
-	/**
-	 * Transform a headers string to an associative array
-	 * 
-	 * @param string $headers String of headers
-	 * @return string[] Return an array of headers
-	 */
-	/*public static function headersToArray($headers)
-	{
-		// if no header, return empty array
-		if ( !$headers )
-			return array();
-			
-			
-        // unfolding of headers : some headers may span over multiple lines ; in that case, following lines of the header spanned begin with at least a space or tab
-		$pheaders = array();
-		$headers = explode("\n", str_replace("\r\n", "\n", $headers));
-		$last = NULL;
-		foreach ( $headers as $line )
-		{
-			// if begin of line is a space or tab, this is a folded header ; concatenate it to the previous header line read
-			if ( preg_match("/^[ ]|\t/", $line) && $last )
-				$pheaders[$last] .= "\r\n" . $line;
-			else
-			{
-				// default case : explode header name/value
-				$line = explode(':', $line, 2);
-				$last = trim($line[0]);
-				$pheaders[$last] = trim($line[1]);
-			}
-		}
-		
-		
-		return $pheaders;
-	}*/
-	
-	
-	/**
-	 * Transform a array of headers to a string
-	 * 
-	 * @param string[] $headers Array of headers
-	 * @return string Return a string of headers
-	 */
-	/*public static function arrayToHeaders($headers)
-	{
-		// empty array : empty string returned
-		if ( count($headers) == 0 )
-			return "";
-			
-		foreach ( $headers as $kh=>$h )
-			$headers[$kh] = "$kh: $h";
-			
-		return implode("\r\n", array_values($headers));
-	}*/
-	
-	
-	/**
-	 * Get a specific header value
-	 *
-	 * @param string[] $headers Headers array
-	 * @param string $hkey Header name
-	 * @return string|NULL Returns the value of header `$hkey` or NULL if header does not exists
-	 */
-	/*public static function getHeader(array $headers, $hkey)
-	{
-		return array_key_exists($hkey, $headers) ? $headers[$hkey] : null;
-	}*/
-	
-	
-	/**
-	 * Remove a header
-	 * 
-	 * @param string[] $headers Headers array
-	 * @param string $hkey Header name
-	 * @return string[] New headers array
-	 */
-	/*public static function removeHeader(array $headers, $hkey)
-	{
-		if ( count($headers) == 0 )
-			return [];
-		
-		if ( $hkey && array_key_exists($hkey, $headers) )
-			unset($headers[$hkey]);
-
-		return $headers;
-	}*/
-
-	
-	/**
-	 * Add a header to a headers array
-	 * 
-	 * @param string[] $headers Headers array
-	 * @param string $name Header name
-	 * @param string $value Header value
-	 * @return string[] New headers array
-	 */
-	/*public static function addHeader(array $headers, $name, $value)
-	{
-		if ( $name && $value )
-			$headers[$name] = $value;
-
-		return $headers;
-	}*/
-
-
-	/**
-	 * Add several headers to existing headers array
-	 * 
-	 * @param string[] $headers Headers array
-	 * @param string[] $hs Headers array to append
-	 * @return string[] New headers array
-	 */
-	/*public static function addHeaders(array $headers, array $hs)
-	{
-		return array_merge($headers, $hs);
-	}*/
-
 
 	/**
 	 * Patch the email after it has been constructed.
@@ -635,7 +518,7 @@ final class Mailer {
 	 */
 	public static function render(MailContent $mail)
 	{
-		$mail->addCustomHeader('MIME-Version', '1.0');
+		$mail->headers->set('MIME-Version', '1.0');
 		return $mail;
 	}
 	

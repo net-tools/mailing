@@ -39,12 +39,15 @@ class Headers {
 	 *
 	 * @param string $name
 	 * @param string $value
-	 * @return Header Return $this for chaining calls
+	 * @param bool $encode If set to `true`, the value is encoded with `mb_encode_mimeheader`
+	 * @return Headers Return $this for chaining calls
 	 */
-	function set($name, $value)
+	function set($name, $value, $encode = false)
 	{
+		$value = is_null($value) ? '' : $value;
+		
 		if ( $name )
-			$this->_data[$name] = $value;
+			$this->_data[$name] = $encode ? $value : mb_encode_mimeheader($value);
 		
 		
 		return $this;
@@ -53,10 +56,61 @@ class Headers {
 	
 	
 	/**
+	 * Set and encode a header (if already in `$_data`, value is replaced)
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @return Headers Return $this for chaining calls
+	 */
+	function setEncoded($name, $value)
+	{
+		return $this->set($name, $value, true);
+	}
+	
+	
+	
+	/**
+	 * Set and encode a recipient header (only friendly name part is encoded)
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @return Headers Return $this for chaining calls
+	 */
+	function setEncodedRecipient($name, $value)
+	{
+		// if email address in format "friendlyname <address>"
+		if ( !is_null($value) && preg_match("/(.*)<(.*)>/", $value, $regs) )
+		{
+			$friendly = trim($regs[1]);
+			$addr = trim($regs[2]);
+
+			$this->set($name, mb_encode_mimeheader($friendly) . " <$addr>");
+		}
+		
+		
+		return $this;
+	}
+	
+	
+	
+	/**
+	 * Encode a recipient header
+	 *
+	 * @param string $name
+	 * @return Headers Return $this for chaining calls
+	 */
+	function encodeRecipient($name)
+	{
+		return $this->setEncodedRecipient($name, $this->get($name));
+	}
+	
+	
+	
+	/**
 	 * Add headers
 	 *
 	 * @param string[] $headers Associative array of headers to merge with `$_data`
-	 * @return Header Return $this for chaining calls
+	 * @return Headers Return $this for chaining calls
 	 */
 	function merge(array $headers)
 	{
@@ -72,7 +126,7 @@ class Headers {
 	 * Add headers from another object
 	 *
 	 * @param Headers $headers Other objet of class Headers
-	 * @return Header Return $this for chaining calls
+	 * @return Headers Return $this for chaining calls
 	 */
 	function mergeWith(Headers $headers)
 	{
@@ -87,7 +141,7 @@ class Headers {
 	 * Remove a header 
 	 *
 	 * @param string $name
-	 * @return Header Return $this for chaining calls
+	 * @return Headers Return $this for chaining calls
 	 */
 	function remove($name)
 	{
@@ -99,6 +153,23 @@ class Headers {
 		
 		
 		return $this;
+	}
+	
+	
+	
+	/**
+	 * Get decoded value for a header ; is not present, NULL is returned
+	 *
+	 * @param string $name
+	 * @return string|NULL
+	 */
+	function getDecoded($name)
+	{
+		$v = $this->get($name);
+		if ( !is_null($v) )
+			return mb_decode_mimeheader($v);
+		else
+			return NULL;
 	}
 	
 	

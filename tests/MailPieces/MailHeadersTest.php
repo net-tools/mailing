@@ -11,7 +11,7 @@ use \Nettools\Mailing\MailPieces\Headers;
 
 class MailHeadersTest extends \PHPUnit\Framework\TestCase
 {
-    public function testAddHeader()
+    public function testSetHeader()
     {
 		$h = new Headers([]);
 		$h->set('From', 'user@domain.tld');		
@@ -49,6 +49,32 @@ class MailHeadersTest extends \PHPUnit\Framework\TestCase
 		$h->set('Content-Type', "multipart/mixed;\r\n boundary=\"abc5678\"");		
 		$this->assertEquals(['Content-Type' => "multipart/mixed;\r\n boundary=\"abc5678\"", 'From' => 'user@domain.tld'], $h->toArray());
     }
+    
+    
+    public function testEncoding()
+    {
+		$h = new Headers([]);
+		$h->setEncodedRecipient('From', 'éric <user@domain.tld>');
+		$this->assertEquals(['From' => '=?UTF-8?B?w6lyaWM=?= <user@domain.tld>' ], $h->toArray());
+
+		$h = new Headers([]);
+		$h->set('Subject', 'message to éric', true);
+		$this->assertEquals(['Subject' => 'message to =?UTF-8?B?w6lyaWM=?=' ], $h->toArray());
+
+		$h = new Headers([]);
+		$h->setEncoded('Subject', 'message to éric');
+		$this->assertEquals(['Subject' => 'message to =?UTF-8?B?w6lyaWM=?=' ], $h->toArray());
+		
+ 		$h = new Headers(['From' => 'éric <user@domain.tld>']);
+		$h->encodeRecipient('From');
+		$this->assertEquals(['From' => '=?UTF-8?B?w6lyaWM=?= <user@domain.tld>' ], $h->toArray());
+
+		$h = new Headers(['From' => '=?UTF-8?B?w6lyaWM=?= <user@domain.tld>']);
+		$this->assertEquals(['From' => 'éric <user@domain.tld>' ], $h->getDecoded('From'));
+
+		$h = new Headers(['Subject' => 'message to =?UTF-8?B?w6lyaWM=?=']);
+		$this->assertEquals(['Subject' => 'message to éric' ], $h->getDecoded('Subject'));
+   }
     
     
     public function testMerge()

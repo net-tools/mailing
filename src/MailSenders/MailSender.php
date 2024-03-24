@@ -88,8 +88,8 @@ abstract class MailSender {
 	/**
      * Send the email (to be implemented in child classes)
      *
-     * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $to Recipient (no friendly name, only address part)
+     * @param string $subject Subject (must be encoded)
      * @param string $mail String containing the email data
      * @param string $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
@@ -102,14 +102,14 @@ abstract class MailSender {
      * Send the email to a recipient and notify about sent event
      *
      * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
 	function sendTo($to, $subject, $mail, Headers $headers)
 	{
 		// send the email
-		$this->doSend($this->extractRecipient($to), $subject, $mail, $headers->toString());
+		$this->doSend($this->extractRecipient($to), mb_encode_mimeheader($subject), $mail, $headers->toString());
 		
 		// event : 1 mail sent
 		$this->handleSentEvent($to, $subject, $headers);
@@ -125,7 +125,7 @@ abstract class MailSender {
 	 * recipients, we must send as many emails. When using Php Mail function, it processes Bcc headers that way.
      *
      * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
@@ -147,8 +147,8 @@ abstract class MailSender {
 			$bcc_to = explode(',', $bcc);
 			foreach ( $bcc_to as $bcc )
 			{
-				// add bcc recipient one by one
-				$h = Headers::fromObject($headers)->set('Bcc', $this->encodeAddress(trim($bcc)));
+				// add bcc recipient one by one, value is encoded
+				$h = Headers::fromObject($headers)->setEncodedRecipient('Bcc', trim($bcc));
 				$this->sendTo(trim($bcc), $subject, $mail, $h);
 			}
 		}
@@ -160,7 +160,7 @@ abstract class MailSender {
      * Prepare for sending the email (we handle here the Bcc case)
      *
      * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
@@ -179,8 +179,8 @@ abstract class MailSender {
 	/**
      * `Sent` event notify
      *
-     * @param string $to Recipient ; must be already encoded if required
-     * @param string $subject Subject ; must be already encoded if required
+     * @param string $to Recipient
+     * @param string $subject Subject
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
 	function handleSentEvent($to, $subject, Headers $headers)
@@ -188,7 +188,7 @@ abstract class MailSender {
 		$evts = $this->getSentEventHandlers();
 		
 		foreach ( $evts as $evt )
-			$evt->notify(mb_decode_mimeheader($to), mb_decode_mimeheader($subject), $headers);
+			$evt->notify($to, $subject, $headers);
 	}
 	
 	
@@ -196,16 +196,16 @@ abstract class MailSender {
 	/**
      * Add the To and Subject headers to the headers string
      * 
-     * @param string $to Recipient ; must be already encoded if required
-     * @param string $subject Subject ; must be encoded if required
+     * @param string $to Recipient
+     * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
 	function handleHeaders_ToSubject($to, $subject, $mail, Headers $headers)
 	{
 		$headers
-			->set('To', $to)
-			->set('Subject', $subject);
+			->setEncodedRecipient('To', $to)
+			->setEncoded('Subject', $subject);
 	}
 	
 	
@@ -213,8 +213,8 @@ abstract class MailSender {
 	/**
      * Handle priority ; we always set high priorty at the moment
      * 
-     * @param string $to Recipient ; must be already encoded if required
-     * @param string $subject Subject ; must be already encoded if required
+     * @param string $to Recipient
+     * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
@@ -228,10 +228,10 @@ abstract class MailSender {
 	
 	
 	/**
-     * Handle headers modifications (to/subject/priority)
+     * Handle headers modifications (from/to/subject/priority)
      * 
-     * @param string $to Recipient ; must be already encoded if required
-     * @param string $subject Subject ; must be already encoded if required
+     * @param string $to Recipient
+     * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
@@ -256,43 +256,7 @@ abstract class MailSender {
      */
 	function handleFromHeaderEncoding(Headers $headers)
 	{
-		$headers->set('From', $this->encodeAddress($headers->get('From')));
-	}
-	
-	
-	
-	/**
-	 * Encode address
-	 * 
-	 * @param string $to Email address in format `friendly name <recipient@domain.tld>`
-	 * @return string Email address string encoded
-	 */
-	function encodeAddress($to)
-	{
-		// if email address in format "friendlyname <address>"
-		if ( preg_match("/(.*)<(.*)>/", $to, $regs) )
-		{
-			$friendly = trim($regs[1]);
-			$addr = trim($regs[2]);
-			
-			return mb_encode_mimeheader($friendly) . " <$addr>";
-		}
-		else
-			return $to;
-	}
-	
-	
-	
-	/**
-     * Handle headers encoding (to/subject) and update arguments
-     * 
-     * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
-     */
-	function handleToSubjectEncoding(&$to, &$subject)
-	{
-		$to = $this->encodeAddress($to);
-		$subject = mb_encode_mimeheader($subject);
+		$headers->encodeRecipient('From');
 	}
 	
 	
@@ -327,17 +291,11 @@ abstract class MailSender {
 		// if init OK
 		if ( $this->ready() )
 		{
-			// backup $torecipient before it's encoded
-			$torecipient = $to;
-			
-			// handle encoding for `to` and `subject` headers and update $to and $subject
-			$this->handleToSubjectEncoding($to, $subject);
-			
 			// handle headers processing
 			$this->handleHeaders($to, $subject, $mail, $headers);
 			
 			// send
-			$this->handleSend($torecipient, $subject, $mail, $headers);
+			$this->handleSend($to, $subject, $mail, $headers);
 		}
 		else
 			throw new \Nettools\Mailing\Exception(__CLASS__ . ' not ready for sending email');

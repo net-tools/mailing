@@ -27,9 +27,9 @@ class Virtual extends MailSender
 	
 	
 	/**
-	 * send the email
+	 * Send the email
 	 *
-     * @param string $to Recipient
+     * @param string $to Recipient ; only address part, no friendly name
      * @param string $subject Subject ; must be encoded if necessary
      * @param string $mail String containing the email data
      * @param string $headers Email headers
@@ -49,7 +49,7 @@ class Virtual extends MailSender
 	
 	
 	/**
-	 * destroy instance
+	 * Destroy instance
 	 */
 	function destruct()
 	{

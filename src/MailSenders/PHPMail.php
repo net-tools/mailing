@@ -25,26 +25,45 @@ use \Nettools\Mailing\MailPieces\Headers;
 class PHPMail extends MailSender
 {
 	/**
-     * Analyse headers and maybe modify some. 
+     * Add the To and Subject headers to the headers string
      * 
      * For PHPMail strategy, we do not have to set To and Subject headers, as this is php Mail() function that sets them internally
+	 *
+     * @param string $to Recipient
+     * @param string $subject Subject
+     * @param string $mail String containing the email data
+     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
 	function handleHeaders_ToSubject($to, $subject, $mail, Headers $headers)
 	{
 	}
 	
+	
 
-	/** 
-     * Handle Bcc headers
+	/**
+     * Handle Bcc 
      *
-     * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Bcc headers and send bcc emails accordingly
+     * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Bcc headers 
+     *
+     * @param string $to Recipient
+     * @param string $subject Subject
+     * @param string $mail String containing the email data
+     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
 	function handleBcc($to, $subject, $mail, Headers $headers)
 	{
 	}
 	
 	
-	// concrete implemntation to send the email
+	
+	/**
+	 * Send the email
+	 *
+     * @param string $to Recipient ; only address part, no friendly name
+     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $mail String containing the email data
+     * @param string $headers Email headers
+	 */
 	function doSend($to, $subject, $mail, $headers)
 	{
 		if ( !mail($to, $subject, $mail, $headers) )

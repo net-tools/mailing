@@ -110,7 +110,7 @@ class SMTP extends MailSender
 	
 	
 	/**
-	 * is the SMTP connection ready ?
+	 * Is the SMTP connection ready ?
 	 *
 	 * @return bool
 	 */
@@ -123,7 +123,7 @@ class SMTP extends MailSender
 	
 	
 	/**
-	 * destruct object, and disconnet SMTP 
+	 * Destruct object, and disconnet SMTP 
 	 */
 	function destruct()
 	{
@@ -138,14 +138,14 @@ class SMTP extends MailSender
 	
 	
 	/**
-	 * implement sending
-	 *
-     * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * Send the email (to be implemented in child classes)
+     *
+     * @param string $to Recipient (no friendly name, only address part)
+     * @param string $subject Subject (must be encoded)
      * @param string $mail String containing the email data
      * @param string $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
-	 */
+     */
 	function doSend($to, $subject, $mail, $headers)
 	{
 		// PEAR SMTP::send expects headers to be an associative array

@@ -44,7 +44,7 @@ class SentHandler extends \Nettools\Mailing\MailSenders\SentHandlers\Handler
 	 * Event handler for `sent` notification
 	 *
      * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $subject Subject
      * @param Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 */
 	function notify($to, $subject, Headers $headers)

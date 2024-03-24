@@ -29,7 +29,7 @@ abstract class Handler
 	 * Notify about `sent` event
 	 *
      * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $subject Subject
      * @param Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 */
 	abstract function notify($to, $subject, Headers $headers);

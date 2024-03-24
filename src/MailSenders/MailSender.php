@@ -265,7 +265,7 @@ abstract class MailSender {
      * Send the email
      *
      * @param string $to Recipient
-     * @param string $subject Subject ; must be encoded if necessary
+     * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception

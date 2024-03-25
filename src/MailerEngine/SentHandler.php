@@ -1,16 +1,14 @@
 <?php
 /**
- * Handler
+ * SentHandler
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
  */
 
 
-
-
 // namespace
-namespace Nettools\Mailing\MailSenders\SentHandlers;
+namespace Nettools\Mailing\MailerEngine;
 
 
 
@@ -23,7 +21,7 @@ use \Nettools\Mailing\MailPieces\Headers;
 /** 
  * Class to define an event handler for `sent` event (makes it possible to compute quotas if event called at each mail sent event)
  */
-abstract class Handler 
+abstract class SentHandler 
 {
 	/** 
 	 * Notify about `sent` event

@@ -1,6 +1,6 @@
 <?php
 /**
- * MailerEngine
+ * Engine
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -9,7 +9,7 @@
 
 
 // namespace
-namespace Nettools\Mailing;
+namespace Nettools\Mailing\MailerEngine;
 
 
 use \Nettools\Mailing\Mailer;
@@ -22,13 +22,13 @@ use \Nettools\Mailing\MailSenders\MailSender;
 
 
 /**
- * Sending mail helper, depending on email sending strategy (PHPMail, SMTP, etc.) available on MailSenders subdirectory
+ * Sending mail helper, depending on email sending strategy (PHPMail, SMTP, etc.) available on MailSenders root subdirectory
  */
-class MailerEngine {
+class Engine {
 
 	// [----- PROTECTED -----
 	
-	/** @var \Nettools\Mailing\Mailer\SentHandlers\Handler[] $sentEvent Event handler list for `sent` notification */
+	/** @var \Nettools\Mailing\MailerEngine\SentHandler[] $sentEvent Event handler list for `sent` notification */
 	protected $sentEvents = array();
 	
 	
@@ -66,9 +66,9 @@ class MailerEngine {
 	/**
 	 * Register an event handler
 	 *
-	 * @param \Nettools\Mailing\Mailer\SentHandlers\Handler $sentEvent Event handler for `sent` notification
+	 * @param SentHandler $sentEvent Event handler for `sent` notification
 	 */
-	function addSentEventHandler(SentHandlers\Handler $sentEvent)
+	function addSentEventHandler(SentHandler $sentEvent)
 	{
 		$this->sentEvents[] = $sentEvent;
 	}
@@ -78,9 +78,9 @@ class MailerEngine {
 	/**
 	 * Unregister an event handler
 	 *
-	 * @param \Nettools\Mailing\Mailer\SentHandlers\Handler $sentEvent Event handler for `sent` notification
+	 * @param SentHandler $sentEvent Event handler for `sent` notification
 	 */
-	function removeSentEventHandler(SentHandlers\Handler $evt)
+	function removeSentEventHandler(SentHandler $evt)
 	{
 		$this->sentEvents = array_filter($this->sentEvents, function($h) use ($evt) { return $h != $evt; });
 	}
@@ -90,7 +90,7 @@ class MailerEngine {
 	/**
 	 * Get event handler list
 	 *
-	 * @return \Nettools\Mailing\Mailer\SentHandlers\Handler[] Event handler list
+	 * @return SentHandler[] Event handler list
 	 */
 	function getSentEventHandlers()
 	{

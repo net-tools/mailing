@@ -1,17 +1,17 @@
 <?php
 
-namespace Nettools\Mailing\Tests;
-
+namespace Nettools\Mailing\MailerEngine\Tests;
 
 
 use \Nettools\Mailing\MailPieces\Headers;
 use \Nettools\Mailing\MailSenders\Virtual;
-use \Nettools\Mailing\MailSenders\MailSender;
-use \Nettools\Mailing\MailerEngine;
+use \Nettools\Mailing\MailerEngine\Engine;
 
 
 
-class DummyHandler extends \Nettools\Mailing\MailSenders\SentHandlers\Handler
+
+
+class DummyHandler extends \Nettools\Mailing\MailerEngine\SentHandler
 {
 	public $count = 0;
 	
@@ -25,19 +25,20 @@ class DummyHandler extends \Nettools\Mailing\MailSenders\SentHandlers\Handler
 
 
 
-class MailerEngineTest extends \PHPUnit\Framework\TestCase
+
+class EngineTest extends \PHPUnit\Framework\TestCase
 {
     public function testMethods()
     {
 		// getAddressPart
-		$this->assertEquals('me@at.com', MailerEngine::getAddressPart('recipient <me@at.com>'));
-		$this->assertEquals('me@at.com', MailerEngine::getAddressPart('"recipient" <me@at.com>'));
-		$this->assertEquals('me@at.com', MailerEngine::getAddressPart('me@at.com'));
-		$this->assertEquals('me@at.com', MailerEngine::getAddressPart('=?UTF-8?B?w6k=?= <me@at.com>'));
+		$this->assertEquals('me@at.com', Engine::getAddressPart('recipient <me@at.com>'));
+		$this->assertEquals('me@at.com', Engine::getAddressPart('"recipient" <me@at.com>'));
+		$this->assertEquals('me@at.com', Engine::getAddressPart('me@at.com'));
+		$this->assertEquals('me@at.com', Engine::getAddressPart('=?UTF-8?B?w6k=?= <me@at.com>'));
 		
 		
 		// sentEventHandlers
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 		$this->assertEquals(0, count($e->getSentEventHandlers()));
 		
 		$h = new DummyHandler();
@@ -50,26 +51,26 @@ class MailerEngineTest extends \PHPUnit\Framework\TestCase
 		
 		// handleHeaders_ToSubject
 		$h = new Headers([]);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 		$e->handleHeaders_ToSubject('éric <recipient@at.domain>', 'Subject with accent é', $h);
 		$this->assertEquals(['To' => '=?UTF-8?B?w6lyaWM=?= <recipient@at.domain>', 'Subject' => 'Subject with accent =?UTF-8?B?w6k=?='], $h->toArray());
 		
 		// handleHeaders_Cc
 		$h = new Headers(['Cc' => 'me@at.here, éric <recipient@at.domain>']);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 		$e->handleHeaders_Cc($h);
 		$this->assertEquals(['Cc' => "me@at.here,\r\n =?UTF-8?B?w6lyaWM=?= <recipient@at.domain>"], $h->toArray());
  		
 		// handleHeaders_From
 		$h = new Headers(['From' => 'éric <recipient@at.domain>']);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 		$e->handleHeaders_Cc($h);
 		$this->assertEquals(['From' => "=?UTF-8?B?w6lyaWM=?= <recipient@at.domain>"], $h->toArray());
 		
 		
 		// handleHeaders
 		$h = new Headers(['From' => 'éric <recipient@at.domain>', 'Cc' => 'me@at.here, éric <recipient@at.domain>']);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 		$e->handleHeaders('éric <recipient@at.domain>', 'Subject with accent é', $h);
 		$this->assertEquals([
 				'From' => "=?UTF-8?B?w6lyaWM=?= <recipient@at.domain>",
@@ -85,7 +86,7 @@ class MailerEngineTest extends \PHPUnit\Framework\TestCase
 	public function testCc()
     {
 		$h = new Headers(['Cc' => 'cc-recipient@php.com', 'From' => 'from@test.php']);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 		$handler = new DummyHandler();
 		$e->addSentEventHandler($handler);
 		
@@ -103,7 +104,7 @@ class MailerEngineTest extends \PHPUnit\Framework\TestCase
 	public function testBCc()
     {
 		$h = new Headers(['Bcc' => 'bcc-recipient@domain.name', 'From' => 'from@test.php']);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 		$handler = new DummyHandler();
 		$e->addSentEventHandler($handler);
 		
@@ -124,7 +125,7 @@ class MailerEngineTest extends \PHPUnit\Framework\TestCase
 	public function testCc2()
     {
 		$h = new Headers(['Cc' => 'cc <cc-recipient@php.com>, othercc <othercc-recipient@php.com>, éric <another-cc@php.com>', 'From' => 'unit-test@php.com']);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 		$handler = new DummyHandler();
 		$e->addSentEventHandler($handler);
 
@@ -149,7 +150,7 @@ class MailerEngineTest extends \PHPUnit\Framework\TestCase
     public function testEncoding()
     {
 		$h = new Headers(['From' => 'from <unit-test@php.com>']);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 
 		$e->send('to <unit-test-recipient@php.com>', 'Mail subject', "mail content", $h);
 		$sent = $e->getMailSender()->getSent();
@@ -180,7 +181,7 @@ class MailerEngineTest extends \PHPUnit\Framework\TestCase
     public function testEncoding2()
     {
 		$h = new Headers(['From' => 'é <unit-test@php.com>']);
-		$e = new MailerEngine(new Virtual());
+		$e = new Engine(new Virtual());
 
 		$e->send('à <unit-test-recipient@php.com>', 'Mail subject with accents éè inside the string', "mail content", $h);
 		$sent = $e->getMailSender()->getSent();

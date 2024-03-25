@@ -42,13 +42,28 @@ class PHPMail extends MailSender
 	/**
      * Handle Bcc 
      *
-     * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Bcc headers 
+     * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Bcc header
      *
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
 	function handleBcc($subject, $mail, Headers $headers)
+	{
+	}
+	
+	
+	
+	/**
+     * Handle Cc 
+     *
+     * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Cc header
+     *
+     * @param string $subject Subject
+     * @param string $mail String containing the email data
+     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     */
+	function handleCc($subject, $mail, Headers $headers)
 	{
 	}
 	

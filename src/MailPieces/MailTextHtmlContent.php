@@ -14,6 +14,12 @@ namespace Nettools\Mailing\MailPieces;
 
 
 
+use \Nettools\Mailing\MailerEngine\Headers;
+
+
+
+
+
 /** 
  * Base class for text/html part.
  *

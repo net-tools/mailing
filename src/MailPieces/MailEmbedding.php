@@ -13,6 +13,7 @@ namespace Nettools\Mailing\MailPieces;
 
 use \Nettools\Core\Helpers\FileHelper;
 use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 

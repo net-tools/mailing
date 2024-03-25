@@ -12,6 +12,11 @@
 namespace Nettools\Mailing\MailPieces;
 
 
+use \Nettools\Mailing\MailerEngine\Headers;
+
+
+
+
 
 /**
  * Base class for handling 2 or more email parts 

@@ -13,6 +13,8 @@ namespace Nettools\Mailing\MailPieces;
 
 
 
+
+
 /**
  * Base class for embeddings and attachments
  */ 

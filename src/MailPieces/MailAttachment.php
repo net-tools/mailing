@@ -11,6 +11,8 @@ namespace Nettools\Mailing\MailPieces;
 
 
 use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailerEngine\Headers;
+
 
 
 

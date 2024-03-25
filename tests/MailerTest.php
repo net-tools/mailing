@@ -300,14 +300,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
     
 
-    public function testRender()
-    {
-		$obj = Mailer::createText('textplain content');
-		Mailer::render($obj);
-		$this->assertMatchesRegularExpression('/MIME-Version: 1\\.0/', $obj->getAllHeaders()->toString());
-    }
-    
-    
     public function testSendmail()
     {
 		$ml = new Mailer(new Virtual());
@@ -359,7 +351,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
 		$obj = new MailTextPlainContent('textplain content');
 		$ml = new Mailer(new Virtual());
-		Mailer::render($obj);
 		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), $obj->getAllHeaders()->set('From', 'unit-test@php.com'), false); 
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));
@@ -413,7 +404,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         
         // by setting the mailsender, we create another strategy; previously sent emails are lost
         $ml->setMailSender(new Virtual());
-		Mailer::render($obj);
 		$ml->sendmail_raw(array('user1@test.com','user2@test.com'), 'test subject', $obj->getContent(), $obj->getAllHeaders()->set('From', 'unit-test@php.com'), false); 
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));    

@@ -64,7 +64,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		// handleHeaders_From
 		$h = new Headers(['From' => 'éric <recipient@at.domain>']);
 		$e = new Engine(new Virtual());
-		$e->handleHeaders_Cc($h);
+		$e->handleHeaders_From($h);
 		$this->assertEquals(['From' => "=?UTF-8?B?w6lyaWM=?= <recipient@at.domain>"], $h->toArray());
 		
 		
@@ -114,11 +114,11 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$this->assertEquals(2, count($sent));
 		$this->assertEquals(2, $handler->count);
-		$this->assertStringContainsString("Bcc: bcc-recipient@php.com\r\n", $sent[0]);
-		$this->assertStringContainsString("Delivered-To: bcc-recipient@php.com\r\n", $sent[0]);
+		$this->assertStringContainsString("Bcc: bcc-recipient@domain.name\r\n", $sent[0]);
+		$this->assertStringContainsString("Delivered-To: bcc-recipient@domain.name\r\n", $sent[0]);
 		$this->assertStringContainsString("Delivered-To: recipient@at.domain\r\n", $sent[1]);
 		$this->assertStringContainsString("To: recipient@at.domain\r\n", $sent[1]);
-		$this->assertStringNotContainsString("Bcc: bcc-recipient@php.com\r\n", $sent[1]);
+		$this->assertStringNotContainsString("Bcc: bcc-recipient@domain.name\r\n", $sent[1]);
     }
     
     

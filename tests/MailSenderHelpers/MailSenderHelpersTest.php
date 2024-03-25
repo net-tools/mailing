@@ -102,7 +102,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertInstanceOf(\Nettools\Mailing\MailPieces\MailContent::class, $content);
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$msh->send($content, 'user-to@php.com');
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(1, $sent);	// test mode, sent to a test recipient
 		$this->assertStringContainsString('user-test1@php.com', $sent[0]);
 		
@@ -134,7 +134,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		$msh->send($content, 'user-to@php.com'); // fine
 		
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(2, $sent);								// BCC + mail
 		/*$this->assertStringStartsWith( 
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
@@ -151,7 +151,6 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
-				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n"
 				, $sent[0]);
 
@@ -178,7 +177,6 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
-				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n",
 				$sent[1]);
 		
@@ -198,12 +196,11 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$msh->setToOverride('override-user@php.com');
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$msh->send($content, 'user-to@php.com');
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(2, $sent);								// BCC + mail
 		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
-				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n",
 				$sent[0]);
 
@@ -223,7 +220,6 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
 				"Reply-To: reply-to-user@php.com\r\n" .
-				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n",
 				$sent[1]);
 			
@@ -253,7 +249,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$content = $msh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
 		$msh->closeQueue();
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(0, $sent);								// no mail sent yet, as we use a queue
 		
 		$msq = Store::read($this->_queuePath, true);
@@ -266,12 +262,11 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(false, $q->locked);
 		$this->assertEquals(0, $q->sendOffset);
 		$q->send($ml);
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								// one mail from queue sent
 		$this->assertEquals(true, is_int(strpos($sent[0], 'my template : msh content')));
 		$this->assertStringContainsString(
 				"Content-Type: multipart/alternative;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
-				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"X-MailSenderQueue: " . $q->id . "\r\n",
 				$sent[0]);
@@ -294,7 +289,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$content = $msh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
 		$msh->destruct();
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(0, $sent);								// destruct drops emails stored in Virtual
 
 				
@@ -327,7 +322,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$amsh->setAttachment($this->_fatt, 'attachment2.txt', 'text/plain', 1);
 		$content = $amsh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								
 		
 		// guess Message-ID and Date headers
@@ -341,9 +336,9 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		$this->assertEquals( 
 				"Content-Type: multipart/mixed;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
-				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"$dt\r\n" .
+				"MIME-Version: 1.0\r\n" . 
 				"To: user-to@php.com\r\n" .
 				"Subject: test subject\r\n" .
 				"$mid\r\n" .
@@ -420,7 +415,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$amsh->setEmbedding($this->_fatt, 'text/plain', 'cid-123', 0);
 		$content = $amsh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(1, $sent);							
 
 		// guess Message-ID and Date headers
@@ -433,9 +428,9 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		$this->assertEquals(
 				"Content-Type: multipart/related;\r\n boundary=\"" . $content->getSeparator() . "\"\r\n" .
-				"MIME-Version: 1.0\r\n" . 
 				"From: unit-test@php.com\r\n" .
 				"$dt\r\n" .
+				"MIME-Version: 1.0\r\n" . 
 				"To: user-to@php.com\r\n" .
 				"Subject: test subject\r\n" .
 				"$mid\r\n" .

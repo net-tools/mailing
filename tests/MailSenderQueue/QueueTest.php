@@ -84,7 +84,7 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 		$d = Data::read($q, 0, true);
 		$this->assertEquals('Subject here', $d->subject);
 		$this->assertEquals('recipient@here.com', $d->to);
-		$this->assertStringContainsString("MIME-Version: 1.0\r\nFrom: sender@home.com", $d->headers);
+		$this->assertStringContainsString("From: sender@home.com", $d->headers);
 		$this->assertEquals(Data::STATUS_TOSEND, $d->status);
 		
 		
@@ -98,7 +98,7 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 		$d = Data::read($q, 1, true);
 		$this->assertEquals('Other subject here', $d->subject);
 		$this->assertEquals('recipient2@here.com', $d->to);
-		$this->assertStringContainsString("MIME-Version: 1.0\r\nFrom: sender@home.com", $d->headers);
+		$this->assertStringContainsString("From: sender@home.com", $d->headers);
 		$this->assertEquals(Data::STATUS_TOSEND, $d->status);
 			
 		
@@ -147,7 +147,6 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 		
 		// reading eml content
 		$eml = $q->emlAt(0);
-		$this->assertStringContainsString("MIME-Version: 1.0\r\n", $eml);
 		$this->assertStringContainsString("From: sender@home.com\r\n", $eml);
 		$this->assertStringContainsString("To: recipient@here.com\r\n", $eml);
 		$this->assertStringContainsString("Subject: Subject here\r\n", $eml);

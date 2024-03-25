@@ -335,9 +335,6 @@ class Queue {
      */
 	function push(\Nettools\Mailing\MailPieces\MailContent $mail, $from, $to, $subject)
 	{
-		// add required headers to the email (importance, etc.)
-		Mailer::render($mail);
-		
 		// adding to queue
 		$this->_push(
 						$mail->getContent(), 

@@ -65,7 +65,7 @@ interface MailSenderHelperIntf
 	/**
 	 * Destruct object
 	 */
-	public function destruct();
+	public function destroy();
 	
 	
 	

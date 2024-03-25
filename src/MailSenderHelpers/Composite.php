@@ -96,9 +96,9 @@ abstract class Composite implements MailSenderHelperIntf
 	/**
 	 * Destruct object
 	 */
-	public function destruct()
+	public function destroy()
 	{
-		$this->component->destruct();
+		$this->component->destroy();
 	}
 	
 	

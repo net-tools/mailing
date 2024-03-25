@@ -94,7 +94,7 @@ class Headers {
 
 				// email address has no friendly name part, setting the value without any encoding
 				else
-					$ret[] = $recipient;
+					$ret[] = trim($recipient);
 			
 			
 			// setting back recipients encoded with folding for each recipient

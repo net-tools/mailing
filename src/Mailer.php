@@ -22,7 +22,7 @@ use \Nettools\Mailing\MailPieces\MailTextPlainContent;
 use \Nettools\Mailing\MailSenders\MailSender;
 use \Nettools\Core\Helpers\EncodingHelper;
 use \Nettools\Core\Helpers\FileHelper;
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 
@@ -629,7 +629,7 @@ final class Mailer {
 	 * @param string|string[] $to Email recipient ; if multiple recipients, use a comma "," between addresses
 	 * @param string $subject Email subject
 	 * @param string $mail Email body as text
-	 * @param \Nettools\Mailing\MailPieces\Headers $headers Headers array
+	 * @param \Nettools\Mailing\MailerEngine\Headers $headers Headers array
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
 	 * @throws \Nettools\Mailing\Exception
 	 */

@@ -3,7 +3,7 @@
 namespace Nettools\Mailing\Tests;
 
 
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 

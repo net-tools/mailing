@@ -288,9 +288,9 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$content = $msh->render(NULL);
 		$msh->send($content, 'user-to@php.com');
-		$msh->destruct();
+		$msh->destroy();
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
-		$this->assertCount(0, $sent);								// destruct drops emails stored in Virtual
+		$this->assertCount(0, $sent);								// destroy drops emails stored in Virtual
 
 				
 				

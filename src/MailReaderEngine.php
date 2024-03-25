@@ -12,7 +12,7 @@
 namespace Nettools\Mailing;
 
 
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 
@@ -381,8 +381,8 @@ class MailReaderEngine
 	/** 
 	 * Decode headers object whose data may have been encoded with mb_encode_mimeheader (such as `to`, `from`, `subject` etc.)
 	 *
-	 * @param Nettools\Mailing\MailPieces\Headers $headers
-	 * @return Nettools\Mailing\MailPieces\Headers
+	 * @param Nettools\Mailing\MailerEngine\Headers $headers
+	 * @return Nettools\Mailing\MailerEngine\Headers
 	 */
 	static function decodeHeaders(Headers $headers)
 	{
@@ -400,7 +400,7 @@ class MailReaderEngine
 	* Decode email from a string
 	* 
 	* @param string $data Email string to decode
-	* @return object Returns an object litteral with properties `email` and `headers` (of type MailPieces\MailContent and MailPieces\Headers)
+	* @return object Returns an object litteral with properties `email` and `headers` (of type MailPieces\MailContent and MailerEngine\Headers)
 	* @throws MailReaderError
 	*/
 	static function fromString($data)

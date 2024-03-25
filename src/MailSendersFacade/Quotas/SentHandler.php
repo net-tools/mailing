@@ -10,7 +10,7 @@
 namespace Nettools\Mailing\MailSendersFacade\Quotas;
 
 
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 
@@ -45,7 +45,7 @@ class SentHandler extends \Nettools\Mailing\MailSenders\SentHandlers\Handler
 	 *
      * @param string $to Recipient
      * @param string $subject Subject
-     * @param Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 */
 	function notify($to, $subject, Headers $headers)
 	{

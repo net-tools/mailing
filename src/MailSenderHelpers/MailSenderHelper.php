@@ -156,10 +156,10 @@ class MailSenderHelper implements MailSenderHelperIntf
 	/**
 	 * Destruct object
 	 */
-	public function destruct()
+	public function destroy()
 	{
 		if ( $this->mailer )
-			$this->mailer->destruct();
+			$this->mailer->destroy();
 	}
 	
 	

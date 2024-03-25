@@ -13,7 +13,6 @@ namespace Nettools\Mailing\MailerEngine;
 
 
 use \Nettools\Mailing\Mailer;
-use \Nettools\Mailing\MailPieces\Headers;
 use \Nettools\Mailing\MailSenders\MailSender;
 
 
@@ -27,10 +26,6 @@ use \Nettools\Mailing\MailSenders\MailSender;
 class Engine {
 
 	// [----- PROTECTED -----
-	
-	/** @var \Nettools\Mailing\MailerEngine\SentHandler[] $sentEvent Event handler list for `sent` notification */
-	protected $sentEvents = array();
-	
 	
 	/** @var \Nettools\Mailing\MailSenders\MailSender $ms Mail sending strategy to send email through */
 	protected $mailSender = null;
@@ -64,53 +59,17 @@ class Engine {
 	
 	
 	/**
-	 * Register an event handler
-	 *
-	 * @param SentHandler $sentEvent Event handler for `sent` notification
-	 */
-	function addSentEventHandler(SentHandler $sentEvent)
-	{
-		$this->sentEvents[] = $sentEvent;
-	}
-	
-
-	
-	/**
-	 * Unregister an event handler
-	 *
-	 * @param SentHandler $sentEvent Event handler for `sent` notification
-	 */
-	function removeSentEventHandler(SentHandler $evt)
-	{
-		$this->sentEvents = array_filter($this->sentEvents, function($h) use ($evt) { return $h != $evt; });
-	}
-	
-
-	
-	/**
-	 * Get event handler list
-	 *
-	 * @return SentHandler[] Event handler list
-	 */
-	function getSentEventHandlers()
-	{
-		return $this->sentEvents;
-	}
-	
-
-	
-	/**
      * Send the email through mail sending strategy
      *
      * @param string $to Recipient (no friendly name, only address part)
      * @param string $subject Subject (must be encoded)
      * @param string $mail String containing the email data
-     * @param string $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
-	function doSend($to, $subject, $mail, $headers)
+	function doSend($to, $subject, $mail, Headers $headers)
 	{
-		return $this->mailSender->doSend($to, $subject, $mail, $headers);
+		return $this->mailSender->send($to, $subject, $mail, $headers);
 	}
 	
 
@@ -132,12 +91,12 @@ class Engine {
 
 
 	/**
-     * Send the email to a recipient and notify about sent event
+     * Send the email to a recipient ; Message-ID header is created here
      *
      * @param string $to Recipient
      * @param string $subject Subject
      * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function sendTo($to, $subject, $mail, Headers $headers)
 	{
@@ -146,10 +105,7 @@ class Engine {
 		$this->handleHeaders_MessageId($h2);		
 		
 		// send the email
-		$this->doSend(self::getAddressPart($to), mb_encode_mimeheader($subject), $mail, $h2->toString());
-		
-		// event : 1 mail sent
-		$this->handleSentEvent($to, $subject, $h2);
+		$this->doSend(self::getAddressPart($to), mb_encode_mimeheader($subject), $mail, $h2);
 	}
 	
 
@@ -163,7 +119,7 @@ class Engine {
      *
      * @param string $subject Subject
      * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
 	 */
 	function handleBcc($subject, $mail, Headers $headers)
@@ -199,7 +155,7 @@ class Engine {
      *
      * @param string $subject Subject
      * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
 	 */
 	function handleCc($subject, $mail, Headers $headers)
@@ -225,7 +181,7 @@ class Engine {
      * @param string $to Recipients, separated by `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
 	function handleSend($to, $subject, $mail, Headers $headers)
@@ -248,7 +204,7 @@ class Engine {
      * @param string $to Recipients separated by `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
 	function handleRecipients($to, $subject, $mail, Headers $headers)
@@ -264,28 +220,11 @@ class Engine {
 	
 	
 	/**
-     * `Sent` event notify
-     *
-     * @param string $to Recipient
-     * @param string $subject Subject
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
-     */
-	function handleSentEvent($to, $subject, Headers $headers)
-	{
-		$evts = $this->getSentEventHandlers();
-		
-		foreach ( $evts as $evt )
-			$evt->notify($to, $subject, $headers);
-	}
-	
-	
-	
-	/**
      * Add the To and Subject headers to the headers string
      * 
      * @param string $to Recipients separated by `,`
      * @param string $subject Subject
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleHeaders_ToSubject($to, $subject, Headers $headers)
 	{
@@ -299,7 +238,7 @@ class Engine {
 	/**
      * Handle priority ; we always set high priorty at the moment
      * 
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleHeaders_Priority(Headers $headers)
 	{
@@ -313,7 +252,7 @@ class Engine {
 	/**
      * Encode the Cc header 
      * 
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleHeaders_Cc(Headers $headers)
 	{
@@ -325,7 +264,7 @@ class Engine {
 	/**
      * Handle `From` header encoding
      * 
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleHeaders_From(Headers $headers)
 	{
@@ -337,7 +276,7 @@ class Engine {
 	/**
      * Create `Message-ID` header 
      * 
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleHeaders_MessageId(Headers $headers)
 	{
@@ -353,7 +292,7 @@ class Engine {
 	/**
      * Create `Date` header encoding
      * 
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleHeaders_DateMimeVersion(Headers $headers)
 	{
@@ -369,7 +308,7 @@ class Engine {
      * 
      * @param string $to Recipients separated by `,`
      * @param string $subject Subject
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleHeaders($to, $subject, Headers $headers)
 	{
@@ -397,7 +336,7 @@ class Engine {
      * @param string $to Recipients separated with `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
 	function send($to, $subject, $mail, Headers $headers)

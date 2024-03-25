@@ -12,7 +12,7 @@
 namespace Nettools\Mailing\MailSenders;
 
 
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 

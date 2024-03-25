@@ -12,7 +12,7 @@
 namespace Nettools\Mailing\MailSenders;
 
 
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 
@@ -31,7 +31,7 @@ class PHPMail extends MailSender
 	 *
      * @param string[] $to Array of recipients
      * @param string $subject Subject
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleHeaders_ToSubject($to, $subject, Headers $headers)
 	{
@@ -46,7 +46,7 @@ class PHPMail extends MailSender
      *
      * @param string $subject Subject
      * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleBcc($subject, $mail, Headers $headers)
 	{
@@ -61,7 +61,7 @@ class PHPMail extends MailSender
      *
      * @param string $subject Subject
      * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
      */
 	function handleCc($subject, $mail, Headers $headers)
 	{

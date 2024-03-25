@@ -12,7 +12,7 @@ namespace Nettools\Mailing\MailerEngine;
 
 
 
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 
@@ -28,7 +28,7 @@ abstract class SentHandler
 	 *
      * @param string $to Recipient
      * @param string $subject Subject
-     * @param Nettools\Mailing\MailPieces\Headers $headers Email headers
+     * @param Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 */
 	abstract function notify($to, $subject, Headers $headers);
 }

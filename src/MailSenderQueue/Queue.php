@@ -5,7 +5,7 @@ namespace Nettools\Mailing\MailSenderQueue;
 
 
 use \Nettools\Mailing\Mailer;
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 
@@ -41,10 +41,10 @@ class Queue {
 	 * @param int $index 0-index of email to sent in queue
 	 * @param string $bcc Optionnal bcc recipient to add
 	 * @param string $to Overriding `To` recipient 
-     * @param \Nettools\Mailing\MailPieces\Headers $suppl_headers Optionnal supplementary headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $suppl_headers Optionnal supplementary headers
      * @throws \Nettools\Mailing\Exception
 	 */
-	private function _sendFromQueue(Mailer $mailer, $index, $bcc = NULL, $to = NULL, ?\Nettools\Mailing\MailPieces\Headers $suppl_headers = NULL)
+	private function _sendFromQueue(Mailer $mailer, $index, $bcc = NULL, $to = NULL, ?\Nettools\Mailing\MailerEngine\Headers $suppl_headers = NULL)
 	{
 		$err = null;
 		$root = $this->root;
@@ -353,7 +353,7 @@ class Queue {
      * Send a batch of email through a Mailer instance, and optionnally add headers
      *
      * @param Mailer $mailer Mailer instance to send email through
-     * @param \Nettools\Mailing\MailPieces\Headers $suppl_headers Optionnal supplementary headers
+     * @param \Nettools\Mailing\MailerEngine\Headers $suppl_headers Optionnal supplementary headers
      * @throws \Nettools\Mailing\Exception
      */
 	function send(Mailer $mailer, ?Headers $suppl_headers = NULL)

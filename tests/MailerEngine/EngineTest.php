@@ -3,7 +3,7 @@
 namespace Nettools\Mailing\MailerEngine\Tests;
 
 
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 use \Nettools\Mailing\MailSenders\Virtual;
 use \Nettools\Mailing\MailerEngine\Engine;
 
@@ -39,14 +39,14 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		// sentEventHandlers
 		$e = new Engine(new Virtual());
-		$this->assertEquals(0, count($e->getSentEventHandlers()));
+		$this->assertEquals(0, count($e->getMailSender()->getSentEventHandlers()));
 		
 		$h = new DummyHandler();
-		$e->addSentEventHandler($h);
-		$this->assertEquals(1, count($e->getSentEventHandlers()));
+		$e->getMailSender()->addSentEventHandler($h);
+		$this->assertEquals(1, count($e->getMailSender()->getSentEventHandlers()));
 		
-		$e->removeSentEventHandler($h);
-		$this->assertEquals(0, count($e->getSentEventHandlers()));
+		$e->getMailSender()->removeSentEventHandler($h);
+		$this->assertEquals(0, count($e->getMailSender()->getSentEventHandlers()));
 		
 		
 		// handleHeaders_ToSubject
@@ -89,7 +89,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$h = new Headers(['Cc' => 'cc-recipient@php.com', 'From' => 'from@test.php']);
 		$e = new Engine(new Virtual());
 		$handler = new DummyHandler();
-		$e->addSentEventHandler($handler);
+		$e->getMailSender()->addSentEventHandler($handler);
 		
 		$e->send('recipient@at.domain', 'Subject here', "mail content", $h);
 		$sent = $e->getMailSender()->getSent();
@@ -107,7 +107,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$h = new Headers(['Bcc' => 'bcc-recipient@domain.name', 'From' => 'from@test.php']);
 		$e = new Engine(new Virtual());
 		$handler = new DummyHandler();
-		$e->addSentEventHandler($handler);
+		$e->getMailSender()->addSentEventHandler($handler);
 		
 		$e->send('recipient@at.domain', 'Subject here', "mail content", $h);
 		$sent = $e->getMailSender()->getSent();
@@ -128,7 +128,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$h = new Headers(['Cc' => 'cc <cc-recipient@php.com>, othercc <othercc-recipient@php.com>, éric <another-cc@php.com>', 'From' => 'unit-test@php.com']);
 		$e = new Engine(new Virtual());
 		$handler = new DummyHandler();
-		$e->addSentEventHandler($handler);
+		$e->getMailSender()->addSentEventHandler($handler);
 
 		$e->send('unit-test-recipient@php.com', 'Mail subject', "mail content", $h);
 		$sent = $e->getMailSender()->getSent();

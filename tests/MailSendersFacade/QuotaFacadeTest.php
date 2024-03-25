@@ -6,7 +6,7 @@ namespace Nettools\Mailing\Tests;
 use \Nettools\Mailing\MailSendersFacade\QuotaFacade;
 use \Nettools\Mailing\MailSendersFacade\Lists\Proxies;
 use \Nettools\Mailing\MailSendersFacade\Factories\QuotaCreator;
-use \Nettools\Mailing\MailPieces\Headers;
+use \Nettools\Mailing\MailerEngine\Headers;
 
 
 

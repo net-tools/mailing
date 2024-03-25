@@ -59,10 +59,10 @@ class SMTP extends MailSender
 		else
 			throw new \Nettools\Mailing\Exception($ret->toString());
 	}
-	
-	
+		
 	// ----- PROTECTED -----]
 
+	
     /**
 	 * Constructor
 	 * 

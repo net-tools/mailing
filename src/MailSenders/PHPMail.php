@@ -44,9 +44,11 @@ class PHPMail extends MailSender
      *
      * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Bcc headers 
      *
+     * @param string $subject Subject
+     * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
-	function handleBcc(Headers $headers)
+	function handleBcc($subject, $mail, Headers $headers)
 	{
 	}
 	

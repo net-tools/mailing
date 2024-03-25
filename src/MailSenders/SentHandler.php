@@ -8,7 +8,7 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailerEngine;
+namespace Nettools\Mailing\MailSenders;
 
 
 

@@ -7,7 +7,7 @@
  */
 
 // namespace
-namespace Nettools\Mailing\MailPieces;
+namespace Nettools\Mailing\MailerEngine;
 
 
 

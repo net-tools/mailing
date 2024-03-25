@@ -355,9 +355,11 @@ class Engine {
      * 
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
-	function handleHeaders_Date(Headers $headers)
+	function handleHeaders_DateMimeVersion(Headers $headers)
 	{
-		$headers->set('Date', date('r'));
+		$headers
+			->set('Date', date('r'))
+			->set('MIME-Version', '1.0');
 	}
 	
 	
@@ -377,8 +379,8 @@ class Engine {
 		// encode Cc header
 		$this->handleHeaders_Cc($headers);
 		
-		// create Date header
-		$this->handleHeaders_Date($headers);
+		// create Date and Mime-Version header
+		$this->handleHeaders_DateMimeVersion($headers);
 		
 		// add To and Subject headers
 		$this->handleHeaders_ToSubject($to, $subject, $headers);

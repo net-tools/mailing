@@ -43,6 +43,9 @@ final class Mailer {
 
 	/** @var \Nettools\Mailing\MailSenders\MailSender Email sending strategy */
 	protected $mailsender = NULL;
+		
+	/** @var \Nettools\Mailing\MailerEngine\Engine Subclass to handle sending through strategy $mailsender */
+	protected $mailerEngine = NULL;
 	
 // ----- PROTECTED -----]
 
@@ -56,8 +59,9 @@ final class Mailer {
 	/** @var \Nettools\Core\Containers\Cache Cache for embeddings */
 	protected static $cacheEmbeddings = NULL;
 	
-	/** @var Mailer Default mailer instance (singleton pattern) ; uses PHPMail_MailSender class strategy */
+	/** @var Mailer Default mailer instance (singleton pattern) ; uses MailSenders\PHPMail strategy */
 	protected static $defaultMailer = NULL;
+	
 	
 	
 	/** 
@@ -509,21 +513,6 @@ final class Mailer {
 		return self::htmlMinify(str_replace("\n", "<br>", str_replace("\r\n", "\n", $plain)));
 	}	
 	
-	
-	
-	/**
-	 * Add required technical headers (such as MIME version)
-	 *
-	 * @param MailPieces\MailContent $mail Mail object to process
-	 * @return MailPieces\MailContent Returns mail object modified
-	 */
-	public static function render(MailContent $mail)
-	{
-		$mail->headers->set('MIME-Version', '1.0');
-		return $mail;
-	}
-	
-	
 // ----- STATIC -----]
 
 
@@ -550,31 +539,28 @@ final class Mailer {
 	public function setMailSender(MailSender $mailsender)
 	{
 		$this->mailsender = $mailsender;
-		
-		return $this->mailsender->ready();
+		$this->mailerEngine = new MailerEngine\Engine($mailsender);
+		return $this->mailerEngine->ready();
 	}
 	
 	
 	/** 
 	 * Close email sending strategy (e.g. closing SMTP connections)
 	 */
-	public function destruct()
+	public function destroy()
 	{
-		return $this->getMailSender()->destruct();
+		return $this->mailerEngine->destroy();
 	}
 	
 
 	/**
-	 * Get current email sending strategy, or create a default one
+	 * Get underlying mailer engine
 	 *
-	 * @return \Nettools\Mailing\MailSenders\MailSender Returns the mail sender strategy currently defined ; if none, MailSenders\PHPMail_MailSender is used
+	 * @return \Nettools\Mailing\MailerEngine\Engine
 	 */
-	public function getMailSender()
+	public function getMailerEngine()
 	{
-		if ( is_null($this->mailsender) )
-			$this->mailsender = new \Nettools\Mailing\MailSenders\PHPMail();
-
-		return $this->mailsender;
+		return $this->mailerEngine;
 	}
 	
 	
@@ -633,9 +619,6 @@ final class Mailer {
 	 */
 	public function sendmail(MailContent $mail, $from, $to, $subject, $destruct = false)
 	{
-		// add required technical headers
-		self::render($mail);
-		
 		$this->sendmail_raw($to, $subject, $mail->getContent(), $mail->getAllHeaders()->set('From', $from), $destruct);
 	}
 	
@@ -656,7 +639,7 @@ final class Mailer {
 			$to = implode(',', $to);
 		
 		
-		$this->getMailSender()->send($to, $subject, $mail, $headers);
+		$this->mailerEngine->send($to, $subject, $mail, $headers);
 		/*
 						
 		$st = array();

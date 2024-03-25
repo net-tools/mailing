@@ -69,14 +69,14 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         
         // getMailSender
 		$ml = Mailer::getDefault();
-		$this->assertInstanceOf(\Nettools\Mailing\MailSenders\PHPMail::class, $ml->getMailSender());
+		$this->assertInstanceOf(\Nettools\Mailing\MailSenders\PHPMail::class, $ml->getMailerEngine()->getMailSender());
 
 
 		try
 		{
         	// setMailSender
 			$ml->setMailSender(new Virtual());
-			$this->assertInstanceOf(Virtual::class, $ml->getMailSender());
+			$this->assertInstanceOf(Virtual::class, $ml->getMailerEngine()->getMailSender());
 		}
 		finally
 		{
@@ -314,7 +314,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 
         $obj = Mailer::addAttachment(new MailTextPlainContent('textplain content'), self::$_fatt, 'attach.txt', 'text/plain');
 		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		
 		// guess Message-ID and Date headers
 		$regs = [];
@@ -327,9 +327,9 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals( 
 				"Content-Type: multipart/mixed;\r\n" .
 				" boundary=\"" . $obj->getSeparator() . "\"\r\n" .
-				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
 				"$dt\r\n" .
+				"MIME-Version: 1.0\r\n" .
 				"To: unit-test-recipient@php.com\r\n" .
 				"Subject: Mail subject\r\n" .
 				"$mid\r\n" .
@@ -361,7 +361,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$ml = new Mailer(new Virtual());
 		Mailer::render($obj);
 		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), $obj->getAllHeaders()->set('From', 'unit-test@php.com'), false); 
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));
 		
 		// guess Message-ID and Date headers
@@ -382,9 +382,9 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(
 				"Content-Type: text/plain; charset=UTF-8\r\n" .
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
-				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
 				"$dt1\r\n" .
+				"MIME-Version: 1.0\r\n" .
 				"To: user1@test.com,\r\n user2@test.com\r\n" .
 				"Subject: test subject\r\n" .
 				"$mid1\r\n" .
@@ -397,9 +397,9 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(
 				"Content-Type: text/plain; charset=UTF-8\r\n" .
 				"Content-Transfer-Encoding: quoted-printable\r\n" .
-				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
 				"$dt2\r\n" .
+				"MIME-Version: 1.0\r\n" .
 				"To: user1@test.com,\r\n user2@test.com\r\n" .
 				"Subject: test subject\r\n" .
 				"$mid2\r\n" .
@@ -415,7 +415,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $ml->setMailSender(new Virtual());
 		Mailer::render($obj);
 		$ml->sendmail_raw(array('user1@test.com','user2@test.com'), 'test subject', $obj->getContent(), $obj->getAllHeaders()->set('From', 'unit-test@php.com'), false); 
-		$sent = $ml->getMailSender()->getSent();
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertEquals(2, count($sent));    
     }
 }

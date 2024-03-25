@@ -76,6 +76,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 				'From' => "=?UTF-8?B?w6lyaWM=?= <recipient@at.domain>",
 				'Cc' => "me@at.here,\r\n =?UTF-8?B?w6lyaWM=?= <recipient@at.domain>",
 				'Date' => $h->get('Date'),
+				'MIME-Version' => '1.0',
 				'To' => '=?UTF-8?B?w6lyaWM=?= <recipient@at.domain>',
 				'Subject' => 'Subject with accent =?UTF-8?B?w6k=?='
 			], $h->toArray());
@@ -167,6 +168,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString( 
 				"From: from <unit-test@php.com>\r\n" .
 				"$dt\r\n" .
+				"MIME-Version: 1.0\r\n" .
 				"To: to <unit-test-recipient@php.com>\r\n" .
 				"Subject: Mail subject\r\n" .
 				"$mid\r\n" .
@@ -197,6 +199,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString( 
 				"From: =?UTF-8?B?w6k=?= <unit-test@php.com>\r\n" .
 				"$dt\r\n" .
+				"MIME-Version: 1.0\r\n" .
 				"To: =?UTF-8?B?w6A=?= <unit-test-recipient@php.com>\r\n" .
 				"Subject: Mail subject with accents =?UTF-8?B?w6nDqCBpbnNpZGUgdGhlIHN0cmluZw==?=\r\n" .
 				"$mid\r\n" .

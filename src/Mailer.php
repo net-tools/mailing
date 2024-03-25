@@ -685,7 +685,7 @@ final class Mailer {
 			}*/
 
 		if ( $destruct )
-			$this->destruct();
+			$this->destroy();
 
 		// return FALSE if ok, a string if an error occured
 		/*if ( count($st) )

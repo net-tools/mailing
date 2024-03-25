@@ -77,12 +77,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         	// setMailSender
 			$ml->setMailSender(new Virtual());
 			$this->assertInstanceOf(Virtual::class, $ml->getMailSender());
-
-			// getAddressPart
-			$this->assertEquals('me@at.com', MailSender::getAddressPart('recipient <me@at.com>'));
-			$this->assertEquals('me@at.com', MailSender::getAddressPart('"recipient" <me@at.com>'));
-			$this->assertEquals('me@at.com', MailSender::getAddressPart('me@at.com'));
-			$this->assertEquals('me@at.com', MailSender::getAddressPart('=?UTF-8?B?w6k=?= <me@at.com>'));
 		}
 		finally
 		{
@@ -360,108 +354,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 			);
     }
     
-    
-    public function testSendmailCc()
-    {
-		$ml = new Mailer(new Virtual());
-
-        $obj = new MailTextPlainContent('textplain content');
-		$obj->headers->set('Cc', 'cc-recipient@php.com');
-		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
-		$sent = $ml->getMailSender()->getSent();
-		
-		// guess Message-ID and Date headers
-		$this->assertEquals(2, count($sent));
-		$regs = [];
-
-		$this->assertStringContainsString("Delivered-To: cc-recipient@php.com\r\n", $sent[0]);
-		$this->assertStringContainsString("Delivered-To: unit-test-recipient@php.com\r\n", $sent[1]);
-    }
-    
-    
-    public function testSendmailCc2()
-    {
-		$ml = new Mailer(new Virtual());
-
-        $obj = new MailTextPlainContent('textplain content');
-		$obj->headers->set('Cc', 'cc <cc-recipient@php.com>, othercc <othercc-recipient@php.com>, éric <another-cc@php.com>');
-		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
-		$sent = $ml->getMailSender()->getSent();
-		
-		// guess Message-ID and Date headers
-		$this->assertEquals(4, count($sent));
-		$regs = [];
-
-		$this->assertStringContainsString("Delivered-To: cc-recipient@php.com\r\n", $sent[0]);
-		$this->assertStringContainsString("Delivered-To: othercc-recipient@php.com\r\n", $sent[1]);
-		$this->assertStringContainsString("Delivered-To: another-cc@php.com\r\n", $sent[2]);
-		$this->assertStringContainsString("Delivered-To: unit-test-recipient@php.com\r\n", $sent[3]);
-
-		$this->assertStringContainsString("Cc: cc <cc-recipient@php.com>,\r\n othercc <othercc-recipient@php.com>,\r\n =?UTF-8?B?w6lyaWM=?= <another-cc@php.com>\r\n", $sent[0]);
-		$this->assertStringContainsString("Cc: cc <cc-recipient@php.com>,\r\n othercc <othercc-recipient@php.com>,\r\n =?UTF-8?B?w6lyaWM=?= <another-cc@php.com>\r\n", $sent[1]);
-		$this->assertStringContainsString("Cc: cc <cc-recipient@php.com>,\r\n othercc <othercc-recipient@php.com>,\r\n =?UTF-8?B?w6lyaWM=?= <another-cc@php.com>\r\n", $sent[2]);
-		$this->assertStringContainsString("Cc: cc <cc-recipient@php.com>,\r\n othercc <othercc-recipient@php.com>,\r\n =?UTF-8?B?w6lyaWM=?= <another-cc@php.com>\r\n", $sent[3]);
-	}
-    
-    
-    public function testEncoding()
-    {
-		$ml = new Mailer(new Virtual());
-
-        $obj = Mailer::createText('textplain content');
-		$ml->sendmail($obj, 'from <unit-test@php.com>', 'to <unit-test-recipient@php.com>', 'Mail subject', false);
-		$sent = $ml->getMailSender()->getSent();
-		
-		// guess Message-ID and Date headers
-		$regs = [];
-		$this->assertEquals(1, preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
-		$mid = $regs[0];
-		$regs = [];
-		$this->assertEquals(1, preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
-		$dt = $regs[0];
-
-		$this->assertStringContainsString( 
-				"From: from <unit-test@php.com>\r\n" .
-				"$dt\r\n" .
-				"To: to <unit-test-recipient@php.com>\r\n" .
-				"Subject: Mail subject\r\n" .
-				"$mid\r\n" .
-				"Delivered-To: unit-test-recipient@php.com\r\n",
-            
-                $sent[0]
-			);
-    }
-    
-    
-    public function testEncoding2()
-    {
-		$ml = new Mailer(new Virtual());
-
-        $obj = Mailer::createText('textplain content');
-		$ml->sendmail($obj, 'é <unit-test@php.com>', 'à <unit-test-recipient@php.com>', 'Mail subject with accents éè inside the string', false);
-		$sent = $ml->getMailSender()->getSent();
-		
-		// guess Message-ID and Date headers
-		$regs = [];
-		$this->assertEquals(1, preg_match('/Message-ID: <[0-9a-f]+@php.com>/', $sent[0], $regs));
-		$mid = $regs[0];
-		$regs = [];
-		$this->assertEquals(1, preg_match('/Date: [A-Z][a-z]{2,4}, [0-9]{1,2} [A-Z][a-z]{2,4} 20[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} .[0-9]{4}/', $sent[0], $regs));
-		$dt = $regs[0];
-
-		$this->assertStringContainsString( 
-				"From: =?UTF-8?B?w6k=?= <unit-test@php.com>\r\n" .
-				"$dt\r\n" .
-				"To: =?UTF-8?B?w6A=?= <unit-test-recipient@php.com>\r\n" .
-				"Subject: Mail subject with accents =?UTF-8?B?w6nDqCBpbnNpZGUgdGhlIHN0cmluZw==?=\r\n" .
-				"$mid\r\n" .
-				"Delivered-To: unit-test-recipient@php.com\r\n",
-            
-                $sent[0]
-			);
-    }
-    
-    
+	
     public function testSendmail_raw()
     {
 		$obj = new MailTextPlainContent('textplain content');

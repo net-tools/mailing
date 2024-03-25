@@ -116,7 +116,6 @@ class SMTP extends MailSender
 	 */
 	function ready()
 	{
-		// tester 
 		return parent::ready() && $this->smtp && ($this->smtp instanceof \Mail);
 	}
 	
@@ -125,7 +124,7 @@ class SMTP extends MailSender
 	/**
 	 * Destruct object, and disconnet SMTP 
 	 */
-	function destruct()
+	function destroy()
 	{
 		if ( $this->params['persist'] && $this->ready() )
 		{

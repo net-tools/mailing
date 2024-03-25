@@ -51,7 +51,7 @@ class Virtual extends MailSender
 	/**
 	 * Destroy instance
 	 */
-	function destruct()
+	function destroy()
 	{
 		$this->_sent = array();
 	}

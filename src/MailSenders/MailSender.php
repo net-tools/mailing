@@ -162,13 +162,13 @@ abstract class MailSender {
 	/**
      * Prepare for sending the email (we handle here the Bcc case)
      *
-     * @param string[] $to Array of recipients
+     * @param string $to Recipients, separated by `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
-	function handleSend(array $to, $subject, $mail, Headers $headers)
+	function handleSend($to, $subject, $mail, Headers $headers)
 	{
 		// handle Bcc ; headers array may be modified after the call (Bcc line removed)
 		$this->handleBcc($subject, $mail, $headers);
@@ -182,14 +182,17 @@ abstract class MailSender {
 	/**
      * Prepare for sending the email to each recipient
      *
-     * @param string[] $to Array of recipients
+     * @param string $to Recipients separated by `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
-	function handleRecipients(array $to, $subject, $mail, Headers $headers)
+	function handleRecipients($to, $subject, $mail, Headers $headers)
 	{
+		// if recipients is not an array, converting it to an array of recipients
+		$to = $to ? array_map(function($r){ return trim($r); }, explode(',', $to)) : array();			
+
 		// send the email to each recipient
 		foreach ( $to as $recipient )
 			$this->sendTo($recipient, $subject, $mail, $headers);
@@ -217,7 +220,7 @@ abstract class MailSender {
 	/**
      * Add the To and Subject headers to the headers string
      * 
-     * @param string[] $to Array of recipients
+     * @param string $to Recipients separated by `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
@@ -234,12 +237,12 @@ abstract class MailSender {
 	/**
      * Handle priority ; we always set high priorty at the moment
      * 
-     * @param string[] $to Array of recipients
+     * @param string $to Recipients separated by `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
-	function handleHeaders_Priority(array $to, $subject, $mail, Headers $headers)
+	function handleHeaders_Priority($to, $subject, $mail, Headers $headers)
 	{
 /*		$headers->set('X-Priority', '1')
 				->set('X-MSMail-Priority', '1')
@@ -251,12 +254,12 @@ abstract class MailSender {
 	/**
      * Handle headers modifications (from/to/subject/priority)
      * 
-     * @param string[] $to Array of recipients
+     * @param string $to Recipients separated by `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
-	function handleHeaders(array $to, $subject, $mail, Headers $headers)
+	function handleHeaders($to, $subject, $mail, Headers $headers)
 	{
 		// encode From header if required
 		$this->handleFromHeaderEncoding($headers);
@@ -316,7 +319,7 @@ abstract class MailSender {
 	/**
      * Send the email
      *
-     * @param string|string[] $to Recipients separated with `,` or array of recipients
+     * @param string $to Recipients separated with `,`
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
@@ -327,10 +330,6 @@ abstract class MailSender {
 		// if init OK
 		if ( $this->ready() )
 		{
-			// if recipients is not an array, converting it to an array of recipients
-			if ( !is_array($to) )
-				$to = $to ? array_map(function($r){ return trim($r); }, explode(',', $to)) : array();
-			
 			// processing mandatory headers
 			$this->handleHeaders($to, $subject, $mail, $headers);
 			

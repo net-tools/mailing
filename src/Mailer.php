@@ -668,6 +668,10 @@ final class Mailer {
 	 */
 	public function sendmail_raw($to, $subject, $mail, Headers $headers, $destruct = false)
 	{
+		if ( is_array($to) )
+			$to = implode(',', $to);
+		
+		
 		$this->getMailSender()->send($to, $subject, $mail, $headers);
 		/*
 						

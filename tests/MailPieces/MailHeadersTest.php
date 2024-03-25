@@ -63,7 +63,7 @@ class MailHeadersTest extends \PHPUnit\Framework\TestCase
 
 		$h = new Headers([]);
 		$h->setEncodedRecipient('Bcc', 'bccme <me@domain.tld>, éric <other@domain.tld>, anotherbcc@here.com');
-		$this->assertEquals(['From' => "bccme <me@domain.tld>,\r\n =?UTF-8?B?w6lyaWM=?= <other@domain.tld>,\r\n anotherbcc@here.com" ], $h->toArray());
+		$this->assertEquals(['Bcc' => "bccme <me@domain.tld>,\r\n =?UTF-8?B?w6lyaWM=?= <other@domain.tld>,\r\n anotherbcc@here.com" ], $h->toArray());
 
 		$h = new Headers([]);
 		$h->set('Subject', 'message to éric', true);

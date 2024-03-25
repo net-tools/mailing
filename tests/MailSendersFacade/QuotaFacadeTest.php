@@ -91,6 +91,9 @@ class QuotaFacadeTest extends \PHPUnit\Framework\TestCase
 		$ms->send('recipient@here.org', 'test subject', 'mail content', new Headers(['From' => 'sender@me.com']));
 		$this->assertEquals(1, $qif->sent);	
 		$ms->send('recipient@here.org', 'test subject', 'mail content', new Headers(['From' => 'sender@me.com', 'Bcc' => 'bcc@here.org']));
+		
+		print_r($ms->getMailerEngine()->getMailSender()->getSent());
+		
 		$this->assertEquals(1+2, $qif->sent);	
 	}
     

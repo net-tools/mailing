@@ -99,6 +99,22 @@ abstract class MailSender {
 
 	
 	/**
+	 * Get the email address from a recipient string that may have a friendly name part `recipient <me@at.domain>`
+	 *
+	 * @param string $addr The email address in the format `me@at.domain` or `recipient <me@at.domain>`
+	 * @return string Returns only the email address part `me@at.domain`
+	 */
+	static function getAddressPart($addr)
+	{
+		if ( preg_match("/<(.*)>/", $addr, $regs) )
+			return $regs[1];
+		else
+			return $addr;
+	}
+	
+
+
+	/**
      * Send the email to a recipient and notify about sent event
      *
      * @param string $to Recipient
@@ -113,7 +129,7 @@ abstract class MailSender {
 		$this->handleMessageIdHeader($h2);		
 		
 		// send the email
-		$this->doSend(Mailer::getAddress($to), mb_encode_mimeheader($subject), $mail, $h2->toString());
+		$this->doSend(self::getAddressPart($to), mb_encode_mimeheader($subject), $mail, $h2->toString());
 		
 		// event : 1 mail sent
 		$this->handleSentEvent($to, $subject, $h2);
@@ -141,7 +157,7 @@ abstract class MailSender {
 			$headers->remove('Bcc');
 			
 			
-			// For all Bcc recipients, send a copy of the email ; 
+			// For all Bcc recipients, send a copy of the email 
 			//
 			// 1. We remind that bcc recipients are regular recipients ; `to` and `bcc` headers are only for information purposes
 			// 2. If we deal with SMTP, it's the RCPT-TO smtp command that sets the real recipient. This is the same as the name on the enveloppe (RCPT-TO) and the
@@ -154,6 +170,33 @@ abstract class MailSender {
 				$h = Headers::fromObject($headers)->setEncodedRecipient('Bcc', trim($bcc));
 				$this->sendTo(trim($bcc), $subject, $mail, $h);
 			}
+		}
+	}
+
+
+	
+	/**
+     * Handle Cc 
+     *
+     * With a Cc header, we must do specific things. SMTP does not handle Cc.
+     *
+     * @param string $subject Subject
+     * @param string $mail String containing the email data
+     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+	 * @throws \Nettools\Mailing\Exception
+	 */
+	function handleCc($subject, $mail, Headers $headers)
+	{
+		if ( $cc = $headers->get('Cc') )
+		{
+			// For all Cc recipients, send a copy of the email 
+			//
+			// 1. We remind that Cc recipients are regular recipients ; `to` and `cc` headers are only for information purposes
+			// 2. If we deal with SMTP, it's the RCPT-TO smtp command that sets the real recipient. This is the same as the name on the enveloppe (RCPT-TO) and the
+			// name on the letter inside the enveloppe (To and Cc headers, that are not seen by mail carriers)
+			$cc_to = explode(',', $cc);
+			foreach ( $cc_to as $cc )
+				$this->sendTo(trim($cc), $subject, $mail, $headers);
 		}
 	}
 

@@ -65,12 +65,6 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                            Mailer::plain2html("**<é>**\r\n==red==\r\n\r\nhttp://www.website.com"));
 
         
-        // getAddress
-		$this->assertEquals('me@at.com', Mailer::getAddress('recipient <me@at.com>'));
-		$this->assertEquals('me@at.com', Mailer::getAddress('"recipient" <me@at.com>'));
-		$this->assertEquals('me@at.com', Mailer::getAddress('me@at.com'));
-
-        
         // getMailSender
 		$ml = Mailer::getDefault();
 		$this->assertInstanceOf(\Nettools\Mailing\MailSenders\PHPMail::class, $ml->getMailSender());
@@ -81,6 +75,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         	// setMailSender
 			$ml->setMailSender(new Virtual());
 			$this->assertInstanceOf(Virtual::class, $ml->getMailSender());
+
+			// getAddressPart
+			$this->assertEquals('me@at.com', MailSender::getAddressPart('recipient <me@at.com>'));
+			$this->assertEquals('me@at.com', MailSender::getAddressPart('"recipient" <me@at.com>'));
+			$this->assertEquals('me@at.com', MailSender::getAddressPart('me@at.com'));
+			$this->assertEquals('me@at.com', MailSender::getAddressPart('=?UTF-8?B?w6k=?= <me@at.com>'));
 		}
 		finally
 		{

@@ -512,22 +512,6 @@ final class Mailer {
 	
 	
 	/**
-	 * Get the email address from a recipient string that may have a friendly name part `recipient <me@at.domain>`
-	 *
-	 * @param string $addr The email address in the format `me@at.domain` or `recipient <me@at.domain>`
-	 * @return string Returns only the email address part `me@at.domain`
-	 */
-	public static function getAddress($addr)
-	{
-		if ( preg_match("/<(.*)>/", $addr, $regs) )
-			return $regs[1];
-		else
-			return $addr;
-	}
-	
-
-
-	/**
 	 * Add required technical headers (such as MIME version)
 	 *
 	 * @param MailPieces\MailContent $mail Mail object to process

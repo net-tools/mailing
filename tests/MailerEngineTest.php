@@ -7,12 +7,11 @@ namespace Nettools\Mailing\Tests;
 use \Nettools\Mailing\MailPieces\Headers;
 use \Nettools\Mailing\MailSenders\Virtual;
 use \Nettools\Mailing\MailSenders\MailSender;
-use \Nettools\Mailing\MailSenders\SentHandlers\Handler;
 use \Nettools\Mailing\MailerEngine;
 
 
 
-class DummyHandler extends Handler
+class DummyHandler extends \Nettools\Mailing\MailSenders\SentHandlers\Handler
 {
 	public $count = 0;
 	

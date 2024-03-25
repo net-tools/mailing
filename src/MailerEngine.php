@@ -378,7 +378,7 @@ class MailerEngine {
 		$this->handleHeaders_Cc($headers);
 		
 		// create Date header
-		$this->handleHeader_Date($headers);
+		$this->handleHeaders_Date($headers);
 		
 		// add To and Subject headers
 		$this->handleHeaders_ToSubject($to, $subject, $headers);

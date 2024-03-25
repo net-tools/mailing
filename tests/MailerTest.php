@@ -384,7 +384,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$ml = new Mailer(new Virtual());
 
         $obj = new MailTextPlainContent('textplain content');
-		$obj->headers->set('Cc', 'cc <cc-recipient@php.com>, othercc <othercc-recipient@php.com>, =?UTF-8?B?w6k=?= <another-cc@php.com>');
+		$obj->headers->set('Cc', 'cc <cc-recipient@php.com>, othercc <othercc-recipient@php.com>, éric <another-cc@php.com>');
 		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
 		$sent = $ml->getMailSender()->getSent();
 		
@@ -396,7 +396,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString("Delivered-To: othercc-recipient@php.com\r\n", $sent[1]);
 		$this->assertStringContainsString("Delivered-To: another-cc@php.com\r\n", $sent[2]);
 		$this->assertStringContainsString("Delivered-To: unit-test-recipient@php.com\r\n", $sent[3]);
-    }
+
+		$this->assertStringContainsString("Cc: cc <cc-recipient@php.com>,\r\n othercc <othercc-recipient@php.com>,\r\n =?UTF-8?B?w6lyaWM=?= <another-cc@php.com>\r\n", $sent[0]);
+		$this->assertStringContainsString("Cc: cc <cc-recipient@php.com>,\r\n othercc <othercc-recipient@php.com>,\r\n =?UTF-8?B?w6lyaWM=?= <another-cc@php.com>\r\n", $sent[1]);
+		$this->assertStringContainsString("Cc: cc <cc-recipient@php.com>,\r\n othercc <othercc-recipient@php.com>,\r\n =?UTF-8?B?w6lyaWM=?= <another-cc@php.com>\r\n", $sent[2]);
+		$this->assertStringContainsString("Cc: cc <cc-recipient@php.com>,\r\n othercc <othercc-recipient@php.com>,\r\n =?UTF-8?B?w6lyaWM=?= <another-cc@php.com>\r\n", $sent[3]);
+	}
     
     
     public function testEncoding()

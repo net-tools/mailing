@@ -361,6 +361,24 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     }
     
     
+    public function testSendmailCc()
+    {
+		$ml = new Mailer(new Virtual());
+
+        $obj = new MailTextPlainContent('textplain content');
+		$obj->headers->set('Cc', 'cc-recipient@php.com');
+		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
+		$sent = $ml->getMailSender()->getSent();
+		
+		// guess Message-ID and Date headers
+		$this->assertEquals(2, count($sent));
+		$regs = [];
+
+		$this->assertStringContainsString("Delivered-To: cc-recipient@php.com\r\n", $sent[0]);
+		$this->assertStringContainsString("Delivered-To: unit-test-recipient@php.com\r\n", $sent[1]);
+    }
+    
+    
     public function testEncoding()
     {
 		$ml = new Mailer(new Virtual());

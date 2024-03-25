@@ -216,6 +216,9 @@ abstract class MailSender {
 		// handle Bcc ; headers array may be modified after the call (Bcc line removed)
 		$this->handleBcc($subject, $mail, $headers);
 		
+		// send to all Cc recipients
+		$this->handleCc($subject, $mail, $headers);
+		
 		// send to all recipients
 		$this->handleRecipients($to, $subject, $mail, $headers);
 	}

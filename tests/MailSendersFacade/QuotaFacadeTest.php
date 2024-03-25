@@ -86,14 +86,13 @@ class QuotaFacadeTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals('Virtual', $f->getActiveProxy()->name);
 		
 		$ms = $f->getActiveMailSender();
+		
+		$engine = new \Nettools\Mailing\MailerEngine\Engine($ms);
 		$this->assertEquals(\Nettools\Mailing\MailSenders\Virtual::class, get_class($ms));
 		$this->assertEquals(0, $qif->sent);
-		$ms->send('recipient@here.org', 'test subject', 'mail content', new Headers(['From' => 'sender@me.com']));
+		$engine->send('recipient@here.org', 'test subject', 'mail content', new Headers(['From' => 'sender@me.com']));
 		$this->assertEquals(1, $qif->sent);	
-		$ms->send('recipient@here.org', 'test subject', 'mail content', new Headers(['From' => 'sender@me.com', 'Bcc' => 'bcc@here.org']));
-		
-		print_r($ms->getMailerEngine()->getMailSender()->getSent());
-		
+		$engine->send('recipient@here.org', 'test subject', 'mail content', new Headers(['From' => 'sender@me.com', 'Bcc' => 'bcc@here.org']));
 		$this->assertEquals(1+2, $qif->sent);	
 	}
     

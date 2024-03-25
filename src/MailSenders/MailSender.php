@@ -265,10 +265,9 @@ abstract class MailSender {
      * 
      * @param string $to Recipients separated by `,`
      * @param string $subject Subject
-     * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
-	function handleHeaders_ToSubject($to, $subject, $mail, Headers $headers)
+	function handleHeaders_ToSubject($to, $subject, Headers $headers)
 	{
 		$headers
 			->setEncodedRecipient('To', $to)
@@ -280,16 +279,25 @@ abstract class MailSender {
 	/**
      * Handle priority ; we always set high priorty at the moment
      * 
-     * @param string $to Recipients separated by `,`
-     * @param string $subject Subject
-     * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
-	function handleHeaders_Priority($to, $subject, $mail, Headers $headers)
+	function handleHeaders_Priority(Headers $headers)
 	{
 /*		$headers->set('X-Priority', '1')
 				->set('X-MSMail-Priority', '1')
 				->set('Importance', 'High');*/
+	}
+	
+
+	
+	/**
+     * Encode the Cc header 
+     * 
+     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     */
+	function handleHeaders_Cc(Headers $headers)
+	{
+		$headers->encodeRecipient('Cc');
 	}
 	
 	
@@ -307,14 +315,17 @@ abstract class MailSender {
 		// encode From header if required
 		$this->handleFromHeaderEncoding($headers);
 		
+		// encode Cc header
+		$this->handleHeaders_Cc($headers);
+		
 		// create Date header
 		$this->handleDateHeader($headers);
 		
 		// add To and Subject headers
-		$this->handleHeaders_ToSubject($to, $subject, $mail, $headers);
+		$this->handleHeaders_ToSubject($to, $subject, $headers);
 		
 		// handle priority headers
-		$this->handleHeaders_Priority($to, $subject, $mail, $headers);
+		$this->handleHeaders_Priority($headers);
 	}
 	
 	

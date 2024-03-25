@@ -447,7 +447,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
 				"$dt1\r\n" .
-				"To: user1@test.com\r\n" .
+				"To: user1@test.com,\r\n user2@test.com" .
 				"Subject: test subject\r\n" .
 				"$mid1\r\n" .
 				"Delivered-To: user1@test.com\r\n" .
@@ -462,7 +462,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 				"MIME-Version: 1.0\r\n" .
 				"From: unit-test@php.com\r\n" .
 				"$dt2\r\n" .
-				"To: user2@test.com\r\n" .
+				"To: user1@test.com,\r\n user2@test.com" .
 				"Subject: test subject\r\n" .
 				"$mid2\r\n" .
 				"Delivered-To: user2@test.com\r\n" .

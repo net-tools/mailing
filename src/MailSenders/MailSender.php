@@ -108,11 +108,15 @@ abstract class MailSender {
      */
 	function sendTo($to, $subject, $mail, Headers $headers)
 	{
+		// create message-id header
+		$h2 = Headers::fromObject($headers);
+		$this->handleMessageIdHeader($h2);		
+		
 		// send the email
-		$this->doSend(Mailer::getAddress($to), mb_encode_mimeheader($subject), $mail, $headers->toString());
+		$this->doSend(Mailer::getAddress($to), mb_encode_mimeheader($subject), $mail, $h2->toString());
 		
 		// event : 1 mail sent
-		$this->handleSentEvent($to, $subject, $headers);
+		$this->handleSentEvent($to, $subject, $h2);
 	}
 	
 
@@ -124,13 +128,12 @@ abstract class MailSender {
 	 * a 'normal' email to this Bcc recipient (and removing Bcc header, which the recipient must not see). If multiple
 	 * recipients, we must send as many emails. When using Php Mail function, it processes Bcc headers that way.
      *
-     * @param string $to Recipient
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
 	 */
-	function handleBcc($to, $subject, $mail, Headers $headers)
+	function handleBcc($subject, $mail, Headers $headers)
 	{
 		if ( $bcc = $headers->get('Bcc') )
 		{
@@ -159,19 +162,37 @@ abstract class MailSender {
 	/**
      * Prepare for sending the email (we handle here the Bcc case)
      *
-     * @param string $to Recipient
+     * @param string[] $to Array of recipients
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
 	 * @throws \Nettools\Mailing\Exception
      */
-	function handleSend($to, $subject, $mail, Headers $headers)
+	function handleSend(array $to, $subject, $mail, Headers $headers)
 	{
 		// handle Bcc ; headers array may be modified after the call (Bcc line removed)
-		$this->handleBcc($to, $subject, $mail, $headers);
+		$this->handleBcc($subject, $mail, $headers);
 		
-		// send the email
-		$this->sendTo($to, $subject, $mail, $headers);
+		// send to all recipients
+		$this->handleRecipients($to, $subject, $mail, $headers);
+	}
+	
+	
+	
+	/**
+     * Prepare for sending the email to each recipient
+     *
+     * @param string[] $to Array of recipients
+     * @param string $subject Subject
+     * @param string $mail String containing the email data
+     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+	 * @throws \Nettools\Mailing\Exception
+     */
+	function handleRecipients(array $to, $subject, $mail, Headers $headers)
+	{
+		// send the email to each recipient
+		foreach ( $to as $recipient )
+			$this->sendTo($recipient, $subject, $mail, $headers);
 	}
 	
 	
@@ -196,7 +217,7 @@ abstract class MailSender {
 	/**
      * Add the To and Subject headers to the headers string
      * 
-     * @param string $to Recipient
+     * @param string[] $to Array of recipients
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
@@ -213,12 +234,12 @@ abstract class MailSender {
 	/**
      * Handle priority ; we always set high priorty at the moment
      * 
-     * @param string $to Recipient
+     * @param string[] $to Array of recipients
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
-	function handleHeaders_Priority($to, $subject, $mail, Headers $headers)
+	function handleHeaders_Priority(array $to, $subject, $mail, Headers $headers)
 	{
 /*		$headers->set('X-Priority', '1')
 				->set('X-MSMail-Priority', '1')
@@ -230,15 +251,18 @@ abstract class MailSender {
 	/**
      * Handle headers modifications (from/to/subject/priority)
      * 
-     * @param string $to Recipient
+     * @param string[] $to Array of recipients
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
-	function handleHeaders($to, $subject, $mail, Headers $headers)
+	function handleHeaders(array $to, $subject, $mail, Headers $headers)
 	{
 		// encode From header if required
 		$this->handleFromHeaderEncoding($headers);
+		
+		// create Date header
+		$this->handleDateHeader($headers);
 		
 		// add To and Subject headers
 		$this->handleHeaders_ToSubject($to, $subject, $mail, $headers);
@@ -250,7 +274,7 @@ abstract class MailSender {
 	
 	
 	/**
-     * Handle from header encoding
+     * Handle `From` header encoding
      * 
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
      */
@@ -262,9 +286,37 @@ abstract class MailSender {
 	
 	
 	/**
+     * Create `Message-ID` header 
+     * 
+     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     */
+	function handleMessageIdHeader(Headers $headers)
+	{
+		$from = $headers->get('From');
+		if ( $from && preg_match('/[^@]+(@[^>\\r\\n]+)/', $from, $regs) )
+			$headers->set('Message-ID', '<' . sha1(uniqid()) . $regs[1] . '>');
+		else
+			$headers->set('Message-ID', '<' . sha1(uniqid()) . '@' . md5(time()) . '.com>');				
+	}
+	
+	
+	
+	/**
+     * Create `Date` header encoding
+     * 
+     * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
+     */
+	function handleDateHeader(Headers $headers)
+	{
+		$headers->set('Date', date('r'));
+	}
+	
+	
+	
+	/**
      * Send the email
      *
-     * @param string $to Recipient
+     * @param string|string[] $to Recipients separated with `,` or array of recipients
      * @param string $subject Subject
      * @param string $mail String containing the email data
      * @param \Nettools\Mailing\MailPieces\Headers $headers Email headers
@@ -275,10 +327,14 @@ abstract class MailSender {
 		// if init OK
 		if ( $this->ready() )
 		{
-			// handle headers processing
+			// if recipients is not an array, converting it to an array of recipients
+			if ( !is_array($to) )
+				$to = $to ? array_map(function($r){ return trim($r); }, explode(',', $to)) : array();
+			
+			// processing mandatory headers
 			$this->handleHeaders($to, $subject, $mail, $headers);
 			
-			// send
+			// send to recipients and handle bcc
 			$this->handleSend($to, $subject, $mail, $headers);
 		}
 		else

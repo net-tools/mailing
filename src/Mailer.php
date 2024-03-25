@@ -668,11 +668,8 @@ final class Mailer {
 	 */
 	public function sendmail_raw($to, $subject, $mail, Headers $headers, $destruct = false)
 	{
-		// if recipients is not an array, converting it to an array of recipients
-		if ( !is_array($to) )
-			$to = $to ? explode(',', $to) : array();
-		
-	
+		$this->getMailSender()->send($to, $subject, $mail, $headers);
+		/*
 						
 		$st = array();
 		foreach ( $to as $recipient )
@@ -697,7 +694,7 @@ final class Mailer {
 			catch ( \Nettools\Mailing\Exception $e )
 			{
 				$st[] = $e->getMessage();
-			}
+			}*/
 
 		if ( $destruct )
 			$this->destruct();

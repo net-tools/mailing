@@ -76,19 +76,30 @@ class Headers {
 	 */
 	function setEncodedRecipient($name, $value)
 	{
-		if ( !is_null($value) )
-			// if email address in format "friendlyname <address>"
-			if ( preg_match("/(.*)<(.*)>/", $value, $regs) )
-			{
-				$friendly = trim($regs[1]);
-				$addr = trim($regs[2]);
+		if ( $value )
+		{
+			// explode values
+			$items = explode(',', $value);
+			$ret = [];
+			
+			foreach ( $items as $recipient )
+				// if email address in format "friendlyname <address>"
+				if ( preg_match("/(.*)<(.*)>/", trim($recipient), $regs) )
+				{
+					$friendly = trim($regs[1]);
+					$addr = trim($regs[2]);
 
-				$this->set($name, mb_encode_mimeheader($friendly) . " <$addr>");
-			}
-		
-			// email address has no friendly name part, setting the value without any encoding
-			else
-				$this->set($name, $value);		
+					$ret[] = mb_encode_mimeheader($friendly) . " <$addr>";
+				}
+
+				// email address has no friendly name part, setting the value without any encoding
+				else
+					$ret[] = $recipient;
+			
+			
+			// setting back recipients encoded with folding for each recipient
+			$this->set($name, implode(",\r\n ", $ret));
+		}
 		
 		
 		return $this;

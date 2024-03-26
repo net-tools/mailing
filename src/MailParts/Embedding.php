@@ -21,7 +21,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
 /**
  * Class to deal with embeddings
  */
-class Embedding extends MixedContent {
+class Embedding extends MixedRelated {
 
 // [----- PROTECTED -----
 

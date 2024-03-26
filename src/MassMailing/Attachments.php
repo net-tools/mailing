@@ -1,7 +1,7 @@
 <?php
 
 // namespace
-namespace Nettools\Mailing\MailingHelpers;
+namespace Nettools\Mailing\MassMailing;
 
 
 // clauses use
@@ -13,7 +13,7 @@ use \Nettools\Mailing\Mailer;
 /** 
  * Helper class to deal with attachments
  */
-class Attachments extends Composite
+class Attachments extends MixedRelated
 {
 	/**
 	 * Factory method to create an attachment
@@ -89,14 +89,12 @@ class Attachments extends Composite
 	 *
 	 * @param mixed $data
 	 * @return \Nettools\Mailing\MailParts\Multipart
-	 * @throws \Nettools\Mailing\MailingHelpers\Exception
+	 * @throws \Nettools\Mailing\MassMailing\Exception
 	 */
-	public function render($data)
+	protected function _render($data)
 	{
-		// get a MailContent object
-		$value = parent::render($data);
-
-		return Mailer::addAttachmentObjects($value, $this->items);
+		// get a Content object and add on top an Attachment object
+		return Mailer::addAttachmentObjects(parent::_render($data), $this->items);
 	}
 }
 

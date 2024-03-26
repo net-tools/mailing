@@ -1,7 +1,7 @@
 <?php
 
 // namespace
-namespace Nettools\Mailing\MailingHelpers;
+namespace Nettools\Mailing\MassMailing;
 
 
 // clauses use
@@ -92,14 +92,12 @@ class Embeddings extends Composite
 	 *
 	 * @param mixed $data
 	 * @return \Nettools\Mailing\MailParts\Multipart
-	 * @throws \Nettools\Mailing\MailingHelpers\Exception
+	 * @throws \Nettools\Mailing\MassMailing\Exception
 	 */
-	public function render($data)
+	protected function _render($data)
 	{
-		// get a MailContent object
-		$value = parent::render($data);
-
-		return Mailer::addEmbeddingObjects($value, $this->items);
+		// get a Content object and add on top an Embedding object
+		return Mailer::addEmbeddingObjects(parent::_render($data), $this->items);
 	}
 }
 

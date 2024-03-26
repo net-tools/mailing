@@ -13,7 +13,7 @@ use \org\bovigo\vfs\vfsStream;
 
 
 
-class MixedContentTest extends \PHPUnit\Framework\TestCase
+class MixedRelatedTest extends \PHPUnit\Framework\TestCase
 {
     protected static $_fatt = NULL;
 	protected static $_fatt_ignorecache = NULL;
@@ -29,7 +29,7 @@ class MixedContentTest extends \PHPUnit\Framework\TestCase
 	}
 	
 	
-    public function testMailMixedContent()
+    public function testMailMixedRelated()
     {
 		// getContent
 		$matt = new Attachment(self::$_fatt, 'attach.txt', 'text/plain', false);

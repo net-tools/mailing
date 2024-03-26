@@ -19,7 +19,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
 /** 
  * Class to deal with attachments
  */
-class Attachment extends MixedContent {
+class Attachment extends MixedRelated {
 
 // [----- PROTECTED -----
 

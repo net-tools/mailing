@@ -1,6 +1,6 @@
 <?php
 /**
- * MixedContent
+ * MixedRelated
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -18,7 +18,7 @@ namespace Nettools\Mailing\MailParts;
 /**
  * Base class for embeddings and attachments
  */ 
-abstract class MixedContent extends Content {
+abstract class MixedRelated extends Content {
 
 // [----- PROTECTED -----
 

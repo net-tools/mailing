@@ -334,6 +334,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$boundary = __getBoundary($sent[0], 'multipart/mixed');
 		$boundary2 = __getBoundary($sent[0], 'multipart/alternative');
+		print_r($boundary . ',' . $boundary2);
 		$this->assertEquals( 
 				"Content-Type: multipart/mixed;\r\n boundary=\"$boundary\"\r\n" .
 				"From: unit-test@php.com\r\n" .

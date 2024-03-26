@@ -34,8 +34,7 @@ class Engine
 	protected $bcc = NULL;
 	protected $replyTo = false;
 	protected $toOverride = NULL;
-	protected $testRecipients = NULL;
-	
+	protected $testRecipients = NULL;	
 	
 	protected $mailer = NULL;
 	
@@ -124,6 +123,18 @@ class Engine
 		$this->toOverride = array_key_exists('toOverride', $params) ? $params['toOverride'] : NULL;
 		$this->testRecipients = array_key_exists('testRecipients', $params) ? $params['testRecipients'] : NULL;
 		$this->replyTo = array_key_exists('replyTo', $params) ? $params['replyTo'] : NULL;
+		
+		
+		$this->_initialize();
+	}
+	
+	
+	
+	/**
+	 * Do some init stuff after object is constructed
+	 */
+	protected function _initialize()
+	{		
 	}
 	
 	

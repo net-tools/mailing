@@ -18,11 +18,11 @@ abstract class MixedRelated extends Engine
 
 
 	
-	/** 
-	 * Constructor
+	/**
+	 * Do some init stuff after object is constructed
 	 */
-	function __construct()
-	{
+	protected function _initialize()
+	{		
 		// create pool to deal smartly with instances between many call of render method
 		$this->itemsPool = new \Nettools\Core\Containers\Pool(array($this, '_poolFactoryMethod'));
 		$this->items = array();

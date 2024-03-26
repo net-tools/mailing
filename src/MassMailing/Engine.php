@@ -68,9 +68,10 @@ class Engine
 	/**
 	 * Preprocess the mail content through an array of PreProcessor objects
 	 * 
+	 * @param mixed $data Any data required by pre-processor
 	 * @return string
 	 */
-	protected function _preProcess()
+	protected function _preProcess($data)
 	{
 		$txt = $this->mail;
 				
@@ -142,7 +143,7 @@ class Engine
 		$this->toOverride = array_key_exists('toOverride', $params) ? $params['toOverride'] : NULL;
 		$this->testRecipients = array_key_exists('testRecipients', $params) ? $params['testRecipients'] : NULL;
 		$this->replyTo = array_key_exists('replyTo', $params) ? $params['replyTo'] : NULL;
-		$this->preProcessors = array_key_exists('preProcessors', $params) ? $params['preProcessors'] : NULL;
+		$this->preProcessors = array_key_exists('preProcessors', $params) ? $params['preProcessors'] : [];
 		
 		
 		$this->_initialize();

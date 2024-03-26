@@ -320,7 +320,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$amsh->setAttachmentsCount(2);
 		$amsh->setAttachment($this->_fatt, 'attachment1.txt', 'text/plain', 0);
 		$amsh->setAttachment($this->_fatt, 'attachment2.txt', 'text/plain', 1);
-		$msh->prepareAndSend('user-to@php.com');
+		$amsh->prepareAndSend('user-to@php.com');
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(1, $sent);								
 		
@@ -334,7 +334,6 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$boundary = __getBoundary($sent[0], 'multipart/mixed');
 		$boundary2 = __getBoundary($sent[0], 'multipart/alternative');
-		print_r($boundary . ',' . $boundary2);
 		$this->assertEquals( 
 				"Content-Type: multipart/mixed;\r\n boundary=\"$boundary\"\r\n" .
 				"From: unit-test@php.com\r\n" .
@@ -414,7 +413,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$amsh = new Embeddings($ml, 'content with embeddings.', 'text/plain', 'unit-test@php.com', 'test subject');
 		$amsh->setEmbeddingsCount(1);
 		$amsh->setEmbedding($this->_fatt, 'text/plain', 'cid-123', 0);
-		$msh->prepareAndSend('user-to@php.com');
+		$amsh->prepareAndSend('user-to@php.com');
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		$this->assertCount(1, $sent);							
 

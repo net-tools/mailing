@@ -13,7 +13,7 @@ use \Nettools\Mailing\Mailer;
 /**
  * Helper class for embedded images
  */
-class Embeddings extends Composite
+class Embeddings extends MixedRelated
 {
 	/**
 	 * Create a embedding object

@@ -35,6 +35,7 @@ class Engine
 	protected $replyTo = false;
 	protected $toOverride = NULL;
 	protected $testRecipients = NULL;	
+	protected $preProcessors = [];
 	
 	protected $mailer = NULL;
 	
@@ -61,6 +62,23 @@ class Engine
 				throw new \Nettools\Mailing\MassMailing\Exception('Unknown content-type : ' . $this->mailContentType);
 		}
 	}
+	
+	
+	
+	/**
+	 * Preprocess the mail content through an array of PreProcessor objects
+	 * 
+	 * @return string
+	 */
+	protected function _preProcess()
+	{
+		$txt = $this->mail;
+				
+		foreach ( $this->preProcessors as $p )
+			$txt = $p->process($txt, $data);
+			
+		return $txt;	
+	}
 
 
 	
@@ -77,7 +95,7 @@ class Engine
 		$this->ready();
 		
 		// render email and get a Content object
-		return $this->_createMailContent($this->mail);
+		return $this->_createMailContent($this->_preProcess($data));
 	}	
 	
 	
@@ -95,6 +113,7 @@ class Engine
 	 *   - replyTo : If set, an email address to set in a ReplyTo header
 	 *   - toOverride : If set, sends all email to a given address (debug purposes)
 	 *   - testMode : If true, email are sent to testing addresses (see `testRecipients` optionnal parameter) ; defaults to false
+	 *   - preProcessors : an array of PreProcessor objects that will update mail content
 	 *
 	 * @param \Nettools\Mailing\Mailer $mailer
 	 * @param string $mail Mail content as a string
@@ -123,6 +142,7 @@ class Engine
 		$this->toOverride = array_key_exists('toOverride', $params) ? $params['toOverride'] : NULL;
 		$this->testRecipients = array_key_exists('testRecipients', $params) ? $params['testRecipients'] : NULL;
 		$this->replyTo = array_key_exists('replyTo', $params) ? $params['replyTo'] : NULL;
+		$this->preProcessors = array_key_exists('preProcessors', $params) ? $params['preProcessors'] : NULL;
 		
 		
 		$this->_initialize();

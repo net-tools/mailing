@@ -1,17 +1,19 @@
 <?php
 
-namespace Nettools\Mailing\Tests;
+namespace Nettools\Mailing\MailParts\Tests;
 
 
 
 
-use \Nettools\Mailing\MailPieces\MailAttachment;
-use \Nettools\Mailing\MailPieces\MailEmbedding;
+use \Nettools\Mailing\MailParts\Attachment;
+use \Nettools\Mailing\MailParts\Embedding;
 use \org\bovigo\vfs\vfsStream;
 
 
 
-class MailMixedContentTest extends \PHPUnit\Framework\TestCase
+
+
+class MixedContentTest extends \PHPUnit\Framework\TestCase
 {
     protected static $_fatt = NULL;
 	protected static $_fatt_ignorecache = NULL;
@@ -30,7 +32,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
     public function testMailMixedContent()
     {
 		// getContent
-		$matt = new MailAttachment(self::$_fatt, 'attach.txt', 'text/plain', false);
+		$matt = new Attachment(self::$_fatt, 'attach.txt', 'text/plain', false);
 		$this->assertEquals(self::$_fatt_content_b64, $matt->getContent());
 
 
@@ -53,7 +55,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
 
 
         // getContent and ignoreCache = false
-		$matt = new MailAttachment(self::$_fatt_ignorecache, 'attach.txt', 'text/plain', false);
+		$matt = new Attachment(self::$_fatt_ignorecache, 'attach.txt', 'text/plain', false);
 		$this->assertEquals(self::$_fatt_content_b64, $matt->getContent());
 		$f = fopen(self::$_fatt_ignorecache, 'w'); // update content of file 
 		fwrite($f, '');
@@ -71,7 +73,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
     public function testMailAttachment()
     {
         // getFileName
-		$matt = new MailAttachment(self::$_fatt, 'attach.txt', 'text/plain', false);
+		$matt = new Attachment(self::$_fatt, 'attach.txt', 'text/plain', false);
 		$this->assertEquals('attach.txt', $matt->getFileName());
 
         
@@ -104,7 +106,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
     public function testMailAttachmentAsString()
     {
         // getFileName
-		$matt = new MailAttachment('attachment data string', 'attach.txt', 'text/plain', false, false);
+		$matt = new Attachment('attachment data string', 'attach.txt', 'text/plain', false, false);
 		$this->assertEquals('attach.txt', $matt->getFileName());
 
         
@@ -137,7 +139,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
     public function testMailEmbedding()
     {
         // getCid
-		$membed = new MailEmbedding(self::$_fatt, 'text/plain', 'cid-123', false);
+		$membed = new Embedding(self::$_fatt, 'text/plain', 'cid-123', false);
 		$this->assertEquals('cid-123', $membed->getCid());
 
 
@@ -171,7 +173,7 @@ class MailMixedContentTest extends \PHPUnit\Framework\TestCase
     public function testMailEmbeddingAsString()
     {
         // getCid
-		$membed = new MailEmbedding('embedding data string', 'text/plain', 'cid-123', false, false);
+		$membed = new Embedding('embedding data string', 'text/plain', 'cid-123', false, false);
 		$this->assertEquals('cid-123', $membed->getCid());
 
 

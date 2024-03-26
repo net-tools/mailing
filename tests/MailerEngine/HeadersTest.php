@@ -1,6 +1,6 @@
 <?php
 
-namespace Nettools\Mailing\Tests;
+namespace Nettools\Mailing\MailerEngine\Tests;
 
 
 use \Nettools\Mailing\MailerEngine\Headers;
@@ -9,7 +9,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
 
 
 
-class MailHeadersTest extends \PHPUnit\Framework\TestCase
+class HeadersTest extends \PHPUnit\Framework\TestCase
 {
     public function testSetHeader()
     {

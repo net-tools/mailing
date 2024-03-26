@@ -13,12 +13,12 @@ namespace Nettools\Mailing;
 
 
 // clauses use
-use \Nettools\Mailing\MailPieces\MailAttachment;
-use \Nettools\Mailing\MailPieces\MailContent;
-use \Nettools\Mailing\MailPieces\MailEmbedding;
-use \Nettools\Mailing\MailPieces\MailMultipart;
-use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
-use \Nettools\Mailing\MailPieces\MailTextPlainContent;
+use \Nettools\Mailing\MailParts\Attachment;
+use \Nettools\Mailing\MailParts\Content;
+use \Nettools\Mailing\MailParts\Embedding;
+use \Nettools\Mailing\MailParts\Multipart;
+use \Nettools\Mailing\MailParts\TextHtmlContent;
+use \Nettools\Mailing\MailParts\TextPlainContent;
 use \Nettools\Mailing\MailSenders\MailSender;
 use \Nettools\Core\Helpers\EncodingHelper;
 use \Nettools\Core\Helpers\FileHelper;
@@ -41,10 +41,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
 final class Mailer {
 // [----- PROTECTED -----
 
-	/** @var \Nettools\Mailing\MailSenders\MailSender Email sending strategy */
-	protected $mailsender = NULL;
-		
-	/** @var \Nettools\Mailing\MailerEngine\Engine Subclass to handle sending through strategy $mailsender */
+	/** @var \Nettools\Mailing\MailerEngine\Engine Subclass to handle sending through strategy */
 	protected $mailerEngine = NULL;
 	
 // ----- PROTECTED -----]
@@ -114,7 +111,7 @@ final class Mailer {
 	 *
 	 * @param string $plain Plain text part
 	 * @param string $html HTML text part
-	 * @return MailPieces\MailMultipart Returns a multipart/alternative part
+	 * @return MailParts\Multipart Returns a multipart/alternative part
 	 */
 	public static function addTextHtml ($plain, $html)
 	{
@@ -127,7 +124,7 @@ final class Mailer {
 	 *
 	 * @param string $html HTML text part
 	 * @param string $htmltemplate Template for html part ; use `%content%` in the template to set the placeholder for content
-	 * @return MailPieces\MailMultipart Returns a multipart/alternative part
+	 * @return MailParts\Multipart Returns a multipart/alternative part
 	 */
 	public static function addTextHtmlFromHtml ($html, $htmltemplate = "%content%")
 	{
@@ -141,7 +138,7 @@ final class Mailer {
 	 *
 	 * @param string $plain Plain text part
 	 * @param string $htmltemplate Template for html part ; use `%content%` in the template to set the placeholder for content
-	 * @return MailPieces\MailMultipart Returns a multipart/alternative part
+	 * @return MailParts\Multipart Returns a multipart/alternative part
 	 */
 	public static function addTextHtmlFromText ($plain, $htmltemplate = "%content%")
 	{
@@ -157,35 +154,35 @@ final class Mailer {
 	 * 
 	 * The text/plain and text/html part are in fact "childs" of a multipart/alternative part
 	 *
-	 * @param MailPieces\MailContent $alt1 Part 1
-	 * @param MailPieces\MailContent $alt2 Part 2
-	 * @return MailPieces\MailMultipart Returns a multipart/alternative part
+	 * @param MailParts\Content $alt1 Part 1
+	 * @param MailParts\Content $alt2 Part 2
+	 * @return MailParts\Multipart Returns a multipart/alternative part
 	 */
-	public static function addAlternativeObject (MailContent $alt1, MailContent $alt2)
+	public static function addAlternativeObject (Content $alt1, Content $alt2)
 	{
-		return MailMultipart::from("alternative", $alt1, $alt2);
+		return Multipart::from("alternative", $alt1, $alt2);
 	}
 	
 	
 	/**
 	 * Create a text/plain part
 	 * 
-	 * @return MailPieces\MailTextPlainContent The plain text part
+	 * @return MailParts\TextPlainContent The plain text part
 	 */
 	public static function createText ($text)
 	{
-		return new MailTextPlainContent($text);
+		return new TextPlainContent($text);
 	}
 	
 	
 	/**
 	 * Create a text/html part
 	 * 
-	 * @return MailPieces\MailTextHtmlContent The HTML part
+	 * @return MailParts\TextHtmlContent The HTML part
 	 */
 	public static function createHtml ($html)
 	{
-		return new MailTextHtmlContent($html);
+		return new TextHtmlContent($html);
 	}
 	
 	
@@ -197,11 +194,11 @@ final class Mailer {
 	 * @param string $cid Content-ID for embedding
      * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
 	 * @param bool $isFile True if $embed is a file path, false if it's a data string
-	 * @return MailPieces\MailEmbedding Returns a embedding part
+	 * @return MailParts\Embedding Returns a embedding part
 	 */
 	public static function createEmbedding($embed, $embedtype, $cid, $ignoreCache = false, $isFile = true)
 	{
-		return new MailEmbedding($embed, $embedtype, $cid, $ignoreCache, $isFile);
+		return new Embedding($embed, $embedtype, $cid, $ignoreCache, $isFile);
 	}
 	
 	
@@ -213,24 +210,24 @@ final class Mailer {
 	 * @param string $filetype Mime type of the attachment
      * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
 	 * @param bool $isFile True if $embed is a file path, false if it's a data string
-	 * @return MailPieces\MailAttachment Returns a embedding part
+	 * @return MailParts\Attachment Returns a embedding part
 	 */
 	public static function createAttachment($file, $filename, $filetype, $ignoreCache = false, $isFile = true)
 	{
-		return new MailAttachment($file, $filename, $filetype, $ignoreCache, $isFile);
+		return new Attachment($file, $filename, $filetype, $ignoreCache, $isFile);
 	}
 	
 	
 	/**
 	 * Adds several attachments to an email
 	 * 
-	 * @param MailPieces\MailContent $mail Email object
+	 * @param MailParts\Content $mail Email object
 	 * @param string[][] $files Array of array about files to attach ; provide `file`, `filename` and `filetype` values for each file
      * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
 	 * @param bool $isFile True if 'file' value in $files array is a file path, false if it's a data string
-	 * @return MailPieces\MailMultipart Returns a multipart
+	 * @return MailParts\Multipart Returns a multipart
 	 */
-	public static function addAttachments (MailContent $mail, $files, $ignoreCache = false, $isFile = true)
+	public static function addAttachments (Content $mail, array $files, $ignoreCache = false, $isFile = true)
 	{
 		$att = array();
 		foreach ( $files as $f )
@@ -243,15 +240,15 @@ final class Mailer {
 	/**
 	 * Add an attachment to an email
 	 * 
-	 * @param MailPieces\MailContent $mail Email object
+	 * @param MailParts\Content $mail Email object
 	 * @param string $file Filepath to file to attach
 	 * @param string $filename Filename to display to the user
 	 * @param string $filetype Mime type of the attachment
      * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
 	 * @param bool $isFile True if 'file' value in $files array is a file path, false if it's a data string
-	 * @return MailPieces\MailMultipart Returns a multipart
+	 * @return MailParts\Multipart Returns a multipart
 	 */
-	public static function addAttachment (MailContent $mail, $file, $filename, $filetype, $ignoreCache = false, $isFile = true)
+	public static function addAttachment (Content $mail, $file, $filename, $filetype, $ignoreCache = false, $isFile = true)
 	{
 		return self::addAttachmentObject($mail, self::createAttachment($file, $filename, $filetype, $ignoreCache, $isFile));
 	}
@@ -260,41 +257,41 @@ final class Mailer {
 	/**
 	 * Add an attachment object to an email
 	 * 
-	 * @param MailPieces\MailContent $mail Email object
-	 * @param MailPieces\MailAttachment $obj Attachment object
-	 * @return MailPieces\MailMultipart Returns a multipart
+	 * @param MailParts\Content $mail Email object
+	 * @param MailParts\Attachment $obj Attachment object
+	 * @return MailParts\Multipart Returns a multipart
 	 */
-	public static function addAttachmentObject (MailContent $mail, MailAttachment $obj)
+	public static function addAttachmentObject (Content $mail, Attachment $obj)
 	{
-		return MailMultipart::from("mixed", $mail, $obj);
+		return Multipart::from("mixed", $mail, $obj);
 	}
 
 	
 	/**
 	 * Add several attachment objects to an email
 	 * 
-	 * @param MailPieces\MailContent $mail Email object
-	 * @param MailPieces\MailAttachment[] $objs Attachment objects
-	 * @return MailPieces\MailMultipart Returns a multipart
+	 * @param MailParts\Content $mail Email object
+	 * @param MailParts\Attachment[] $objs Attachment objects
+	 * @return MailParts\Multipart Returns a multipart
 	 */
-	public static function addAttachmentObjects (MailContent $mail, $objs)
+	public static function addAttachmentObjects (Content $mail, array $objs)
 	{
-		return MailMultipart::fromArray("mixed", $mail, $objs);
+		return Multipart::fromArray("mixed", $mail, $objs);
 	}
 
 	
 	/**
 	 * Add an embedding to an email
 	 * 
-	 * @param MailPieces\MailContent $mail Email object
+	 * @param MailParts\Content $mail Email object
 	 * @param string $embed Filepath to file to embed
 	 * @param string $embedtype Mime type of the embedding
 	 * @param string $cid Embedding CID
      * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
 	 * @param bool $isFile True if $embed is a file path, false if it's a data string
-	 * @return MailPieces\MailMultipart Returns a multipart
+	 * @return MailParts\Multipart Returns a multipart
 	 */
-	public static function addEmbedding (MailContent $mail, $embed, $embedtype, $cid, $ignoreCache = false, $isFile = true)
+	public static function addEmbedding (Content $mail, $embed, $embedtype, $cid, $ignoreCache = false, $isFile = true)
 	{
 		return self::addEmbeddingObject($mail, self::createEmbedding($embed, $embedtype, $cid, $ignoreCache, $isFile));
 	}
@@ -303,45 +300,45 @@ final class Mailer {
 	/**
 	 * Add an embedding object to an email
 	 * 
-	 * @param MailPieces\MailContent $mail Email object
-	 * @param MailPieces\MailEmbedding $obj Embedding object
-	 * @return MailPieces\MailMultipart Returns a multipart
+	 * @param MailParts\Content $mail Email object
+	 * @param MailParts\Embedding $obj Embedding object
+	 * @return MailParts\Multipart Returns a multipart
 	 */
-	public static function addEmbeddingObject (MailContent $mail, MailEmbedding $obj)
+	public static function addEmbeddingObject (Content $mail, Embedding $obj)
 	{
-		return MailMultipart::from("related", $mail, $obj);
+		return Multipart::from("related", $mail, $obj);
 	}
 
 	
 	/**
 	 * Adds several embeddings to an email
 	 * 
-	 * @param MailPieces\MailContent $mail Email object
+	 * @param MailParts\Content $mail Email object
 	 * @param string[][] $files Array of array about files to embed ; provide `file`, `cid` and `filetype` values for each file
      * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
 	 * @param bool $isFile True if 'file' value in $files array is a file path, false if it's a data string
-	 * @return MailPieces\MailMultipart Returns a multipart
+	 * @return MailParts\Multipart Returns a multipart
 	 */
-	public static function addEmbeddings (MailContent $mail, $embeds, $ignoreCache = false, $isFile = true)
+	public static function addEmbeddings (Content $mail, array $embeds, $ignoreCache = false, $isFile = true)
 	{
 		$emb = array();
 		foreach ( $embeds as $e )
 			$emb[] = self::createEmbedding($e['file'], $e['filetype'], $e['cid'], $ignoreCache, $isFile);
 
-		return MailMultipart::fromArray("related", $mail, $emb);
+		return Multipart::fromArray("related", $mail, $emb);
 	}
 
 	
 	/**
 	 * Add several embedding objects to an email
 	 * 
-	 * @param MailPieces\MailContent $mail Email object
-	 * @param MailPieces\MailEmbedding[] $objs Embedding objects
-	 * @return MailPieces\MailMultipart Returns a multipart
+	 * @param MailParts\Content $mail Email object
+	 * @param MailParts\Embedding[] $objs Embedding objects
+	 * @return MailParts\Multipart Returns a multipart
 	 */
-	public static function addEmbeddingObjects (MailContent $mail, $objs)
+	public static function addEmbeddingObjects (Content $mail, array $objs)
 	{
-		return MailMultipart::fromArray("related", $mail, $objs);
+		return Multipart::fromArray("related", $mail, $objs);
 	}
 	
 
@@ -355,14 +352,14 @@ final class Mailer {
 	 * - $ctype : will be set with the email part content-type
 	 * - $data : `$data` parameter of patch method ; useful to transmit work data to callback
 	 * 
-	 * @param MailPieces\MailContent $mail Email to process
+	 * @param MailParts\Content $mail Email to process
 	 * @param callable $fun Callback (see method summary for it's parameters)
 	 * @param mixed $data Data to pass to the callback
-	 * @return MailPieces\MailContent Returns the $mail parameters, with it's content updated
+	 * @return MailParts\Content Returns the $mail parameters, with it's content updated
 	 */
-    public static function patch(MailContent $mail, $fun, $data)
+    public static function patch(Content $mail, $fun, $data)
 	{
-		if ( $mail instanceof MailMultipart )
+		if ( $mail instanceof Multipart )
 			switch ( $mail->getType() )
 			{
 				// if embeddings or attachements part, the text part which may be patch is in the part at index 0
@@ -378,10 +375,10 @@ final class Mailer {
 					break;	
 			}
 		
-		else if ( $mail instanceof MailTextPlainContent )
+		else if ( $mail instanceof TextPlainContent )
 			$mail->setText(call_user_func($fun, $mail->getText(), $mail->getContentType(), $data));
 		
-		else if ( $mail instanceof MailTextHtmlContent )
+		else if ( $mail instanceof TextHtmlContent )
 			$mail->setHtml(call_user_func($fun, $mail->getHtml(), $mail->getContentType(), $data));
 			
 			
@@ -538,7 +535,6 @@ final class Mailer {
 	 */
 	public function setMailSender(MailSender $mailsender)
 	{
-		$this->mailsender = $mailsender;
 		$this->mailerEngine = new MailerEngine\Engine($mailsender);
 		return $this->mailerEngine->ready();
 	}
@@ -610,14 +606,14 @@ final class Mailer {
 	/**
 	 * Send an email built with static building method of Mailer
 	 *
-	 * @param MailPieces\MailContent $mail Mail object to send
+	 * @param MailParts\Content $mail Mail object to send
 	 * @param string $from Email sender
 	 * @param string|string[] $to Email recipient ; if multiple recipients, use a comma "," between addresses
 	 * @param string $subject Email subject
 	 * @param bool $destruct Set this parameter to TRUE to have the strategy destroyed after sending the email
 	 * @throws \Nettools\Mailing\Exception
 	 */
-	public function sendmail(MailContent $mail, $from, $to, $subject, $destruct = false)
+	public function sendmail(Content $mail, $from, $to, $subject, $destruct = false)
 	{
 		$this->sendmail_raw($to, $subject, $mail->getContent(), $mail->getAllHeaders()->set('From', $from), $destruct);
 	}
@@ -640,32 +636,6 @@ final class Mailer {
 		
 		
 		$this->mailerEngine->send($to, $subject, $mail, $headers);
-		/*
-						
-		$st = array();
-		foreach ( $to as $recipient )
-			try
-			{
-				unset($regs);
-				
-				
-				$h2 = new Headers(['Date' => date('r')]);
-				
-				// look for domain name From: xxx@domain.tld
-				// get From header, if defined
-				$from = $headers->get('From');
-				if ( $from && preg_match('/[^@]+(@[^>\\r\\n]+)/', $from, $regs) )
-					$h2->set('Message-ID', '<' . sha1(uniqid()) . $regs[1] . '>');
-				else
-					$h2->set('Message-ID', '<' . sha1(uniqid()) . '@' . md5(time()) . '.com>');				
-								
-				// sending mail with appropriate headers
-				$this->getMailSender()->send($recipient, $subject, $mail, Headers::fromObject($headers)->mergeWith($h2));
-			}
-			catch ( \Nettools\Mailing\Exception $e )
-			{
-				$st[] = $e->getMessage();
-			}*/
 
 		if ( $destruct )
 			$this->destroy();

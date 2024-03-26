@@ -1,13 +1,13 @@
 <?php
 /**
- * MailAttachment
+ * Attachment
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
  */
 
 // namespace
-namespace Nettools\Mailing\MailPieces;
+namespace Nettools\Mailing\MailParts;
 
 
 use \Nettools\Mailing\Mailer;
@@ -19,7 +19,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
 /** 
  * Class to deal with attachments
  */
-class MailAttachment extends MailMixedContent {
+class Attachment extends MixedContent {
 
 // [----- PROTECTED -----
 

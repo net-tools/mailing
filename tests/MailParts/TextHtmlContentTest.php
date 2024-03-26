@@ -1,39 +1,39 @@
 <?php
 
-namespace Nettools\Mailing\Tests;
+namespace Nettools\Mailing\MailParts\Tests;
 
 
 
-use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
+use \Nettools\Mailing\MailParts\TextHtmlContent;
 
 
 
 
-class MailTextHtmlContentTest extends \PHPUnit\Framework\TestCase
+class TextHtmlContentTest extends \PHPUnit\Framework\TestCase
 {
     public function test()
     {
-		$mc = new MailTextHtmlContent('<b>Test</b> é.');
+		$mc = new TextHtmlContent('<b>Test</b> é.');
 		$this->assertEquals('<b>Test</b> é.', $mc->getHtml());
 	
 	
-		$mc = new MailTextHtmlContent('Test é.');
+		$mc = new TextHtmlContent('Test é.');
 		$mc->setHtml('<strong>Test</strong> è.');
 		$this->assertEquals('<strong>Test</strong> è.', $mc->getHtml());
 		
 		
-		$mc = new MailTextHtmlContent('Test');
+		$mc = new TextHtmlContent('Test');
 		$this->assertEquals('text/html', $mc->getContentType());
 
 
-		$mc = new MailTextHtmlContent('Test é.');
+		$mc = new TextHtmlContent('Test é.');
 		$this->assertEquals( [
 								'Content-Type' => 'text/html; charset=UTF-8',
 								'Content-Transfer-Encoding' => 'quoted-printable'
 							], $mc->getHeaders()->toArray());
 
 
-		$mc = new MailTextHtmlContent('<b>Test</b> é.');
+		$mc = new TextHtmlContent('<b>Test</b> é.');
 		$this->assertEquals("<b>Test</b> =C3=A9.", $mc->getContent());	
     }
 }

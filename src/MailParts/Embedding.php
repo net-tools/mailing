@@ -1,6 +1,6 @@
 <?php
 /**
- * MailEmbedding
+ * Embedding
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -8,7 +8,7 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailPieces;
+namespace Nettools\Mailing\MailParts;
 
 
 use \Nettools\Core\Helpers\FileHelper;
@@ -21,7 +21,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
 /**
  * Class to deal with embeddings
  */
-class MailEmbedding extends MailMixedContent {
+class Embedding extends MixedContent {
 
 // [----- PROTECTED -----
 

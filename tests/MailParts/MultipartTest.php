@@ -1,25 +1,25 @@
 <?php
 
-namespace Nettools\Mailing\Tests;
+namespace Nettools\Mailing\MailParts\Tests;
 
 
 
-use \Nettools\Mailing\MailPieces\MailTextPlainContent;
-use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
-use \Nettools\Mailing\MailPieces\MailMultipart;
+use \Nettools\Mailing\MailParts\TextPlainContent;
+use \Nettools\Mailing\MailParts\TextHtmlContent;
+use \Nettools\Mailing\MailParts\Multipart;
 
 
 
 
-class MailMultipartTest extends \PHPUnit\Framework\TestCase
+class MultipartTest extends \PHPUnit\Framework\TestCase
 {
     public function test()
     {
         // from
-		$mcplain = new MailTextPlainContent('Test é.');
-		$mchtml = new MailTextHtmlContent('<b>Test</b> é.');
-		$mcalt = MailMultipart::from('alternative', $mcplain, $mchtml);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mcalt);
+		$mcplain = new TextPlainContent('Test é.');
+		$mchtml = new TextHtmlContent('<b>Test</b> é.');
+		$mcalt = Multipart::from('alternative', $mcplain, $mchtml);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $mcalt);
 
 
         // getCount : 2 parts
@@ -40,7 +40,7 @@ class MailMultipartTest extends \PHPUnit\Framework\TestCase
 
         
         // getContentType
-		$mcalt = MailMultipart::from('alternative', new MailTextPlainContent('Test é.'), new MailTextHtmlContent('<b>Test</b> é.'));
+		$mcalt = Multipart::from('alternative', new TextPlainContent('Test é.'), new TextHtmlContent('<b>Test</b> é.'));
 		$this->assertEquals('multipart/alternative', $mcalt->getContentType());
 
 
@@ -49,7 +49,7 @@ class MailMultipartTest extends \PHPUnit\Framework\TestCase
 		
 		
 		// getContent
-		$mcalt = MailMultipart::from('alternative', new MailTextPlainContent('Test é.'), new MailTextHtmlContent('<b>Test</b> é.'));
+		$mcalt = Multipart::from('alternative', new TextPlainContent('Test é.'), new TextHtmlContent('<b>Test</b> é.'));
 		$mcalt_content_expected = "--" . $mcalt->getSeparator() . "\r\n" .
 				"Content-Type: text/plain; charset=UTF-8\r\n" .
 				"Content-Transfer-Encoding: quoted-printable\r\n" .

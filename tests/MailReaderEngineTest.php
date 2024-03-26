@@ -19,9 +19,9 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		// we test iso-8859-1 charset converted to utf8
         $mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.plainhtml.eml'));
 		$this->assertNotNull($mail->email);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $mail->email);
 		$this->assertEquals('alternative', $mail->email->getType());
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->email->getPart(0));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\TextPlainContent', $mail->email->getPart(0));
 		$this->assertStringStartsWith( 
 							"At your request, please find below the information you requested :\n" . 
                             "- xxxx\n" . 
@@ -29,7 +29,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 
                             $mail->email->getPart(0)->getText()
 						);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextHtmlContent', $mail->email->getPart(1));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\TextHtmlContent', $mail->email->getPart(1));
 		$this->assertStringStartsWith( 
 							"<html><head><title></title><head><body>\n" .
 							"At your request, please find below the information you requested :<br/>",
@@ -43,12 +43,12 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		// content-disposition is not present, we guess it thanks to the content-id attribute
         $mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.inline.eml'));
 		$this->assertNotNull($mail->email);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email->getPart(0));		
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $mail->email);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $mail->email->getPart(0));		
 		$this->assertEquals('alternative', $mail->email->getPart(0)->getType());
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->email->getPart(0)->getPart(0));		
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\TextPlainContent', $mail->email->getPart(0)->getPart(0));		
 		$this->assertStringStartsWith("this is a *unit test* with inline attachment", $mail->email->getPart(0)->getPart(0)->getText());
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailEmbedding', $mail->email->getPart(1));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Embedding', $mail->email->getPart(1));
 		$fname = $mail->email->getPart(1)->getFile();
 		$this->assertFileEquals(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.inline.png', $fname);
 		MailReaderEngine::clean($mail->email);
@@ -60,8 +60,8 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		// attachment with text/plain content and CRLF newlines
 		$mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.eml'));
 		$this->assertNotNull($mail->email);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->email->getPart(0));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $mail->email);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\TextPlainContent', $mail->email->getPart(0));
         $this->assertEquals('mixed', $mail->email->getType());
 		$this->assertStringStartsWith(
 							"Hi,\n" .
@@ -71,7 +71,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
             
                             $mail->email->getPart(0)->getText()
 						);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->email->getPart(1));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Attachment', $mail->email->getPart(1));
 		$fname = $mail->email->getPart(1)->getFile();
         // gzdecode because GIT or FTP software may convert CRLF to LF
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 
@@ -84,8 +84,8 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		// attachment with text/plain content and LF newlines
 		$mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.eml'));
 		$this->assertNotNull($mail->email);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->email->getPart(0));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $mail->email);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\TextPlainContent', $mail->email->getPart(0));
         $this->assertEquals('mixed', $mail->email->getType());
 		$this->assertStringStartsWith(
 							"Hi,\n" .
@@ -95,7 +95,7 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
             
                             $mail->email->getPart(0)->getText()
 						);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->email->getPart(1));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Attachment', $mail->email->getPart(1));
 		$fname = $mail->email->getPart(1)->getFile();
         // gzdecode because GIT or FTP software may convert CRLF to LF
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.LF_attachment.bin.gz')), file_get_contents($fname)); 
@@ -107,13 +107,13 @@ class MailReaderEngineTest extends \PHPUnit\Framework\TestCase
 		// multipart/mixed with 2 attachments (no multipart/alternative html part)
 		$mail = MailReaderEngine::fromString(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_LF_attachments.eml'));
 		$this->assertNotNull($mail);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $mail->email);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $mail->email->getPart(0));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $mail->email);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\TextPlainContent', $mail->email->getPart(0));
         $this->assertEquals('mixed', $mail->email->getType());
         $this->assertStringStartsWith('two attachments', $mail->email->getPart(0)->getText());
 		$this->assertEquals(3, $mail->email->getCount()); // 3 parts in the mailmultipart : the text/plain one, and the 2 attachments
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->email->getPart(1));
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $mail->email->getPart(2));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Attachment', $mail->email->getPart(1));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Attachment', $mail->email->getPart(2));
 
         $fname = $mail->email->getPart(1)->getFile();
 		$this->assertEquals(gzdecode(file_get_contents(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.CRLF_attachment.bin.gz')), file_get_contents($fname)); 

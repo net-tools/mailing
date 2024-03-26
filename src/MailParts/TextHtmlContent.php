@@ -1,6 +1,6 @@
 <?php
 /**
- * MailTextHtmlContent
+ * TextHtmlContent
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -8,9 +8,8 @@
 
 
 
-
 // namespace
-namespace Nettools\Mailing\MailPieces;
+namespace Nettools\Mailing\MailParts;
 
 
 
@@ -25,7 +24,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
  *
  * The text output will be in utf-8 charset and QP encoded
  */
-class MailTextHtmlContent extends MailContent {
+class TextHtmlContent extends Content {
 
 // [----- PROTECTED -----
 

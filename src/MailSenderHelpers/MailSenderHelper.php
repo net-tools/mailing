@@ -4,7 +4,7 @@
 namespace Nettools\Mailing\MailSenderHelpers;
 
 // clauses use
-use \Nettools\Mailing\MailPieces\MailContent;
+use \Nettools\Mailing\MailParts\Content;
 use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailSenderQueue\Queue;
 use \Nettools\Mailing\MailSenderQueue\Store;
@@ -42,7 +42,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 * Create a MailContent object from a string
 	 *
 	 * @param string $mail Mail raw content as string
-	 * @return \Nettools\Mailing\MailPieces\MailContent
+	 * @return \Nettools\Mailing\MailParts\Content
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
 	protected function _createMailContent($mail)
@@ -206,7 +206,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 * Render email content
 	 *
 	 * @param mixed $data Data that may be required during rendering process
-	 * @return \Nettools\Mailing\MailPieces\MailContent
+	 * @return \Nettools\Mailing\MailParts\Content
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
 	public function render($data)
@@ -214,7 +214,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 		// testing mandatory parameters (exception thrown)
 		$this->ready();
 		
-		// render email and get a MailContent object
+		// render email and get a Content object
 		return $this->_createMailContent($this->mail);
 	}
 	
@@ -223,12 +223,12 @@ class MailSenderHelper implements MailSenderHelperIntf
 	/**
 	 * Send the email
 	 *
-	 * @param \Nettools\Mailing\MailPieces\MailContent $mail
+	 * @param \Nettools\Mailing\MailParts\Content $mail
 	 * @param string $mto Email recipient
 	 * @param string $subject Specific email subject ; if NULL, the default value passed to the constructor will be used
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
-	public function send(MailContent $mail, $mto, $subject = NULL)
+	public function send(Content $mail, $mto, $subject = NULL)
 	{
 		// if sending as batch (otherwise NULL), msender contains the queue name at first call ; then it will contain the queue object
 		if ( $this->queue && is_string($this->queue) )

@@ -3,6 +3,7 @@
 // namespace
 namespace Nettools\Mailing\MailSenderHelpers;
 
+
 // clauses use
 use \Nettools\Mailing\Mailer;
 
@@ -17,7 +18,7 @@ class Embeddings extends Composite
 	/**
 	 * Create a embedding object
 	 * 
-	 * @return \Nettools\Mailing\MailPieces\MailEmbedding
+	 * @return \Nettools\Mailing\MailPart\Embedding
 	 */
 	function _poolFactoryMethod()
 	{
@@ -90,7 +91,7 @@ class Embeddings extends Composite
 	 * Render the email
 	 *
 	 * @param mixed $data
-	 * @return \Nettools\Mailing\MailPieces\MailMultipart
+	 * @return \Nettools\Mailing\MailParts\Multipart
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
 	public function render($data)

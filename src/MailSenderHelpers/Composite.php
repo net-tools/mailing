@@ -3,8 +3,9 @@
 // namespace
 namespace Nettools\Mailing\MailSenderHelpers;
 
+
 // clauses use
-use \Nettools\Mailing\MailPieces\MailContent;
+use \Nettools\Mailing\MailParts\Content;
 
 
 
@@ -40,7 +41,7 @@ abstract class Composite implements MailSenderHelperIntf
 	/**
 	 * Factory method
 	 * 
-	 * @return \Nettools\Mailing\MailPieces\MailMixedContent
+	 * @return \Nettools\Mailing\MailParts\MixedContent
 	 */
 	abstract function _poolFactoryMethod();
 	
@@ -156,7 +157,7 @@ abstract class Composite implements MailSenderHelperIntf
 	 * Get an item
 	 * 
 	 * @param int $index
-	 * @return \Nettools\Mailing\MailPieces\MailMixedContent
+	 * @return \Nettools\Mailing\MailParts\MixedContent
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
 	public function getItem($index = 0)
@@ -173,7 +174,7 @@ abstract class Composite implements MailSenderHelperIntf
 	 * Rendering email
 	 *
 	 * @param mixed $data
-	 * @return \Nettools\Mailing\MailPieces\MailMultipart
+	 * @return \Nettools\Mailing\MailParts\Multipart
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
 	public function render($data)
@@ -188,11 +189,11 @@ abstract class Composite implements MailSenderHelperIntf
 	/**
 	 * Send the email
 	 * 
-	 * @param \Nettools\Mailing\MailPieces\MailContent $mail
+	 * @param \Nettools\Mailing\MailPars\Content $mail
 	 * @param string $to Email recipient
 	 * @param string $subject Specific email subject ; if NULL, the default value passed to the constructor will be used
 	 */
-	public function send(MailContent $mail, $to, $subject = NULL)
+	public function send(Content $mail, $to, $subject = NULL)
 	{
 		$this->component->send($mail, $to, $subject);
 	}

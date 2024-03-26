@@ -1,6 +1,6 @@
 <?php
 /**
- * MailMultipart
+ * Multipart
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -9,7 +9,7 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailPieces;
+namespace Nettools\Mailing\MailParts;
 
 
 use \Nettools\Mailing\MailerEngine\Headers;
@@ -21,14 +21,14 @@ use \Nettools\Mailing\MailerEngine\Headers;
 /**
  * Base class for handling 2 or more email parts 
  */
-class MailMultipart extends MailContent {
+class Multipart extends Content {
 
 // [----- PROTECTED -----
 
     /** @var string Boundary separator (please refer to email RFC https://tools.ietf.org/html/rfc2822) */
 	protected $_separator = NULL;
     
-    /** @var MailContent[] Array of parts */
+    /** @var Content[] Array of parts */
 	protected $_parts = NULL;
     
     /** @var string Mime type for this part */
@@ -49,13 +49,13 @@ class MailMultipart extends MailContent {
      * - related (embeddings)
      * 
      * @param string $type Type of the multipart
-     * @param MailContent $p1 First part
-     * @param MailContent $p2 Second part
-     * @return MailMultipart New object created from parameters
+     * @param Content $p1 First part
+     * @param Content $p2 Second part
+     * @return Multipart New object created from parameters
      */
-	public static function from ($type, MailContent $p1, MailContent $p2)
+	public static function from ($type, Content $p1, Content $p2)
 	{
-		return new MailMultipart($type, array($p1, $p2));
+		return new Multipart($type, array($p1, $p2));
 	}
 
 
@@ -69,13 +69,13 @@ class MailMultipart extends MailContent {
      * - related (embeddings)
      * 
      * @param string $type Type of the multipart
-     * @param MailContent $p1 First part
-     * @param MailContent[] $parts Array of parts
+     * @param Content $p1 First part
+     * @param Content[] $parts Array of parts
      * @return MailMultipart New object created from parameters
      */
-	public static function fromArray ($type, MailContent $p1, $parts)
+	public static function fromArray ($type, Content $p1, array $parts)
 	{
-		return new MailMultipart($type, array_merge(array($p1), $parts));
+		return new Multipart($type, array_merge(array($p1), $parts));
 	}
 
 
@@ -89,12 +89,12 @@ class MailMultipart extends MailContent {
      * - related (embeddings)
      *
      * @param string $type Type of the multipart
-     * @param MailContent[] $parts Array of parts
-     * @return MailMultipart New object created from parameters
+     * @param Content[] $parts Array of parts
+     * @return Multipart New object created from parameters
      */
-	public static function fromSingleArray ($type, $parts)
+	public static function fromSingleArray ($type, array $parts)
 	{
-		return new MailMultipart($type, $parts);
+		return new Multipart($type, $parts);
 	}
 
 // ----- STATIC -----]
@@ -122,7 +122,7 @@ class MailMultipart extends MailContent {
      * Get a part 
      * 
      * @param int $i Part index
-     * @return MailContent The part at index $i
+     * @return Content The part at index $i
      */
 	public function getPart($i) { return $this->_parts[$i]; }
 
@@ -131,7 +131,7 @@ class MailMultipart extends MailContent {
      * Set a part 
      * 
      * @param int $i Part index
-     * @param MailContent $p The part to set at index $i
+     * @param Content $p The part to set at index $i
      */
     public function setPart($i, $p) { $this->_parts[$i] = $p; }
 
@@ -154,9 +154,9 @@ class MailMultipart extends MailContent {
      * - related (embeddings)
      *
      * @param string $type Type of the multipart
-     * @param MailContent[] $parts Array of parts
+     * @param Content[] $parts Array of parts
      */
-	public function __construct($type, $parts)
+	public function __construct($type, array $parts)
 	{
 		parent::__construct("multipart/$type");
 	

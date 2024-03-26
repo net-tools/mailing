@@ -4,7 +4,7 @@
 namespace Nettools\Mailing\MailSenderHelpers;
 
 // clauses use
-use \Nettools\Mailing\MailPieces\MailContent;
+use \Nettools\Mailing\MailParts\Content;
 
 
 
@@ -27,7 +27,7 @@ interface MailSenderHelperIntf
 	 * Compute email 
 	 *
 	 * @param mixed $data Data that may be required during rendering process
-	 * @return \Nettools\Mailing\MailPieces\MailContent
+	 * @return \Nettools\Mailing\MailParts\Content
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
 	public function render($data);
@@ -37,12 +37,12 @@ interface MailSenderHelperIntf
 	/**
 	 * Send the email
 	 *
-	 * @param \Nettools\Mailing\MailPieces\MailContent $mail
+	 * @param \Nettools\Mailing\MailParts\Content $mail
 	 * @param string $to Email recipient
 	 * @param string $subject Specific email subject ; if NULL, the default value passed to the constructor will be used
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
-	public function send(MailContent $mail, $to, $subject = NULL);
+	public function send(Content $mail, $to, $subject = NULL);
 	
 	
 	

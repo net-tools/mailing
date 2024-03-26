@@ -4,8 +4,8 @@ namespace Nettools\Mailing\Tests;
 
 
 
-use \Nettools\Mailing\MailPieces\MailTextPlainContent;
-use \Nettools\Mailing\MailPieces\MailTextHtmlContent;
+use \Nettools\Mailing\MailParts\TextPlainContent;
+use \Nettools\Mailing\MailParts\TextHtmlContent;
 use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailSenders\Virtual;
 use \Nettools\Mailing\MailSenders\MailSender;
@@ -88,7 +88,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testAddTextHtml()
     {
 		$obj = Mailer::addTextHtml('Test message', '<b>test</b> message');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $obj);
 		$this->assertEquals('text/plain', $obj->getPart(0)->getContentType());
 		$this->assertEquals('text/html', $obj->getPart(1)->getContentType());
 		$this->assertEquals('Test message', $obj->getPart(0)->getContent());
@@ -99,7 +99,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testAddTextHtmlFromHtml()
     {
 		$obj = Mailer::addTextHtmlFromHtml('<b>test</b> message', 'Content :<br>--%content%--');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $obj);
 		$this->assertEquals('text/plain', $obj->getPart(0)->getContentType());
 		$this->assertEquals('text/html', $obj->getPart(1)->getContentType());
 		$this->assertEquals("Content :\r\n--test message--", $obj->getPart(0)->getContent());
@@ -110,7 +110,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testAddTextHtmlFromText()
     {
 		$obj = Mailer::addTextHtmlFromText('**test** message', 'Content :<br>--%content%--');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $obj);
 		$this->assertEquals('text/plain', $obj->getPart(0)->getContentType());
 		$this->assertEquals('text/html', $obj->getPart(1)->getContentType());
 		$this->assertEquals("Content :\r\n--**test** message--", $obj->getPart(0)->getContent());
@@ -120,8 +120,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     
     public function testAddAlternativeObject()
     {
-		$obj = Mailer::addAlternativeObject(new MailTextPlainContent('textplain content'), new MailTextHtmlContent('html content'));
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $obj);
+		$obj = Mailer::addAlternativeObject(new TextPlainContent('textplain content'), new TextHtmlContent('html content'));
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $obj);
 		$this->assertEquals('text/plain', $obj->getPart(0)->getContentType());
 		$this->assertEquals('text/html', $obj->getPart(1)->getContentType());
 		$this->assertEquals('textplain content', $obj->getPart(0)->getContent());
@@ -132,7 +132,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testCreateText()
     {
 		$obj = Mailer::createText('textplain content');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextPlainContent', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\TextPlainContent', $obj);
 		$this->assertEquals('text/plain', $obj->getContentType());
 		$this->assertEquals('textplain content', $obj->getContent());
     }
@@ -141,7 +141,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testCreateHtml()
     {
 		$obj = Mailer::createHtml('html content');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailTextHtmlContent', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\TextHtmlContent', $obj);
 		$this->assertEquals('text/html', $obj->getContentType());
 		$this->assertEquals('html content', $obj->getContent());
     }
@@ -150,7 +150,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testCreateEmbedding()
     {
 		$obj = Mailer::createEmbedding(self::$_fatt, 'text/plain', 'cid-123');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailEmbedding', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Embedding', $obj);
 		$this->assertEquals('text/plain', $obj->getContentType());
     }
     
@@ -158,15 +158,15 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testCreateAttachment()
     {
 		$obj = Mailer::createAttachment(self::$_fatt, 'attach.txt', 'text/plain');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailAttachment', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Attachment', $obj);
 		$this->assertEquals('text/plain', $obj->getContentType());
     }
     
     
     public function testAddAttachment()
     {
-		$obj = Mailer::addAttachment(new MailTextPlainContent('textplain content'), self::$_fatt, 'attach.txt', 'text/plain');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $obj);
+		$obj = Mailer::addAttachment(new TextPlainContent('textplain content'), self::$_fatt, 'attach.txt', 'text/plain');
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $obj);
 		$this->assertEquals('multipart/mixed', $obj->getContentType());
 		$this->assertEquals( 
 				"--" . $obj->getSeparator() . "\r\n" .
@@ -191,13 +191,13 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     
     public function testAddAttachments()
     {
-		$obj = Mailer::addAttachments(new MailTextPlainContent('textplain content'), 
+		$obj = Mailer::addAttachments(new TextPlainContent('textplain content'), 
 										[
 											array('file'=>self::$_fatt, 'filename'=>'attach.txt', 'filetype'=>'text/plain'),
 											array('file'=>self::$_fatt2, 'filename'=>'attach2.txt', 'filetype'=>'text/plain')
 										]
 									);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $obj);
 		$this->assertEquals('multipart/mixed', $obj->getContentType());
     }
     
@@ -207,7 +207,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$obj = Mailer::createAttachment(self::$_fatt, 'attach.txt', 'text/plain');
 		$mail = Mailer::createText('textplain content');
 		$matt = Mailer::addAttachmentObject($mail, $obj);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $matt);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $matt);
 		$this->assertEquals('multipart/mixed', $matt->getContentType());
     }
     
@@ -218,15 +218,15 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$obj2 = Mailer::createAttachment(self::$_fatt2, 'attach2.txt', 'text/plain');
 		$mail = Mailer::createText('textplain content');
 		$matt = Mailer::addAttachmentObjects($mail, [$obj, $obj2]);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $matt);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $matt);
 		$this->assertEquals('multipart/mixed', $matt->getContentType());
     }
     
     
     public function testAddEmbedding()
     {
-		$obj = Mailer::addEmbedding(new MailTextPlainContent('textplain content'), self::$_fatt, 'text/plain', 'cid-123');
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $obj);
+		$obj = Mailer::addEmbedding(new TextPlainContent('textplain content'), self::$_fatt, 'text/plain', 'cid-123');
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $obj);
 		$this->assertEquals('multipart/related', $obj->getContentType());
 
 		$this->assertEquals(
@@ -253,13 +253,13 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     
     public function testAddEmbeddings()
     {
-		$obj = Mailer::addEmbeddings(new MailTextPlainContent('textplain content'), 
+		$obj = Mailer::addEmbeddings(new TextPlainContent('textplain content'), 
 										[
 											array('file'=>self::$_fatt, 'filetype'=>'text/plain', 'cid'=>'cid-123'),
 											array('file'=>self::$_fatt2, 'filetype'=>'text/plain', 'cid'=>'cid-456')
 										]
 									);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $obj);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $obj);
 		$this->assertEquals('multipart/related', $obj->getContentType());
     }
     
@@ -269,7 +269,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$obj = Mailer::createEmbedding(self::$_fatt, 'text/plain', 'cid-123');
 		$mail = Mailer::createText('textplain content');
 		$matt = Mailer::addEmbeddingObject($mail, $obj);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $matt);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $matt);
 		$this->assertEquals('multipart/related', $matt->getContentType());
     }
     
@@ -280,7 +280,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 		$obj2 = Mailer::createEmbedding(self::$_fatt2, 'text/plain', 'cid-456');
 		$mail = Mailer::createText('textplain content');
 		$matt = Mailer::addEmbeddingObjects($mail, [$obj, $obj2]);
-		$this->assertInstanceOf('Nettools\Mailing\MailPieces\MailMultipart', $matt);
+		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $matt);
 		$this->assertEquals('multipart/related', $matt->getContentType());
     }
     
@@ -289,8 +289,8 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
 		$obj = Mailer::addAttachment(
 					Mailer::addAlternativeObject(
-								new MailTextPlainContent('http://www.web.com ; textplain content'),
-								new MailTextHtmlContent('<a href="http://www.web.com">texthtml</a>')
+								new TextPlainContent('http://www.web.com ; textplain content'),
+								new TextHtmlContent('<a href="http://www.web.com">texthtml</a>')
 							),
 					self::$_fatt, 'attach.txt', 'text/plain'
 				);
@@ -304,7 +304,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     {
 		$ml = new Mailer(new Virtual());
 
-        $obj = Mailer::addAttachment(new MailTextPlainContent('textplain content'), self::$_fatt, 'attach.txt', 'text/plain');
+        $obj = Mailer::addAttachment(new TextPlainContent('textplain content'), self::$_fatt, 'attach.txt', 'text/plain');
 		$ml->sendmail($obj, 'unit-test@php.com', 'unit-test-recipient@php.com', 'Mail subject', false);
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		
@@ -349,7 +349,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 	
     public function testSendmail_raw()
     {
-		$obj = new MailTextPlainContent('textplain content');
+		$obj = new TextPlainContent('textplain content');
 		$ml = new Mailer(new Virtual());
 		$ml->sendmail_raw('user1@test.com,user2@test.com', 'test subject', $obj->getContent(), $obj->getAllHeaders()->set('From', 'unit-test@php.com'), false); 
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();

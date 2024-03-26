@@ -1,6 +1,6 @@
 <?php
 /**
- * MailContent
+ * Content
  *
  * @author Pierre - dev@nettools.ovh
  * @license MIT
@@ -8,7 +8,7 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailPieces;
+namespace Nettools\Mailing\MailParts;
 
 
 use \Nettools\Mailing\Mailer;
@@ -21,7 +21,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
 /** 
  * Base class for defining a mail part : a content with a Content/Type
  */
-abstract class MailContent {
+abstract class Content {
 
 // [----- PROTECTED -----
 
@@ -70,7 +70,7 @@ abstract class MailContent {
      * 
      * Headers and contents are merged
      *
-     * @see MailMultipart::getContent
+	 * @see Multipart::getContent
      * @return string The text representation of this part (headers and content merged)
      */
 	public function toString()

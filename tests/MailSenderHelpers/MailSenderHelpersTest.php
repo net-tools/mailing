@@ -99,7 +99,7 @@ class MailSenderHelpersTest extends \PHPUnit\Framework\TestCase
 		
 		$msh = new MailSenderHelper($ml, 'msh content', 'text/plain', 'unit-test@php.com', 'test subject', ['testMode' => true, 'testRecipients' => ['user-test1@php.com', 'user-test2@php.com']]);
 		$content = $msh->render(NULL);
-		$this->assertInstanceOf(\Nettools\Mailing\MailPieces\MailContent::class, $content);
+		$this->assertInstanceOf(\Nettools\Mailing\MailParts\Content::class, $content);
 		$ml->setMailSender(new \Nettools\Mailing\MailSenders\Virtual(), NULL);
 		$msh->send($content, 'user-to@php.com');
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();

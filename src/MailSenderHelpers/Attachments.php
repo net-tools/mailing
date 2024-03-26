@@ -3,6 +3,7 @@
 // namespace
 namespace Nettools\Mailing\MailSenderHelpers;
 
+
 // clauses use
 use \Nettools\Mailing\Mailer;
 
@@ -17,7 +18,7 @@ class Attachments extends Composite
 	/**
 	 * Factory method to create an attachment
 	 * 
-	 * @return \Nettools\Mailing\MailPieces\MailAttachment
+	 * @return \Nettools\Mailing\MailParts\Attachment
 	 */
 	function _poolFactoryMethod()
 	{
@@ -68,7 +69,7 @@ class Attachments extends Composite
 	 * 
 	 * @param array $attachments Array of associative arrays with keys : file, filename, contentType, ignoreCache
 	 */
-	public function setAttachments($attachments)
+	public function setAttachments(array $attachments)
 	{
 		$this->setAttachmentsCount(count($attachments));
 		
@@ -87,7 +88,7 @@ class Attachments extends Composite
 	 * Render email 
 	 *
 	 * @param mixed $data
-	 * @return \Nettools\Mailing\MailPieces\MailMultipart
+	 * @return \Nettools\Mailing\MailParts\Multipart
 	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
 	 */
 	public function render($data)

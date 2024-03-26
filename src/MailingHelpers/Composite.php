@@ -1,7 +1,7 @@
 <?php
 
 // namespace
-namespace Nettools\Mailing\MailSenderHelpers;
+namespace Nettools\Mailing\MailingHelpers;
 
 
 // clauses use
@@ -14,7 +14,7 @@ use \Nettools\Mailing\MailParts\Content;
 /**
  * Base to class to deal with attachments and embeddings
  */
-abstract class Composite implements MailSenderHelperIntf
+abstract class Composite implements MailingHelperIntf
 {
 	
 	protected $component = NULL;
@@ -26,9 +26,9 @@ abstract class Composite implements MailSenderHelperIntf
 	/** 
 	 * Constructor
 	 * 
-	 * @param \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf $component Underlying object
+	 * @param \Nettools\Mailing\MailingHelpers\MailingHelperIntf $component Underlying object
 	 */
-	function __construct(MailSenderHelperIntf $component)
+	function __construct(MailingHelperIntf $component)
 	{
 		$this->component = $component;
 			
@@ -60,7 +60,7 @@ abstract class Composite implements MailSenderHelperIntf
 	 * Setter for ToOverride
 	 * 
 	 * @param strig $o Email address to send all emails to (for debugging purpose)
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailingHelpers\MailingHelperIntf Returns the calling object for chaining
 	 */
 	public function setToOverride($o) { return $this->component->setToOverride($o); return $this; }
 	
@@ -88,7 +88,7 @@ abstract class Composite implements MailSenderHelperIntf
 	 * Update raw mail string
 	 * 
 	 * @param string $m
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailingHelpers\MailingHelperIntf Returns the calling object for chaining
 	 */
 	public function setRawMail($m) { return $this->component->setRawMail($m); return $this; }
 	
@@ -107,15 +107,15 @@ abstract class Composite implements MailSenderHelperIntf
 	/** 
 	 * Testing required parameters
 	 *
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function ready()
 	{
 		if ( empty($this->component) )
-			throw new \Nettools\Mailing\MailSenderHelpers\Exception('Underlying object unset');
+			throw new \Nettools\Mailing\MailingHelpers\Exception('Underlying object unset');
 
 		if ( empty($this->itemsPool) ) 
-			throw new \Nettools\Mailing\MailSenderHelpers\Exception('Items pool not initialized');
+			throw new \Nettools\Mailing\MailingHelpers\Exception('Items pool not initialized');
 			
 		
 		// call underlying object ready method, which will throw an exception if something wrong
@@ -158,14 +158,14 @@ abstract class Composite implements MailSenderHelperIntf
 	 * 
 	 * @param int $index
 	 * @return \Nettools\Mailing\MailParts\MixedContent
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function getItem($index = 0)
 	{
 		if ( $index < count($this->items) )
 			return $this->items[$index];
 		else
-			throw new \Nettools\Mailing\MailSenderHelpers\Exception("Index value is incorrect ($index)");
+			throw new \Nettools\Mailing\MailingHelpers\Exception("Index value is incorrect ($index)");
 	}
 
 	
@@ -175,7 +175,7 @@ abstract class Composite implements MailSenderHelperIntf
 	 *
 	 * @param mixed $data
 	 * @return \Nettools\Mailing\MailParts\Multipart
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function render($data)
 	{
@@ -189,7 +189,7 @@ abstract class Composite implements MailSenderHelperIntf
 	/**
 	 * Send the email
 	 * 
-	 * @param \Nettools\Mailing\MailPars\Content $mail
+	 * @param \Nettools\Mailing\MailParts\Content $mail
 	 * @param string $to Email recipient
 	 * @param string $subject Specific email subject ; if NULL, the default value passed to the constructor will be used
 	 */

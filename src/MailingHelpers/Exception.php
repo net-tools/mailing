@@ -1,6 +1,6 @@
 <?php
 // namespace
-namespace Nettools\Mailing\MailSenderHelpers;
+namespace Nettools\Mailing\MailingHelpers;
 
 
 class Exception extends \Nettools\Mailing\Exception {}

@@ -1,7 +1,7 @@
 <?php
 
 // namespace
-namespace Nettools\Mailing\MailSenderHelpers;
+namespace Nettools\Mailing\MailingHelpers;
 
 // clauses use
 use \Nettools\Mailing\MailParts\Content;
@@ -12,12 +12,12 @@ use \Nettools\Mailing\MailParts\Content;
 /**
  * Interface for mailing helper (queue may be used, but this is not mandatory)
  */
-interface MailSenderHelperIntf
+interface MailingHelperIntf
 {
 	/** 
 	 * Testing that required parameters are set
 	 *
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function ready();
 
@@ -28,7 +28,7 @@ interface MailSenderHelperIntf
 	 *
 	 * @param mixed $data Data that may be required during rendering process
 	 * @return \Nettools\Mailing\MailParts\Content
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function render($data);
 	
@@ -40,7 +40,7 @@ interface MailSenderHelperIntf
 	 * @param \Nettools\Mailing\MailParts\Content $mail
 	 * @param string $to Email recipient
 	 * @param string $subject Specific email subject ; if NULL, the default value passed to the constructor will be used
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function send(Content $mail, $to, $subject = NULL);
 	
@@ -82,7 +82,7 @@ interface MailSenderHelperIntf
 	 * Setter for ToOverride
 	 * 
 	 * @param string $o Email address to send all emails to (for debugging purpose)
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailingHelpers\MailingHelperIntf Returns the calling object for chaining
 	 */
 	public function setToOverride($o);
 	
@@ -110,7 +110,7 @@ interface MailSenderHelperIntf
 	 * Update raw mail content
 	 * 
 	 * @param string $m
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelperIntf Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailingHelpers\MailingHelperIntf Returns the calling object for chaining
 	 */
 	public function setRawMail($m);
 }

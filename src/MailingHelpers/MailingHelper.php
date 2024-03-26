@@ -1,7 +1,7 @@
 <?php
 
 // namespace
-namespace Nettools\Mailing\MailSenderHelpers;
+namespace Nettools\Mailing\MailingHelpers;
 
 // clauses use
 use \Nettools\Mailing\MailParts\Content;
@@ -18,7 +18,7 @@ use \Nettools\Mailing\MailSenderQueue\Store;
  * Subject, template, from address, bcc, replyto can be set at object construction, then all required customizations are applied to mail objects sent through `send` method.
  * It also makes it possible to send emails to tests recipients or to a queue object, again just by setting appropriate parameters of constructor
  */
-class MailSenderHelper implements MailSenderHelperIntf
+class MailingHelper implements MailingHelperIntf
 {
 	protected $mail = NULL;
 	protected $mailContentType = NULL;
@@ -43,7 +43,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 *
 	 * @param string $mail Mail raw content as string
 	 * @return \Nettools\Mailing\MailParts\Content
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	protected function _createMailContent($mail)
 	{
@@ -56,7 +56,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 				return Mailer::addTextHtmlFromHtml($mail, $this->template);
 				
 			default:
-				throw new \Nettools\Mailing\MailSenderHelpers\Exception('Unknown content-type : ' . $this->mailContentType);
+				throw new \Nettools\Mailing\MailingHelpers\Exception('Unknown content-type : ' . $this->mailContentType);
 		}
 	}
 
@@ -119,7 +119,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 * Setter for ToOverride
 	 * 
 	 * @param strig $o Email address to send all emails to (for debugging purpose)
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelper Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailingHelpers\MailingHelper Returns the calling object for chaining
 	 */
 	public function setToOverride($o) { $this->toOverride = $o; return $this;}
 	
@@ -147,7 +147,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 * Update raw mail string
 	 * 
 	 * @param string $m
-	 * return \Nettools\Mailing\MailSenderHelpers\MailSenderHelper Returns the calling object for chaining
+	 * return \Nettools\Mailing\MailingHelpers\MailingHelper Returns the calling object for chaining
 	 */
 	public function setRawMail($m) { $this->mail = $m; return $this; }
 
@@ -167,36 +167,36 @@ class MailSenderHelper implements MailSenderHelperIntf
 	/** 
 	 * Testing that required parameters are set
 	 *
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function ready()
 	{
 		if ( empty($this->mailer) )
-            throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::mailer is not defined");
+            throw new \Nettools\Mailing\MailingHelpers\Exception("MailingHelper::mailer is not defined");
 
 		if ( empty($this->mail) )
-            throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::mail is not defined");
+            throw new \Nettools\Mailing\MailingHelpers\Exception("MailingHelper::mail is not defined");
         
 		if ( empty($this->mailContentType) )
-        	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::mailContentType is not defined");
+        	throw new \Nettools\Mailing\MailingHelpers\Exception("MailingHelper::mailContentType is not defined");
 
 		if ( empty($this->from) )
-            throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::from is not defined");
+            throw new \Nettools\Mailing\MailingHelpers\Exception("MailingHelper::from is not defined");
 
 		if ( empty($this->template) )
-            throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::template is not defined");
+            throw new \Nettools\Mailing\MailingHelpers\Exception("MailingHelper::template is not defined");
 		
 		
 		if ( $this->testMode )
 		{
 			if ( empty($this->testRecipients) )
-            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testRecipients is not defined");
+            	throw new \Nettools\Mailing\MailingHelpers\Exception("MailingHelper::testRecipients is not defined");
 			
 			if ( !is_array($this->testRecipients) )
-            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testRecipients is not an array");
+            	throw new \Nettools\Mailing\MailingHelpers\Exception("MailingHelper::testRecipients is not an array");
 			
 			if ( count($this->testRecipients) == 0 )
-            	throw new \Nettools\Mailing\MailSenderHelpers\Exception("MailSenderHelper::testRecipients is an empty array");
+            	throw new \Nettools\Mailing\MailingHelpers\Exception("MailingHelper::testRecipients is an empty array");
 		}
 	}
 	
@@ -207,7 +207,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 *
 	 * @param mixed $data Data that may be required during rendering process
 	 * @return \Nettools\Mailing\MailParts\Content
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function render($data)
 	{
@@ -226,7 +226,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 	 * @param \Nettools\Mailing\MailParts\Content $mail
 	 * @param string $mto Email recipient
 	 * @param string $subject Specific email subject ; if NULL, the default value passed to the constructor will be used
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function send(Content $mail, $mto, $subject = NULL)
 	{
@@ -263,9 +263,9 @@ class MailSenderHelper implements MailSenderHelperIntf
 		
 		// checking email syntax
 		if ( is_null($dest) )
-			throw new \Nettools\Mailing\MailSenderHelpers\Exception("Empty email recipient");
+			throw new \Nettools\Mailing\MailingHelpers\Exception("Empty email recipient");
 		if ( !preg_match("/^[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*@[a-z0-9]+([_|\.|-]{1}[a-z0-9]+)*[\.]{1}[a-z]{2,6}$/", $dest) )
-			throw new \Nettools\Mailing\MailSenderHelpers\Exception("Malformed email : '$dest'");
+			throw new \Nettools\Mailing\MailingHelpers\Exception("Malformed email : '$dest'");
 			
 		
 		// dealing with BCC
@@ -281,7 +281,7 @@ class MailSenderHelper implements MailSenderHelperIntf
 		// checking a subject is defined, either in constructor parameters or in this method argument
 		$subject = $subject ? $subject : $this->subject;
 		if ( is_null($subject) )
-            throw new \Nettools\Mailing\MailSenderHelpers\Exception("Subject in 'send' method is not defined");
+            throw new \Nettools\Mailing\MailingHelpers\Exception("Subject in 'send' method is not defined");
 
 
 		// if sending to a queue

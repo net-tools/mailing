@@ -1,7 +1,7 @@
 <?php
 
 // namespace
-namespace Nettools\Mailing\MailSenderHelpers;
+namespace Nettools\Mailing\MailingHelpers;
 
 
 // clauses use
@@ -89,7 +89,7 @@ class Attachments extends Composite
 	 *
 	 * @param mixed $data
 	 * @return \Nettools\Mailing\MailParts\Multipart
-	 * @throws \Nettools\Mailing\MailSenderHelpers\Exception
+	 * @throws \Nettools\Mailing\MailingHelpers\Exception
 	 */
 	public function render($data)
 	{

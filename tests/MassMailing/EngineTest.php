@@ -67,7 +67,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			if ( $prefix )
 				$prefix = "$prefix;\r\n";
 			
-			if ( preg_match('/' . $prefix . ' boundary="([^"]+)"/', $str, $regs) )
+			if ( preg_match('|' . $prefix . ' boundary="([^"]+)"|', $str, $regs) )
 				return $regs[1];
 			else
 				return '';

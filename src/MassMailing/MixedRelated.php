@@ -23,8 +23,6 @@ abstract class MixedRelated extends Engine
 	 */
 	function __construct()
 	{
-		$this->component = $component;
-			
 		// create pool to deal smartly with instances between many call of render method
 		$this->itemsPool = new \Nettools\Core\Containers\Pool(array($this, '_poolFactoryMethod'));
 		$this->items = array();
@@ -48,9 +46,6 @@ abstract class MixedRelated extends Engine
 	 */
 	public function ready()
 	{
-		if ( empty($this->component) )
-			throw new \Nettools\Mailing\MassMailing\Exception('Underlying object unset');
-
 		if ( empty($this->itemsPool) ) 
 			throw new \Nettools\Mailing\MassMailing\Exception('Items pool not initialized');
 			

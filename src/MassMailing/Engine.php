@@ -324,7 +324,7 @@ class Engine
 		// checking a subject is defined, either in constructor parameters or in this method argument
 		$subject = $subject ? $subject : $this->subject;
 		if ( is_null($subject) )
-            throw new \Nettools\Mailing\MassMailing\Exception("Subject in 'send' method is not defined");
+            throw new \Nettools\Mailing\MassMailing\Exception("Subject in 'prepareAndSend' method is not defined");
 
 
 		// if sending to a queue

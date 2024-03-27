@@ -94,6 +94,30 @@ abstract class MailSender {
      */
 	abstract function doSend($to, $subject, $mail, $headers);
 	
+	
+	
+	/**
+	 * Update headers according to strategy requirements (PHPMail removes Subject and To headers)
+	 *
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers object
+	 */
+	function updateHeaders(Headers $headers)
+	{		
+	}
+	 	
+
+	
+	/**
+	 * Is the strategy dealing with Cc and Bcc recipients ; this is the case for PHPMail or Gmail.
+	 * Other strategies ignore Cc and Bcc headers and emails must be sent for each recipients (To, Bcc, Cc)
+	 *
+	 * @return bool Returns True if sending strategy handles Cc and Bcc recipients, false otherwise (by default)
+	 */
+	function isStrategyHandling_CcBcc()
+	{
+		return false;
+	}
+	 	
 
 	
 	/**
@@ -106,6 +130,9 @@ abstract class MailSender {
      */
 	function send($to, $subject, $mail, Headers $headers)
 	{
+		// update headers if required by strategy
+		$this->updateHeaders($headers);
+		
 		// send email through implementation of abstract method `doSend`
 		$this->doSend($to, $subject, $mail, $headers->toString());
 

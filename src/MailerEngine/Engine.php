@@ -124,6 +124,11 @@ class Engine {
 	 */
 	function handleBcc($subject, $mail, Headers $headers)
 	{
+		// ignore if underlying sending strategy handles Cc and Bcc
+		if ( $this->getMailSender()->isStrategyHandling_CcBcc() )
+			return;
+		
+		
 		if ( $bcc = $headers->get('Bcc') )
 		{
 			// remove Bcc header
@@ -160,6 +165,11 @@ class Engine {
 	 */
 	function handleCc($subject, $mail, Headers $headers)
 	{
+		// ignore if underlying sending strategy handles Cc and Bcc
+		if ( $this->getMailSender()->isStrategyHandling_CcBcc() )
+			return;
+		
+		
 		if ( $cc = $headers->get('Cc') )
 		{
 			// For all Cc recipients, send a copy of the email 

@@ -23,51 +23,33 @@ use \Nettools\Mailing\MailerEngine\Headers;
  * Strategy to send emails with PHP built-in mail function
  */
 class PHPMail extends MailSender
-{
+{	
 	/**
-     * Add the To and Subject headers to the headers string
-     * 
-     * For PHPMail strategy, we do not have to set To and Subject headers, as this is php Mail() function that sets them internally
+	 * Update headers according to strategy requirements (PHPMail removes Subject and To headers)
 	 *
-     * @param string[] $to Array of recipients
-     * @param string $subject Subject
-     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
-     */
-	function handleHeaders_ToSubject($to, $subject, Headers $headers)
+     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers object
+	 */
+	function updateHeaders(Headers $headers)
 	{
+		$headers
+			->remove('Subject')
+			->remove('To');
 	}
-	
-	
+	 	
 
-	/**
-     * Handle Bcc 
-     *
-     * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Bcc header
-     *
-     * @param string $subject Subject
-     * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
-     */
-	function handleBcc($subject, $mail, Headers $headers)
-	{
-	}
-	
-	
 	
 	/**
-     * Handle Cc 
-     *
-     * For PHPMail strategy, we don't have to do anything, as PHP Mail() function processes Cc header
-     *
-     * @param string $subject Subject
-     * @param string $mail String containing the email data
-     * @param \Nettools\Mailing\MailerEngine\Headers $headers Email headers
-     */
-	function handleCc($subject, $mail, Headers $headers)
+	 * Is the strategy dealing with Cc and Bcc recipients ; this is the case for PHPMail or Gmail.
+	 * Other strategies ignore Cc and Bcc headers and emails must be sent for each recipients (To, Bcc, Cc)
+	 *
+	 * @return bool Returns True if sending strategy handles Cc and Bcc recipients, false otherwise (by default)
+	 */
+	function isStrategyHandling_CcBcc()
 	{
+		return true;
 	}
-	
-	
+	 	
+
 	
 	/**
 	 * Send the email

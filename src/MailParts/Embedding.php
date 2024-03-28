@@ -58,7 +58,7 @@ class Embedding extends MixedRelated {
      public function __construct($file, $file_type, $cid, $ignoreCache = false, $isFile = true)
 	{
 		// if file_type not provided, guess it from the filename
-		parent::__construct($file, is_null($file_type) ? FileHelper::guessMimeType($file, "image/jpeg") : $file_type, $ignoreCache, $isFile);
+		parent::__construct($file, $file_type, $ignoreCache, $isFile);
 		$this->_cid = $cid;
 	}
 	

@@ -94,6 +94,7 @@ class Compose {
 	function withTemplate($template)
 	{
 		$this->_template = $template;
+		return $this;
 	}
 	
 
@@ -170,10 +171,13 @@ class Compose {
 	
 	/**
 	 * Disable auto creation of alternate part (text/html if provided mail content is text/plain, and vice-versa)
+	 *
+	 * @return Compose Return $this for chaining calls
 	 */
 	function noAlternatePart()
 	{
 		$this->_noAlt = true;
+		return $this;
 	}
 	
 	
@@ -187,6 +191,7 @@ class Compose {
 	function attach(Attachment $content)
 	{
 		$this->_attachments[] = $content;
+		return $this;
 	}
 	
 	
@@ -200,6 +205,7 @@ class Compose {
 	function setAttachments(array $content)
 	{
 		$this->_attachments = array_merge($this->_attachments, $content);
+		return $this;
 	}
 	
 	
@@ -213,6 +219,7 @@ class Compose {
 	function embed(Embedding $content)
 	{
 		$this->_embeddings[] = $content;
+		return $this;
 	}
 	
     
@@ -226,6 +233,7 @@ class Compose {
 	function setEmbeddings(array $content)
 	{
 		$this->_embeddings = array_merge($this->_embeddings, $content);
+		return $this;
 	}
 	
 	

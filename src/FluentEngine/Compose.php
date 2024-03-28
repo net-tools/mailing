@@ -281,6 +281,8 @@ class Compose {
 			$m->headers->set('Cc', $this->_cc);
 		if ( $this->_bcc )
 			$m->headers->set('Bcc', $this->_bcc);
+		if ( $this->_replyTo )
+			$m->headers->set('Reply-To', $this->_replyTo);
 		
 		
 		

@@ -33,6 +33,7 @@ class Compose {
 	protected $_cc = null;
 	protected $_bcc = null;
 	protected $_noAlt = false;
+	protected $_template = Mailer::TEMPLATE;
     protected $_attachments = [];
     protected $_embeddings = [];
 	
@@ -80,6 +81,19 @@ class Compose {
 		$this->_content = $txt;
 		$this->_contentType = 'text/html';
 		return $this;
+	}
+	
+	
+	
+	/**
+	 * Set email template as Html data
+	 *
+	 * @param string $template
+	 * @return Compose Return $this for chaining calls
+	 */
+	function withTemplate($template)
+	{
+		$this->_template = $template;
 	}
 	
 
@@ -216,5 +230,64 @@ class Compose {
 	
 	
 	
+	/**
+	 * Create Nettools\Mailing\MailParts\Content object base on mail description through fluent interface
+	 *
+	 * @return Nettools\Mailing\MailParts\Content
+	 */
+	function create()
+	{
+		// if alternative part is allowed
+		if ( !$this->_noAlt )
+			// prepare text parts
+			if ( $this->_contentType == 'text/plain' )
+				$m = Mailer::addTextHtmlFromText($this->_content, $this->_template);
+			else
+				$m = Mailer::addTextHtmlFromHtml($this->_content, $this->_template);
+		
+		
+		// if no alternative part
+		else
+			if ( $this->_contentType == 'text/plain' )
+				$m = Mailer::createText($this->_content);
+			else
+				$m = Mailer::createHtml($this->_content);
+		
+		
+		// set headers
+		if ( $this->_cc )
+			$m->headers->set('Cc', $this->_cc);
+		if ( $this->_bcc )
+			$m->headers->set('Bcc', $this->_bcc);
+		
+		
+		
+		// if embeddings
+		if ( count($this->_embeddings) )
+			// insert embeddings in email object
+			$m = Mailer::addEmbeddingObjects($m, array_map(function($e){ return $e->create(); }, $this->_embeddings));
+		
+		
+		// if attachments
+		if ( count($this->_attachments) )
+			// insert attachments in email object
+			$m = Mailer::addAttachmentObjects($m, array_map(function($e){ return $e->create(); }, $this->_attachments));
+		
+		
+		return $m;
+	}
+	
+	
+	
+	/**
+	 * Send mail to recipients
+	 *
+	 * @return Sent Returns a `Sent` object to deal with data connection after mail sent ; if no other emails are to be sent, closing connection is preferred
+	 */
+	function send()
+	{
+		$this->_mailer->sendmail($this->create(), $this->_from, $this->_to, $this->_subject, false);
+		return new Sent($this->_mailer);
+	}
 }
 ?>

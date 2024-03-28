@@ -60,6 +60,8 @@ final class Mailer {
 	protected static $defaultMailer = NULL;
 	
 	
+	const TEMPLATE = '%content%';
+	
 	
 	/** 
 	 * Get the default mailer (using PHP Mail function strategy)
@@ -92,6 +94,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Get cache for embeddings
 	 *
@@ -104,6 +107,7 @@ final class Mailer {
 			
 		return self::$cacheEmbeddings;
 	}
+	
 	
 	
 	/**
@@ -119,6 +123,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Create a email with a text/html part ; the text/plain part is built from the text/html part
 	 *
@@ -126,11 +131,12 @@ final class Mailer {
 	 * @param string $htmltemplate Template for html part ; use `%content%` in the template to set the placeholder for content
 	 * @return MailParts\Multipart Returns a multipart/alternative part
 	 */
-	public static function addTextHtmlFromHtml ($html, $htmltemplate = "%content%")
+	public static function addTextHtmlFromHtml ($html, $htmltemplate = Mailer::TEMPLATE)
 	{
-		$html = str_replace("%content%", $html, $htmltemplate);
+		$html = str_replace(Mailer::TEMPLATE, $html, $htmltemplate);
 		return self::addTextHtml(self::html2plain($html), $html);
 	}
+	
 	
 	
 	/**
@@ -140,13 +146,14 @@ final class Mailer {
 	 * @param string $htmltemplate Template for html part ; use `%content%` in the template to set the placeholder for content
 	 * @return MailParts\Multipart Returns a multipart/alternative part
 	 */
-	public static function addTextHtmlFromText ($plain, $htmltemplate = "%content%")
+	public static function addTextHtmlFromText ($plain, $htmltemplate = Mailer::TEMPLATE)
 	{
 		return self::addTextHtml(
-								str_replace("%content%", $plain, self::html2plain($htmltemplate)), 
-								str_replace("%content%", self::plain2html($plain), $htmltemplate)
+								str_replace(Mailer::TEMPLATE, $plain, self::html2plain($htmltemplate)), 
+								str_replace(Mailer::TEMPLATE, self::plain2html($plain), $htmltemplate)
 							);
 	}
+	
 	
 	
 	/**
@@ -164,6 +171,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Create a text/plain part
 	 * 
@@ -175,6 +183,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Create a text/html part
 	 * 
@@ -184,6 +193,7 @@ final class Mailer {
 	{
 		return new TextHtmlContent($html);
 	}
+	
 	
 	
 	/**
@@ -202,6 +212,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Create an attachment object
 	 * 
@@ -216,6 +227,7 @@ final class Mailer {
 	{
 		return new Attachment($file, $filename, $filetype, $ignoreCache, $isFile);
 	}
+	
 	
 	
 	/**
@@ -237,6 +249,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Add an attachment to an email
 	 * 
@@ -254,6 +267,7 @@ final class Mailer {
 	}
 
 	
+	
 	/**
 	 * Add an attachment object to an email
 	 * 
@@ -267,6 +281,7 @@ final class Mailer {
 	}
 
 	
+	
 	/**
 	 * Add several attachment objects to an email
 	 * 
@@ -279,6 +294,7 @@ final class Mailer {
 		return Multipart::fromArray("mixed", $mail, $objs);
 	}
 
+	
 	
 	/**
 	 * Add an embedding to an email
@@ -297,6 +313,7 @@ final class Mailer {
 	}
 
 	
+	
 	/**
 	 * Add an embedding object to an email
 	 * 
@@ -309,6 +326,7 @@ final class Mailer {
 		return Multipart::from("related", $mail, $obj);
 	}
 
+	
 	
 	/**
 	 * Adds several embeddings to an email
@@ -329,6 +347,7 @@ final class Mailer {
 	}
 
 	
+	
 	/**
 	 * Add several embedding objects to an email
 	 * 
@@ -340,6 +359,7 @@ final class Mailer {
 	{
 		return Multipart::fromArray("related", $mail, $objs);
 	}
+	
 	
 
 	/**
@@ -386,6 +406,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Minfy html code
 	 * 
@@ -401,6 +422,7 @@ final class Mailer {
 		
 		return $p;
 	}
+	
 	
 				
 	/** 
@@ -476,6 +498,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Convert a plain text string to html, ** replaced by B tags, == by red tags
 	 *
@@ -526,6 +549,7 @@ final class Mailer {
 		$this->setMailSender($mailsender);
 	}
 	
+	
 
 	/** 
 	 * Set the email sending strategy
@@ -540,6 +564,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/** 
 	 * Close email sending strategy (e.g. closing SMTP connections)
 	 */
@@ -547,6 +572,7 @@ final class Mailer {
 	{
 		return $this->mailerEngine->destroy();
 	}
+	
 	
 
 	/**
@@ -558,6 +584,7 @@ final class Mailer {
 	{
 		return $this->mailerEngine;
 	}
+	
 	
 	
 	/**
@@ -603,6 +630,7 @@ final class Mailer {
 	}
 	
 	
+	
 	/**
 	 * Send an email built with static building method of Mailer
 	 *
@@ -617,6 +645,7 @@ final class Mailer {
 	{
 		$this->sendmail_raw($to, $subject, $mail->getContent(), $mail->getAllHeaders()->set('From', $from), $destruct);
 	}
+	
 	
 	
 	/**

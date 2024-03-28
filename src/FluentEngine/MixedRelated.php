@@ -18,7 +18,7 @@ namespace Nettools\Mailing\FluentEngine;
 /**
  * Class to create an email attachment or embedding with fluent interface
  */
-class MixedRelated {
+abstract class MixedRelated {
 // [----- PROTECTED -----
 
 	protected $_content = null;
@@ -66,6 +66,14 @@ class MixedRelated {
 		$this->_ignoreCache = true;
 		return $this;
 	}
-		
+	
+	
+	
+	/** 
+	 * Create the Nettools\Mailing\MailParts\Attachment or Nettools\Mailing\MailParts\Embedding object
+	 *
+	 * @return Nettools\Mailing\MailParts\MixedRelated
+	 */
+	abstract function create();
 }
 ?>

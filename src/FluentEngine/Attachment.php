@@ -32,11 +32,28 @@ class Attachment extends MixedRelated {
 	 * @param string $txt
 	 * @return Attachment Returns $this for chaining
 	 */
-	function withFilename($txt)
+	function withFileName($txt)
 	{
 		$this->_fileName = $txt;
 		return $this;
 	}
+
 	
+	
+	/** 
+	 * Create the Nettools\Mailing\MailParts\Attachment object
+	 *
+	 * @return Nettools\Mailing\MailParts\Attachment
+	 */
+	function create()
+	{
+		if ( $this->_isFile )
+			$fname = $this->_fileName ? $this->_fileName : substr(strrchr($this->_content, '/'), 1);
+		else
+			$fname = $this->_fileName ? $this->_fileName : 'no_name';
+		
+		return Mailer::createAttachment($this->_content, $fname, $this->_ctype, $this->_ignoreCache, $this->_isFile);
+	}
+
 }
 ?>

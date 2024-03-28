@@ -39,5 +39,16 @@ class Embedding extends MixedRelated {
 		$this->_cid = $cid;
 	}
 	
+	
+	
+	/** 
+	 * Create the Nettools\Mailing\MailParts\Embedding object
+	 *
+	 * @return Nettools\Mailing\MailParts\Embedding
+	 */
+	function create()
+	{
+		return Mailer::createEmbedding($this->_content, $this->_ctype, $this->_cid, $this->_ignoreCache, $this->_isFile);
+	}
 }
 ?>

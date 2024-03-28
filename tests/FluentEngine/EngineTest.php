@@ -35,7 +35,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$e->compose()
 			->text('This is **me** !')
 			->about('Here is the subject line')
-			->from('sender@at.home');
+			->from('sender@at.home')
 			->to('recipient@domain.name')
 			->send();
 		

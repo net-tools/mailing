@@ -105,7 +105,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
-			->attach( $e->attachment(self::$_fileName, 'text/plain') )
+			->attach( $e->attachment(self::$_file, 'text/plain') )
 			->send();
 		
 		

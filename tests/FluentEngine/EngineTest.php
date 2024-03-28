@@ -5,6 +5,7 @@ namespace Nettools\Mailing\FluentEngine\Tests;
 
 use \Nettools\Mailing\MailSenders\Virtual;
 use \Nettools\Mailing\FluentEngine\Engine;
+use \Nettools\Mailing\Mailer;
 
 
 

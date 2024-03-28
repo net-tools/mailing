@@ -33,6 +33,8 @@ class Compose {
 	protected $_cc = null;
 	protected $_bcc = null;
 	protected $_noAlt = false;
+    protected $_attachments = [];
+    protected $_embeddings = [];
 	
 	protected $_mailer = null;
 	
@@ -164,12 +166,26 @@ class Compose {
 	
 	/**
 	 * Attach content already created with fluent interface
-	 *
+     * 
+	 * @param Attachment $content Object of class Attachment already created with Engine::attachment method
 	 * @return Compose Return $this for chaining calls
 	 */	
 	function attach(Attachment $content)
 	{
-		
+		$this->_attachments[] = $content;
+	}
+	
+	
+	
+	/**
+	 * Attach several attachments already created with fluent interface
+	 *
+     * @param Attachments[] $content Array of Attachments objects
+	 * @return Compose Return $this for chaining calls
+	 */	
+	function setAttachments(array $content)
+	{
+		$this->_attachments = array_merge($this->_attachments, $content);
 	}
 	
 	
@@ -177,12 +193,28 @@ class Compose {
 	/**
 	 * Embed content already created with fluent interface
 	 *
-	 * @return Compose Return $this for chaining calls
+	 * @param Embedding $content Object of class Embedding already created with Engine::embedding method
+     * @return Compose Return $this for chaining calls
 	 */	
 	function embed(Embedding $content)
 	{
-		
+		$this->_embeddings[] = $content;
 	}
+	
+    
+    
+	/**
+	 * Attach several embeddings already created with fluent interface
+	 *
+     * @param Embeddings[] $content Array of Embeddings objects
+	 * @return Compose Return $this for chaining calls
+	 */	
+	function setEmbeddings(array $content)
+	{
+		$this->_embeddings = array_merge($this->_embeddings, $content);
+	}
+	
+	
 	
 }
 ?>

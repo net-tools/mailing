@@ -6,12 +6,27 @@ namespace Nettools\Mailing\FluentEngine\Tests;
 use \Nettools\Mailing\MailSenders\Virtual;
 use \Nettools\Mailing\FluentEngine\Engine;
 use \Nettools\Mailing\Mailer;
+use \org\bovigo\vfs\vfsStream;
 
 
 
 
 class EngineTest extends \PHPUnit\Framework\TestCase
-{
+{	
+	static protected $_file;
+	static protected $_fileContent = 'my_content_here';
+	static protected $_fileName = 'file1.txt';
+	
+	
+	
+	static public function setUpBeforeClass() :void
+	{
+		$vfs = vfsStream::setup('root');
+        self::$_file = vfsStream::newFile(self::$_fileName)->at($vfs)->setContent(self::$_fileContent)->url();
+	}
+	
+	
+	
     public function testSimple()
     {
 		$ml = new Mailer(new Virtual());
@@ -81,6 +96,33 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     
 	
       
+    public function testFileAttachment()
+    {
+		$ml = new Mailer(new Virtual());
+		$e = new Engine($ml);
+		
+		$e->compose()
+			->text('This is **me** !')
+			->about('Here is the subject line')
+			->to('recipient@domain.name')
+			->attach( $e->attachment(self::$_fileName, 'text/plain') )
+			->send();
+		
+		
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
+		
+		$this->assertStringContainsString('This is **me**', $sent[0]);
+		$this->assertStringContainsString('This is <b>me</b>', $sent[0]);
+		$this->assertStringContainsString('Subject: Here is the subject line', $sent[0]);
+		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
+		
+		$this->assertStringContainsString("Content-Type: multipart/mixed;\r\n boundary=\"", $sent[0]);
+		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"{self::$_fileName}\"", $sent[0]);
+		$this->assertStringContainsString(base64_encode(self::$_fileContent), $sent[0]);
+	}
+     
+	
+      
     public function testAttachments()
     {
 		$ml = new Mailer(new Virtual());
@@ -108,9 +150,9 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$this->assertStringContainsString("Content-Type: multipart/mixed;\r\n boundary=\"", $sent[0]);
 		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach.txt\"", $sent[0]);
-		$this->assertStringContainsString("content_here_as_raw_string", $sent[0]);
+		$this->assertStringContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
 		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach2.txt\"", $sent[0]);
-		$this->assertStringContainsString("other_content_here_as_raw_string", $sent[0]);
+		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
 	}
      
 	
@@ -140,9 +182,9 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$this->assertStringContainsString("Content-Type: multipart/related;\r\n boundary=\"", $sent[0]);
 		$this->assertStringContainsString("Content-ID: <cid_1>", $sent[0]);
-		$this->assertStringContainsString("content_here_as_raw_string", $sent[0]);
+		$this->assertStringContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
 		$this->assertStringContainsString("Content-ID: <cid_2>", $sent[0]);
-		$this->assertStringContainsString("other_content_here_as_raw_string", $sent[0]);
+		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
 	}
    
 	
@@ -174,9 +216,9 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString("Content-Type: multipart/mixed;\r\n boundary=\"", $sent[0]);
 		$this->assertStringContainsString("Content-Type: multipart/related;\r\n boundary=\"", $sent[0]);
 		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach.txt\"", $sent[0]);
-		$this->assertStringContainsString("content_here_as_raw_string", $sent[0]);
+		$this->assertStringContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
 		$this->assertStringContainsString("Content-ID: <cid>", $sent[0]);
-		$this->assertStringContainsString("embedded_content_here_as_raw_string", $sent[0]);
+		$this->assertStringContainsString(base64_encode("embedded_content_here_as_raw_string"), $sent[0]);
 	}
       
 }

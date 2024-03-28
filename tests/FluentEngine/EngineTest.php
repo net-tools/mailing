@@ -117,7 +117,8 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
 		
 		$this->assertStringContainsString("Content-Type: multipart/mixed;\r\n boundary=\"", $sent[0]);
-		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"{self::$_fileName}\"", $sent[0]);
+		$fname = self::$_fileName;
+		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"$fname\"", $sent[0]);
 		$this->assertStringContainsString(base64_encode(self::$_fileContent), $sent[0]);
 	}
      

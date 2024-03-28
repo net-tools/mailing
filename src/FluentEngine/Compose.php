@@ -31,6 +31,7 @@ class Compose {
 	protected $_to = null;
 	protected $_cc = null;
 	protected $_bcc = null;
+	protected $_replyTo = null;
 	protected $_noAlt = false;
 	protected $_template = Mailer::TEMPLATE;
     protected $_attachments = [];
@@ -125,6 +126,20 @@ class Compose {
 	}
 	
 
+	
+	/**
+	 * Set Reply-To recipient
+	 *
+	 * @param string $txt Reply-To recipient
+	 * @return Compose Return $this for chaining calls
+	 */
+	function replyTo($txt)
+	{
+		$this->_replyTo = $txt;
+		return $this;
+	}
+	
+	
 	
 	/**
 	 * Set recipients

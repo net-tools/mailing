@@ -35,6 +35,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$e->compose()
 			->text('This is **me** !')
 			->about('Here is the subject line')
+			->from('sender@at.home');
 			->to('recipient@domain.name')
 			->send();
 		
@@ -44,6 +45,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('This is **me**', $sent[0]);
 		$this->assertStringContainsString('This is <b>me</b>', $sent[0]);
 		$this->assertStringContainsString('Subject: Here is the subject line', $sent[0]);
+		$this->assertStringContainsString('From: sender@at.home', $sent[0]);
 		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
 	}
     
@@ -57,6 +59,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$e->compose()
 			->text('This is **me** !')
 			->about('Here is the subject line')
+			->replyTo('reply-to@domain.name')
 			->to('recipient@domain.name')
 			->ccTo('cc@domain.name')
 			->bccTo('bcc@domain.name')
@@ -66,6 +69,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		
 		$this->assertEquals(3, count($sent));		
+		$this->assertStringContainsString('Reply-To: reply-to@domain.name', $sent[0]);
 		$this->assertStringContainsString('Delivered-To: bcc@domain.name', $sent[0]);
 		$this->assertStringContainsString('Delivered-To: cc@domain.name', $sent[1]);
 		$this->assertStringContainsString('Delivered-To: recipient@domain.name', $sent[2]);

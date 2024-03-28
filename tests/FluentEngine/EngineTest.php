@@ -51,6 +51,56 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     
 	
       
+    public function testWhenTrue()
+    {
+		$ml = new Mailer(new Virtual());
+		$e = new Engine($ml);
+		
+		$e->compose()
+			->text('This is **me** !')
+			->about('Here is the subject line')
+			->from('sender@at.home')
+			->to('recipient@domain.name')
+			->when(true, function($c){ $c->about('new subject'); } )
+			->send();
+		
+		
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
+		
+		$this->assertStringContainsString('This is **me**', $sent[0]);
+		$this->assertStringContainsString('This is <b>me</b>', $sent[0]);
+		$this->assertStringContainsString('Subject: new subject', $sent[0]);
+		$this->assertStringContainsString('From: sender@at.home', $sent[0]);
+		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
+	}
+    
+	
+      
+    public function testWhenFalse()
+    {
+		$ml = new Mailer(new Virtual());
+		$e = new Engine($ml);
+		
+		$e->compose()
+			->text('This is **me** !')
+			->about('Here is the subject line')
+			->from('sender@at.home')
+			->to('recipient@domain.name')
+			->when(false, function($c){ $c->about('new subject'); } )
+			->send();
+		
+		
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
+		
+		$this->assertStringContainsString('This is **me**', $sent[0]);
+		$this->assertStringContainsString('This is <b>me</b>', $sent[0]);
+		$this->assertStringContainsString('Subject: Here is the subject line', $sent[0]);
+		$this->assertStringContainsString('From: sender@at.home', $sent[0]);
+		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
+	}
+    
+	
+      
     public function testRecipients()
     {
 		$ml = new Mailer(new Virtual());

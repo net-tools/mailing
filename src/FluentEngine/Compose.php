@@ -56,6 +56,24 @@ class Compose {
 	
 	
 	/**
+	 * Conditionnal statement
+	 *
+	 * @param bool $cond Bool value to test ; if `$cond` = True, the action callback is called, otherwise it's ignored
+	 * @param function $callback Function called as callback if `$cond` equals True, with `$this` as parameter so that calls can be chained
+	 * @return Compose Return $this for chaining calls
+	 */
+	function when($cond, $callback)
+	{
+		if ( $cond )
+			// call user function
+			call_user_func($callback, $this);
+		
+		return $this;
+	}
+	
+	
+	
+	/**
 	 * Create an email with text/plain string provided
 	 *
 	 * @param string $txt text/plain content ; will be converted to text/html to provide an alternate content

@@ -294,16 +294,6 @@ class Compose {
 				$m = Mailer::createHtml($this->_content);
 		
 		
-		// set headers
-		if ( $this->_cc )
-			$m->headers->set('Cc', $this->_cc);
-		if ( $this->_bcc )
-			$m->headers->set('Bcc', $this->_bcc);
-		if ( $this->_replyTo )
-			$m->headers->set('Reply-To', $this->_replyTo);
-		
-		
-		
 		// if embeddings
 		if ( count($this->_embeddings) )
 			// insert embeddings in email object
@@ -314,6 +304,15 @@ class Compose {
 		if ( count($this->_attachments) )
 			// insert attachments in email object
 			$m = Mailer::addAttachmentObjects($m, array_map(function($e){ return $e->create(); }, $this->_attachments));
+		
+		
+		// set toplevel headers
+		if ( $this->_cc )
+			$m->headers->set('Cc', $this->_cc);
+		if ( $this->_bcc )
+			$m->headers->set('Bcc', $this->_bcc);
+		if ( $this->_replyTo )
+			$m->headers->set('Reply-To', $this->_replyTo);		
 		
 		
 		return $m;

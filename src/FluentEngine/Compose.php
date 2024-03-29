@@ -37,7 +37,7 @@ class Compose {
     protected $_attachments = [];
     protected $_embeddings = [];
 	
-	protected $_mailer = null;
+	protected $_engine = null;
 	
 // ----- PROTECTED -----]
 
@@ -46,13 +46,25 @@ class Compose {
 	/**
 	 * Constructor
 	 *
-	 * @param \Nettools\Mailing\Mailer $ml
+	 * @param Engine $engine
 	 */
-	function __construct(Mailer $ml)
+	function __construct(Engine $engine)
 	{
-		$this->_mailer = $ml;
+		$this->_engine = $engine;
 	}
 	
+	
+	
+	/**
+	 * Get underlying Engine object
+	 *
+	 * @return Engine 
+	 */
+	function getEngine()
+	{
+		return $this->_engine;
+	}
+
 	
 	
 	/**
@@ -66,7 +78,7 @@ class Compose {
 	{
 		if ( $cond )
 			// call user function
-			call_user_func($callback, $this);
+			call_user_func($callback, $this, $this->_engine);
 		
 		return $this;
 	}
@@ -327,7 +339,7 @@ class Compose {
 	 */
 	function send()
 	{
-		$this->_mailer->sendmail($this->create(), $this->_from, $this->_to, $this->_subject, false);
+		$this->_engine->getMailer()->sendmail($this->create(), $this->_from, $this->_to, $this->_subject, false);
 		return new Sent($this->_mailer);
 	}
 }

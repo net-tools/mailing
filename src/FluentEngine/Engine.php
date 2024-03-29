@@ -43,13 +43,25 @@ class Engine {
 	
 	
 	/**
+	 * Get underlying Mailer object
+	 *
+	 * @return \Nettools\Mailing\Mailer
+	 */
+	function getMailer()
+	{
+		return $this->_mailer;
+	}
+	
+	
+
+	/**
 	 * Begin email creation with fluent interface
 	 *
 	 * @return Compose
 	 */
 	function compose()
 	{
-		return new Compose($this->_mailer);
+		return new Compose($this);
 	}
 	
 	

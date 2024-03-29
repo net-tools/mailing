@@ -284,10 +284,10 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
-			->embedSome( [ $e->attachment('content_here_as_raw_string', 'text/plain', 'cid_1')
+			->embedSome( [ $e->embedding('content_here_as_raw_string', 'text/plain', 'cid_1')
 								->asRawContent(),
 						  
-							$e->attachment('other_content_here_as_raw_string', 'text/plain', 'cid_2')
+							$e->embedding('other_content_here_as_raw_string', 'text/plain', 'cid_2')
 								->asRawContent() 
 						   ])
 			->send();

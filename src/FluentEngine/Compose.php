@@ -340,7 +340,7 @@ class Compose {
 	function send()
 	{
 		$this->_engine->getMailer()->sendmail($this->create(), $this->_from, $this->_to, $this->_subject, false);
-		return new Sent($this->_mailer);
+		return new Sent($this->_engine->getMailer());
 	}
 }
 ?>

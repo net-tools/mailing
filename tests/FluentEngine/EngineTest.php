@@ -212,6 +212,37 @@ class EngineTest extends \PHPUnit\Framework\TestCase
      
 	
       
+    public function testAttachments2()
+    {
+		$ml = new Mailer(new Virtual());
+		$e = new Engine($ml);
+		
+		$e->compose()
+			->text('This is **me** !')
+			->about('Here is the subject line')
+			->to('recipient@domain.name')
+			->attachSome( [ $e->attachment('content_here_as_raw_string', 'text/plain')
+								->withFileName('attach.txt')
+								->asRawContent(),
+						  
+							$e->attachment('other_content_here_as_raw_string', 'text/plain')
+								->withFileName('attach2.txt')
+								->asRawContent() 
+						   ])
+			->send();
+		
+		
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
+		
+		$this->assertStringContainsString("Content-Type: multipart/mixed;\r\n boundary=\"", $sent[0]);
+		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach.txt\"", $sent[0]);
+		$this->assertStringContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
+		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach2.txt\"", $sent[0]);
+		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
+	}
+     
+	
+      
     public function testEmbeddings()
     {
 		$ml = new Mailer(new Virtual());
@@ -225,6 +256,40 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 						->asRawContent())
 			->embed( $e->embedding('other_content_here_as_raw_string', 'text/plain', 'cid_2')
 						->asRawContent())
+			->send();
+		
+		
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
+		
+		$this->assertStringContainsString('This is **me**', $sent[0]);
+		$this->assertStringContainsString('This is <b>me</b>', $sent[0]);
+		$this->assertStringContainsString('Subject: Here is the subject line', $sent[0]);
+		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
+		
+		$this->assertStringContainsString("Content-Type: multipart/related;\r\n boundary=\"", $sent[0]);
+		$this->assertStringContainsString("Content-ID: <cid_1>", $sent[0]);
+		$this->assertStringContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
+		$this->assertStringContainsString("Content-ID: <cid_2>", $sent[0]);
+		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
+	}
+   
+	
+	
+    public function testEmbeddings2()
+    {
+		$ml = new Mailer(new Virtual());
+		$e = new Engine($ml);
+		
+		$e->compose()
+			->text('This is **me** !')
+			->about('Here is the subject line')
+			->to('recipient@domain.name')
+			->embedSome( [ $e->attachment('content_here_as_raw_string', 'text/plain', 'cid_1')
+								->asRawContent(),
+						  
+							$e->attachment('other_content_here_as_raw_string', 'text/plain', 'cid_2')
+								->asRawContent() 
+						   ])
 			->send();
 		
 		

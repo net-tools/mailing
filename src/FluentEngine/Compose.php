@@ -246,7 +246,7 @@ class Compose {
      * @param Attachments[] $content Array of Attachments objects
 	 * @return Compose Return $this for chaining calls
 	 */	
-	function setAttachments(array $content)
+	function attachSome(array $content)
 	{
 		$this->_attachments = array_merge($this->_attachments, $content);
 		return $this;
@@ -274,7 +274,7 @@ class Compose {
      * @param Embeddings[] $content Array of Embeddings objects
 	 * @return Compose Return $this for chaining calls
 	 */	
-	function setEmbeddings(array $content)
+	function embedSome(array $content)
 	{
 		$this->_embeddings = array_merge($this->_embeddings, $content);
 		return $this;

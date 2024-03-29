@@ -5,7 +5,7 @@ namespace Nettools\Mailing\MassMailing;
 
 
 // clauses use
-use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailBuilder\Builder;
 
 
 
@@ -22,7 +22,7 @@ class Embeddings extends MixedRelated
 	 */
 	function _poolFactoryMethod()
 	{
-		return Mailer::createEmbedding('', '', '');
+		return Builder::createEmbedding('', '', '');
 	}
 
 	
@@ -91,13 +91,13 @@ class Embeddings extends MixedRelated
 	 * Render the email
 	 *
 	 * @param mixed $data
-	 * @return \Nettools\Mailing\MailParts\Multipart
+	 * @return \Nettools\Mailing\MailBuilder\Multipart
 	 * @throws \Nettools\Mailing\MassMailing\Exception
 	 */
 	protected function _render($data)
 	{
 		// get a Content object and add on top an Embedding object
-		return Mailer::addEmbeddingObjects(parent::_render($data), $this->items);
+		return Builder::addEmbeddingObjects(parent::_render($data), $this->items);
 	}
 }
 

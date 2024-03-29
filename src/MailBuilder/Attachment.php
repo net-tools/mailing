@@ -7,10 +7,9 @@
  */
 
 // namespace
-namespace Nettools\Mailing\MailParts;
+namespace Nettools\Mailing\MailBuilder;
 
 
-use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailerEngine\Headers;
 
 
@@ -30,12 +29,12 @@ class Attachment extends MixedRelated {
 	/**
      * Get attachments cache
      *
-     * @see \Nettools\Mailing\Mailer::getAttachmentsCache
+     * @see \Nettools\Mailing\MailBuilder\Builder::getAttachmentsCache
      * @return \Nettools\Core\Containers\Cache Cache used for attachments
      */
 	protected function _getCache()
 	{
-		return Mailer::getAttachmentsCache();
+		return Builder::getAttachmentsCache();
 	}
 
 // ----- PROTECTED -----]

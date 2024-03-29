@@ -1,12 +1,12 @@
 <?php
 
-namespace Nettools\Mailing\MailParts\Tests;
+namespace Nettools\Mailing\MailBuilder\Tests;
 
 
 
-use \Nettools\Mailing\MailParts\TextPlainContent;
-use \Nettools\Mailing\MailParts\TextHtmlContent;
-use \Nettools\Mailing\MailParts\Multipart;
+use \Nettools\Mailing\MailBuilder\TextPlainContent;
+use \Nettools\Mailing\MailBuilder\TextHtmlContent;
+use \Nettools\Mailing\MailBuilder\Multipart;
 
 
 
@@ -19,7 +19,7 @@ class MultipartTest extends \PHPUnit\Framework\TestCase
 		$mcplain = new TextPlainContent('Test é.');
 		$mchtml = new TextHtmlContent('<b>Test</b> é.');
 		$mcalt = Multipart::from('alternative', $mcplain, $mchtml);
-		$this->assertInstanceOf('Nettools\Mailing\MailParts\Multipart', $mcalt);
+		$this->assertInstanceOf('Nettools\Mailing\MailBuilder\Multipart', $mcalt);
 
 
         // getCount : 2 parts

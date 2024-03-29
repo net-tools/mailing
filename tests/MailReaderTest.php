@@ -19,7 +19,7 @@ class MailReaderTest extends \PHPUnit\Framework\TestCase
 		// we test iso-8859-1 charset converted to utf8
         $mail = MailReader::fromFile(__DIR__ . '/data/' . substr(strrchr(__CLASS__, '\\'),1) . '.plainhtml.eml');
 		$this->assertInstanceOf('Nettools\Mailing\MailReader', $mail);
-		$this->assertInstanceOf('Nettools\Mailing\MailParts\Content', $mail->email);
+		$this->assertInstanceOf('Nettools\Mailing\MailBuilder\Content', $mail->email);
 		$this->assertTrue($mail->headers instanceof \Nettools\Mailing\MailerEngine\Headers);
 		
 		$this->assertEquals(

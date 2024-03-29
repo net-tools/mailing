@@ -27,12 +27,12 @@ class MailReaderEngine
 	/**
 	 * Clear temp files used for embeddings and attachments
 	 * 
-	 * @param MailParts\Content $mail Mail object to process
+	 * @param MailBuilder\Content $mail Mail object to process
 	 */
-	static function clean(\Nettools\Mailing\MailParts\Content $mail)
+	static function clean(\Nettools\Mailing\MailBuilder\Content $mail)
 	{
 		// traiter par récursion
-		if ( $mail instanceof \Nettools\Mailing\MailParts\Multipart )
+		if ( $mail instanceof \Nettools\Mailing\MailBuilder\Multipart )
 		{
 			$partsl = $mail->getCount();
 			for ( $i = 0 ; $i < $partsl ; $i++ )
@@ -41,7 +41,7 @@ class MailReaderEngine
 		
 		
 		// if cleaning required
-		if ( in_array(get_class($mail), array('Nettools\Mailing\MailParts\Attachment', 'Nettools\Mailing\MailParts\Embedding')) )
+		if ( in_array(get_class($mail), array('Nettools\Mailing\MailBuilder\Attachment', 'Nettools\Mailing\MailBuilder\Embedding')) )
 		{
 			$f = $mail->getFile();
 			if ( file_exists($f) )
@@ -182,17 +182,17 @@ class MailReaderEngine
 	/** 
 	 * Decode part content 
 	 * 
-	 * We get some MailParts\Content classes, depending on Content-Type and Content-disposition headers :
+	 * We get some MailBuilder\Content classes, depending on Content-Type and Content-disposition headers :
 	 * 
-	 * - MailParts\TextPlainContent
-	 * - MailParts\HtmlPlainContent
-	 * - MailParts\Attachment
-	 * - MailParts\Embedding
+	 * - MailBuilder\TextPlainContent
+	 * - MailBuilder\HtmlPlainContent
+	 * - MailBuilder\Attachment
+	 * - MailBuilder\Embedding
 	 *
 	 * @param string $body Body to decode
 	 * @param string[] $headers Headers array
 	 * @param string $contentType Content-Type header value
-	 * @return MailParts\Content Returns the part decoded to a MailContent instance 
+	 * @return MailBuilder\Content Returns the part decoded to a MailContent instance 
 	 * @throws MailReaderError	 
 	 */
 	static function decodeContent($body, $headers, $contentType)
@@ -215,9 +215,9 @@ class MailReaderEngine
 			switch ( $contentType )
 			{
 				case 'text/plain' :
-					return new \Nettools\Mailing\MailParts\TextPlainContent($body);
+					return new \Nettools\Mailing\MailBuilder\TextPlainContent($body);
 				case 'text/html' :
-					return new \Nettools\Mailing\MailParts\TextHtmlContent($body);
+					return new \Nettools\Mailing\MailBuilder\TextHtmlContent($body);
 			}
 			
 			
@@ -234,7 +234,7 @@ class MailReaderEngine
 				fclose($f);
 				
 				if ( $contentDisposition == 'attachment' )
-					return new \Nettools\Mailing\MailParts\Attachment($fname, basename($fname), $contentType, true);
+					return new \Nettools\Mailing\MailBuilder\Attachment($fname, basename($fname), $contentType, true);
 				else
 				{
 					// if embedding, extract content-ID
@@ -242,7 +242,7 @@ class MailReaderEngine
 					if ( !$cid )
 						throw new MailReaderError('Content-ID not found.');
 						
-					return new \Nettools\Mailing\MailParts\Embedding($fname, $contentType, trim(str_replace(array('<', '>', '"'), '', $cid)), true);
+					return new \Nettools\Mailing\MailBuilder\Embedding($fname, $contentType, trim(str_replace(array('<', '>', '"'), '', $cid)), true);
 				}
 			}
 			else
@@ -257,7 +257,7 @@ class MailReaderEngine
 	 * @param string $ct Content-Type header value
 	 * @param string[] $headers Headers array
 	 * @param string $body Body to decode
-	 * @return MailParts\Content
+	 * @return MailBuilder\Content
   	 * @throws MailReaderError
 	 */
 	static function fromContentType($ct, $headers, $body)
@@ -327,7 +327,7 @@ class MailReaderEngine
 				if ( count($parts) < 2 )
 					throw new MailReaderError("Decoding of '$contentType' is impossible because of the unsupported parts number (2).");
 					
-				return \Nettools\Mailing\MailParts\Multipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
+				return \Nettools\Mailing\MailBuilder\Multipart::fromSingleArray(substr(strstr($contentType, '/'), 1), $parts);
 					
 					
 			// default case, decode with the transfer-encoding
@@ -400,7 +400,7 @@ class MailReaderEngine
 	* Decode email from a string
 	* 
 	* @param string $data Email string to decode
-	* @return object Returns an object litteral with properties `email` and `headers` (of type MailParts\Content and MailerEngine\Headers)
+	* @return object Returns an object litteral with properties `email` and `headers` (of type MailBuilder\Content and MailerEngine\Headers)
 	* @throws MailReaderError
 	*/
 	static function fromString($data)

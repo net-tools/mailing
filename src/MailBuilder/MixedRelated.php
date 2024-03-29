@@ -9,7 +9,7 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailParts;
+namespace Nettools\Mailing\MailBuilder;
 
 
 

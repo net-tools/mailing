@@ -1,12 +1,12 @@
 <?php
 
-namespace Nettools\Mailing\MailParts\Tests;
+namespace Nettools\Mailing\MailBuilder\Tests;
 
 
 
 
-use \Nettools\Mailing\MailParts\Attachment;
-use \Nettools\Mailing\MailParts\Embedding;
+use \Nettools\Mailing\MailBuilder\Attachment;
+use \Nettools\Mailing\MailBuilder\Embedding;
 use \org\bovigo\vfs\vfsStream;
 
 

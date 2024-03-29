@@ -1,10 +1,10 @@
 <?php
 
-namespace Nettools\Mailing\MailParts\Tests;
+namespace Nettools\Mailing\MailBuilder\Tests;
 
 
 
-use \Nettools\Mailing\MailParts\TextPlainContent;
+use \Nettools\Mailing\MailBuilder\TextPlainContent;
 
 
 

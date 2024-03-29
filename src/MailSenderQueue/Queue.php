@@ -328,12 +328,12 @@ class Queue {
 	/**
      * Push an email to the queue
      * 
-     * @param \Nettools\Mailing\MailParts\Content $mail Email object
+     * @param \Nettools\Mailing\MailBuilder\Content $mail Email object
      * @param string $from Email address of the sender
      * @param string $to Email recipient
      * @param string $subject Email subject
      */
-	function push(\Nettools\Mailing\MailParts\Content $mail, $from, $to, $subject)
+	function push(\Nettools\Mailing\MailBuilder\Content $mail, $from, $to, $subject)
 	{
 		// adding to queue
 		$this->_push(

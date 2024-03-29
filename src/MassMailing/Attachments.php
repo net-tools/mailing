@@ -5,7 +5,7 @@ namespace Nettools\Mailing\MassMailing;
 
 
 // clauses use
-use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailBuilder\Builder;
 
 
 
@@ -18,11 +18,11 @@ class Attachments extends MixedRelated
 	/**
 	 * Factory method to create an attachment
 	 * 
-	 * @return \Nettools\Mailing\MailParts\Attachment
+	 * @return \Nettools\Mailing\MailBuilder\Attachment
 	 */
 	function _poolFactoryMethod()
 	{
-		return Mailer::createAttachment('', '', '');
+		return Builder::createAttachment('', '', '');
 	}
 
 	
@@ -88,13 +88,13 @@ class Attachments extends MixedRelated
 	 * Render email 
 	 *
 	 * @param mixed $data
-	 * @return \Nettools\Mailing\MailParts\Multipart
+	 * @return \Nettools\Mailing\MailBuilder\Multipart
 	 * @throws \Nettools\Mailing\MassMailing\Exception
 	 */
 	protected function _render($data)
 	{
 		// get a Content object and add on top an Attachment object
-		return Mailer::addAttachmentObjects(parent::_render($data), $this->items);
+		return Builder::addAttachmentObjects(parent::_render($data), $this->items);
 	}
 }
 

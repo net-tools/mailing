@@ -9,7 +9,7 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailParts;
+namespace Nettools\Mailing\MailBuilder;
 
 
 use \Nettools\Mailing\MailerEngine\Headers;

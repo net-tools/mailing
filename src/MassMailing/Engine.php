@@ -5,7 +5,8 @@ namespace Nettools\Mailing\MassMailing;
 
 
 // clauses use
-use \Nettools\Mailing\MailParts\Content;
+use \Nettools\Mailing\MailBuilder\Builder;
+use \Nettools\Mailing\MailBuilder\Content;
 use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailSenderQueue\Queue;
 use \Nettools\Mailing\MailSenderQueue\Store;
@@ -45,7 +46,7 @@ class Engine
 	 * Create a Content object from a string
 	 *
 	 * @param string $mail Mail raw content as string
-	 * @return \Nettools\Mailing\MailParts\Content
+	 * @return \Nettools\Mailing\MailBuilder\Content
 	 * @throws \Nettools\Mailing\MassMailing\Exception
 	 */
 	protected function _createMailContent($mail)
@@ -53,10 +54,10 @@ class Engine
 		switch ( $this->mailContentType )
 		{
 			case 'text/plain' : 
-				return Mailer::addTextHtmlFromText($mail, $this->template);
+				return Builder::addTextHtmlFromText($mail, $this->template);
 				
 			case 'text/html': 
-				return Mailer::addTextHtmlFromHtml($mail, $this->template);
+				return Builder::addTextHtmlFromHtml($mail, $this->template);
 				
 			default:
 				throw new \Nettools\Mailing\MassMailing\Exception('Unknown content-type : ' . $this->mailContentType);
@@ -84,10 +85,10 @@ class Engine
 
 	
 	/**
-	 * Render email and get a \Nettools\Mailing\MailParts\Content object that can be passed as argument to `send`
+	 * Render email and get a \Nettools\Mailing\MailBuilder\Content object that can be passed as argument to `send`
 	 *
 	 * @param mixed $data Data that may be required during rendering process
-	 * @return \Nettools\Mailing\MailParts\Content
+	 * @return \Nettools\Mailing\MailBuilder\Content
 	 * @throws \Nettools\Mailing\MassMailing\Exception
 	 */
 	protected function _render($data)
@@ -266,7 +267,7 @@ class Engine
 	 */
 	public function prepareAndSend($mto, $subject = NULL, $data = NULL)
 	{
-		// compute email content and get a MailParts\Content object
+		// compute email content and get a MailBuilder\Content object
 		$mail = $this->_render($data);
 		
 		

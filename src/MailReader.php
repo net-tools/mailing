@@ -12,7 +12,7 @@
 namespace Nettools\Mailing;
 
 
-use \Nettools\Mailing\MailParts\Content;
+use \Nettools\Mailing\MailBuilder\Content;
 use \Nettools\Mailing\MailerEngine\Headers;
 
 
@@ -32,7 +32,7 @@ class MailReader
 	/**
 	 * Constructor
 	 *
-	 * @param MailParts\Content $mail
+	 * @param MailBuilder\Content $mail
 	 * @param string[] $headers
 	 */
 	function __construct(Content $email, Headers $headers)

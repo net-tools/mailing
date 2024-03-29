@@ -14,7 +14,7 @@ namespace Nettools\Mailing\FluentEngine;
 
 
 // clauses use
-use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailBuilder\Builder;
 
 
 
@@ -48,13 +48,13 @@ class Embedding extends MixedRelated {
 	
 	
 	/** 
-	 * Create the Nettools\Mailing\MailParts\Embedding object
+	 * Create the Nettools\Mailing\MailBuilder\Embedding object
 	 *
-	 * @return Nettools\Mailing\MailParts\Embedding
+	 * @return Nettools\Mailing\MailBuilder\Embedding
 	 */
 	function create()
 	{
-		return Mailer::createEmbedding($this->_content, $this->_ctype, $this->_cid, $this->_ignoreCache, $this->_isFile);
+		return Builder::createEmbedding($this->_content, $this->_ctype, $this->_cid, $this->_ignoreCache, $this->_isFile);
 	}
 }
 ?>

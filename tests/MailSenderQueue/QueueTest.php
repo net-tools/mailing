@@ -5,6 +5,7 @@ namespace Nettools\Mailing\MailSenderQueue\Tests;
 
 
 use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailBuilder\Builder;
 use \Nettools\Mailing\MailSenderQueue\Data;
 use \Nettools\Mailing\MailSenderQueue\Store;
 use \Nettools\Mailing\MailSenderQueue\Queue;
@@ -69,7 +70,7 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 		$params = ['root'=>$this->_vfs->url(), 'store'=>$store];
 		$q = Queue::create('qname', $params);
 
-		$mail = Mailer::createText('mail content here');
+		$mail = Builder::createText('mail content here');
 		$q->push($mail, 'sender@home.com', 'recipient@here.com', 'Subject here');
 		
 		$this->assertEquals(1, $q->count);
@@ -89,7 +90,7 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 		
 		
 		
-		$mail = Mailer::createText('another mail content here');
+		$mail = Builder::createText('another mail content here');
 		$q->push($mail, 'sender@home.com', 'recipient2@here.com', 'Other subject here');
 		$this->assertEquals(true, $this->_vfs->hasChild("$qid/$qid.1.data"));
 		$this->assertEquals(true, $this->_vfs->hasChild("$qid/$qid.1.mail"));
@@ -177,9 +178,9 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 
 
 		// creating content and pushing to queue
-		$mail = Mailer::createText('mail content here');
+		$mail = Builder::createText('mail content here');
 		$q->push($mail, 'sender@home.com', 'recipient@here.com', 'Subject here');
-		$mail = Mailer::createText('other mail content here');
+		$mail = Builder::createText('other mail content here');
 		$q->push($mail, 'sender@home.com', 'recipient2@here.com', 'Subject2 here');
 
 		$this->assertEquals(2, $q->count);
@@ -241,7 +242,7 @@ class QueueTest extends \PHPUnit\Framework\TestCase
 		$store = $this->createMock(Store::class);
 		$params = ['root'=>$this->_vfs->url(), 'store'=>$store];
 		$q = Queue::create('qname', $params);
-		$mail = Mailer::createText('mail content here');
+		$mail = Builder::createText('mail content here');
 		$q->push($mail, 'sender@home.com', 'recipient@here.com', 'Subject here');
 		
 		$ser = serialize($q);

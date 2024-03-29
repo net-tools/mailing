@@ -70,9 +70,9 @@ abstract class MixedRelated {
 	
 	
 	/** 
-	 * Create the Nettools\Mailing\MailParts\Attachment or Nettools\Mailing\MailParts\Embedding object
+	 * Create the Nettools\Mailing\MailBuilder\Attachment or Nettools\Mailing\MailBuilder\Embedding object
 	 *
-	 * @return Nettools\Mailing\MailParts\MixedRelated
+	 * @return Nettools\Mailing\MailBuilder\MixedRelated
 	 */
 	abstract function create();
 }

@@ -14,7 +14,7 @@ namespace Nettools\Mailing\FluentEngine;
 
 
 // clauses use
-use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailBuilder\Builder;
 
 
 
@@ -46,9 +46,9 @@ class Attachment extends MixedRelated {
 	
 	
 	/** 
-	 * Create the Nettools\Mailing\MailParts\Attachment object
+	 * Create the Nettools\Mailing\MailBuilder\Attachment object
 	 *
-	 * @return Nettools\Mailing\MailParts\Attachment
+	 * @return Nettools\Mailing\MailBuilder\Attachment
 	 */
 	function create()
 	{
@@ -57,7 +57,7 @@ class Attachment extends MixedRelated {
 		else
 			$fname = $this->_fileName ? $this->_fileName : 'no_name';
 		
-		return Mailer::createAttachment($this->_content, $fname, $this->_ctype, $this->_ignoreCache, $this->_isFile);
+		return Builder::createAttachment($this->_content, $fname, $this->_ctype, $this->_ignoreCache, $this->_isFile);
 	}
 
 }

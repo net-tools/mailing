@@ -33,7 +33,7 @@ abstract class MixedRelated extends Engine
 	/**
 	 * Factory method
 	 * 
-	 * @return \Nettools\Mailing\MailParts\MixedRelated
+	 * @return \Nettools\Mailing\MailBuilder\MixedRelated
 	 */
 	abstract function _poolFactoryMethod();
 	
@@ -89,7 +89,7 @@ abstract class MixedRelated extends Engine
 	 * Get an item
 	 * 
 	 * @param int $index
-	 * @return \Nettools\Mailing\MailParts\MixedRelated
+	 * @return \Nettools\Mailing\MailBuilder\MixedRelated
 	 * @throws \Nettools\Mailing\MassMailing\Exception
 	 */
 	public function getItem($index = 0)

@@ -8,11 +8,10 @@
 
 
 // namespace
-namespace Nettools\Mailing\MailParts;
+namespace Nettools\Mailing\MailBuilder;
 
 
 use \Nettools\Core\Helpers\FileHelper;
-use \Nettools\Mailing\Mailer;
 use \Nettools\Mailing\MailerEngine\Headers;
 
 
@@ -32,12 +31,12 @@ class Embedding extends MixedRelated {
 	/** 
      * Get embeddings cache
      *
-     * @see Mailer::getEmbeddingsCache
+     * @see Builder::getEmbeddingsCache
      * @return \Nettools\Core\Containers\Cache The cache used for embeddings
      */ 
 	protected function _getCache()
 	{
-		return Mailer::getEmbeddingsCache();
+		return Builder::getEmbeddingsCache();
 	}
 
 // ----- PROTECTED -----]

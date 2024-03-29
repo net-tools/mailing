@@ -13,7 +13,7 @@ namespace Nettools\Mailing\FluentEngine;
 
 
 // clauses use
-use \Nettools\Mailing\Mailer;
+use \Nettools\Mailing\MailBuilder\Builder;
 
 
 
@@ -33,7 +33,7 @@ class Compose {
 	protected $_bcc = null;
 	protected $_replyTo = null;
 	protected $_noAlt = false;
-	protected $_template = Mailer::TEMPLATE;
+	protected $_template = Builder::TEMPLATE;
     protected $_attachments = [];
     protected $_embeddings = [];
 	
@@ -283,9 +283,9 @@ class Compose {
 	
 	
 	/**
-	 * Create Nettools\Mailing\MailParts\Content object base on mail description through fluent interface
+	 * Create Nettools\Mailing\MailBuilder\Content object base on mail description through fluent interface
 	 *
-	 * @return Nettools\Mailing\MailParts\Content
+	 * @return Nettools\Mailing\MailBuilder\Content
 	 */
 	function create()
 	{
@@ -293,29 +293,29 @@ class Compose {
 		if ( !$this->_noAlt )
 			// prepare text parts
 			if ( $this->_contentType == 'text/plain' )
-				$m = Mailer::addTextHtmlFromText($this->_content, $this->_template);
+				$m = Builder::addTextHtmlFromText($this->_content, $this->_template);
 			else
-				$m = Mailer::addTextHtmlFromHtml($this->_content, $this->_template);
+				$m = Builder::addTextHtmlFromHtml($this->_content, $this->_template);
 		
 		
 		// if no alternative part
 		else
 			if ( $this->_contentType == 'text/plain' )
-				$m = Mailer::createText($this->_content);
+				$m = Builder::createText($this->_content);
 			else
-				$m = Mailer::createHtml($this->_content);
+				$m = Builder::createHtml($this->_content);
 		
 		
 		// if embeddings
 		if ( count($this->_embeddings) )
 			// insert embeddings in email object
-			$m = Mailer::addEmbeddingObjects($m, array_map(function($e){ return $e->create(); }, $this->_embeddings));
+			$m = Builder::addEmbeddingObjects($m, array_map(function($e){ return $e->create(); }, $this->_embeddings));
 		
 		
 		// if attachments
 		if ( count($this->_attachments) )
 			// insert attachments in email object
-			$m = Mailer::addAttachmentObjects($m, array_map(function($e){ return $e->create(); }, $this->_attachments));
+			$m = Builder::addAttachmentObjects($m, array_map(function($e){ return $e->create(); }, $this->_attachments));
 		
 		
 		// set toplevel headers

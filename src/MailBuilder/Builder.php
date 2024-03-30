@@ -32,7 +32,8 @@ final class Builder {
 	
 
 	/* Default html template */
-	const TEMPLATE = '%content%';
+	const TEMPLATE_PLACEHOLDER = '%content%';
+	const DEFAULT_TEMPLATE = self::TEMPLATE_PLACEHOLDER;
 	
 	
 	
@@ -88,9 +89,9 @@ final class Builder {
 	 * @param string $htmltemplate Template for html part ; use `%content%` in the template to set the placeholder for content
 	 * @return Multipart Returns a multipart/alternative part
 	 */
-	public static function addTextHtmlFromHtml ($html, $htmltemplate = self::TEMPLATE)
+	public static function addTextHtmlFromHtml ($html, $htmltemplate = self::DEFAULT_TEMPLATE)
 	{
-		$html = str_replace(self::TEMPLATE, $html, $htmltemplate);
+		$html = str_replace(self::TEMPLATE_PLACEHOLDER, $html, $htmltemplate);
 		return self::addTextHtml(self::html2plain($html), $html);
 	}
 	
@@ -103,11 +104,11 @@ final class Builder {
 	 * @param string $htmltemplate Template for html part ; use `%content%` in the template to set the placeholder for content
 	 * @return Multipart Returns a multipart/alternative part
 	 */
-	public static function addTextHtmlFromText ($plain, $htmltemplate = self::TEMPLATE)
+	public static function addTextHtmlFromText ($plain, $htmltemplate = self::DEFAULT_TEMPLATE)
 	{
 		return self::addTextHtml(
-								str_replace(self::TEMPLATE, $plain, self::html2plain($htmltemplate)), 
-								str_replace(self::TEMPLATE, self::plain2html($plain), $htmltemplate)
+								str_replace(self::TEMPLATE_PLACEHOLDER, $plain, self::html2plain($htmltemplate)), 
+								str_replace(self::TEMPLATE_PLACEHOLDER, self::plain2html($plain), $htmltemplate)
 							);
 	}
 	

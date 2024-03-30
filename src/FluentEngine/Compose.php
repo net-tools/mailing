@@ -33,7 +33,7 @@ class Compose {
 	protected $_bcc = null;
 	protected $_replyTo = null;
 	protected $_noAlt = false;
-	protected $_template = Builder::TEMPLATE;
+	protected $_template = Builder::DEFAULT_TEMPLATE;
     protected $_attachments = [];
     protected $_embeddings = [];
 	

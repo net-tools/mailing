@@ -181,27 +181,42 @@ class Content {
 	
 	
 	/**
+	 * Update content string before creating Nettools\Mailing\MailBuilder\Content object
+	 *
+	 * @return string
+	 */
+	function updateContentString()
+	{
+		return $this->_content;
+	}
+	
+	
+	
+	/**
 	 * Create Nettools\Mailing\MailBuilder\Content object base on mail description through fluent interface
 	 *
 	 * @return Nettools\Mailing\MailBuilder\Content
 	 */
 	function create()
 	{
+		$text = $this->updateContentString();
+		
+		
 		// if alternative part is allowed
 		if ( !$this->_noAlt )
 			// prepare text parts
 			if ( $this->_contentType == 'text/plain' )
-				$m = Builder::addTextHtmlFromText($this->_content, $this->_template);
+				$m = Builder::addTextHtmlFromText($text, $this->_template);
 			else
-				$m = Builder::addTextHtmlFromHtml($this->_content, $this->_template);
+				$m = Builder::addTextHtmlFromHtml($text, $this->_template);
 		
 		
 		// if no alternative part
 		else
 			if ( $this->_contentType == 'text/plain' )
-				$m = Builder::createText($this->_content);
+				$m = Builder::createText($text);
 			else
-				$m = Builder::createHtml($this->_content);
+				$m = Builder::createHtml($text);
 		
 		
 		// if embeddings

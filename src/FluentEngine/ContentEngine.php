@@ -31,11 +31,12 @@ class ContentEngine extends Engine {
 	/**
 	 * Begin email content creation with fluent interface
 	 *
+	 * @param string[] $params Associative array of parameters to set in constructor ; equivalent of calling corresponding fluent functions
 	 * @return Content
 	 */
-	function content()
+	function content(array $params = [])
 	{
-		return new Content($this);
+		return new Content($this, $params);
 	}
 	
 }

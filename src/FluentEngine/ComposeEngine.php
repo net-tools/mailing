@@ -57,11 +57,12 @@ class ComposeEngine extends Engine {
 	/**
 	 * Begin email creation with fluent interface
 	 *
+	 * @param string[] $params Associative array of parameters to set in constructor ; equivalent of calling corresponding fluent functions
 	 * @return Compose
 	 */
-	function compose()
+	function compose(array $params = [])
 	{
-		return new Compose($this);
+		return new Compose($this, $params);
 	}
 }
 ?>

@@ -42,9 +42,15 @@ class Content {
 	 *
 	 * @param Engine $engine
 	 */
-	function __construct(Engine $engine)
+	function __construct(Engine $engine, array $params = [])
 	{
 		$this->_engine = $engine;
+		
+		
+		// maybe we want to set already some parameters, calling fluent method from here
+		foreach ( $params as $k => $v )
+			if ( method_exists($this, $k) )
+				call_user_func([$this, $k], $v);
 	}
 	
 	

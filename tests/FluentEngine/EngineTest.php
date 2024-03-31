@@ -54,12 +54,15 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testSimpleNoFluent()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new ComposeEngine($ml, [
+		$e = new ComposeEngine($ml);
+			
+		$e->compose([
 				'text' => 'This is **me** !',
 				'about' => 'Here is the subject line',
 				'from' => 'sender@at.home',
 				'to' => 'recipient@domain.name'
-			]);
+			])
+			->send();
 		
 		
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();

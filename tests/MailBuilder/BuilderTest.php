@@ -59,6 +59,10 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
         // plain2html
 		$this->assertEquals('<b>&lt;&eacute;&gt;</b><br><b style="color:#DD0000;">red</b><br><br><a href="http://www.website.com">http://www.website.com</a>',
                            Builder::plain2html("**<é>**\r\n==red==\r\n\r\nhttp://www.website.com"));
+		
+		
+		// getFluentEngine
+		$this->assertInstanceOf(\Nettools\Mailing\FluentEngine\ComposeEngine::class, Builder::getFluentEngine());
     }
     
     

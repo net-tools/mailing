@@ -123,6 +123,18 @@ final class Mailer {
 	
 	
 	/**
+	 * Get a fluent interface to compose email content and sets recipients
+	 * 
+	 * @return \Nettools\Mailing\FluentEngine\ComposeEngine
+	 */
+	public function getFluentEngine()
+	{
+		return new \Nettools\Mailing\FluentEngine\ComposeEngine($this);
+	}	
+	
+	
+	
+	/**
 	 * Simple method call to send an email with content (either plain text or html) and optionnal attachments
 	 *
 	 * @param string $content String with content (HTML or plain text)

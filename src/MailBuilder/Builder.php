@@ -490,17 +490,5 @@ final class Builder {
 		// handle newlines
 		return self::htmlMinify(str_replace("\n", "<br>", str_replace("\r\n", "\n", $plain)));
 	}	
-	
-	
-	
-	/**
-	 * Get a fluent interface to compose email content and sets recipients
-	 * 
-	 * @return \Nettools\Mailing\FluentEngine\ComposeEngine
-	 */
-	public static function getFluentEngine()
-	{
-		return new \Nettools\Mailing\FluentEngine\ComposeEngine();
-	}	
 }
 ?>

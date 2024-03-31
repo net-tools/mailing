@@ -42,6 +42,10 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         // getMailSender
 		$ml = Mailer::getDefault();
 		$this->assertInstanceOf(\Nettools\Mailing\MailSenders\PHPMail::class, $ml->getMailerEngine()->getMailSender());
+		
+		
+		// getFluentEngine
+		$this->assertInstanceOf(\Nettools\Mailing\FluentEngine\ComposeEngine::class, $ml->getFluentEngine());
 
 
 		try

@@ -41,6 +41,7 @@ class Content {
 	 * Constructor
 	 *
 	 * @param Engine $engine
+	 * @param string[] $params Associative array of parameters to set in constructor ; equivalent of calling corresponding fluent functions
 	 */
 	function __construct(Engine $engine, array $params = [])
 	{

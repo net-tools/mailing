@@ -27,7 +27,7 @@ abstract class Engine {
 	 * @param string $ctype Mime type
 	 * @return Attachment
 	 */
-	function attachment($content, $ctype)
+	static function attachment($content, $ctype)
 	{
 		return new Attachment($content, $ctype);
 	}
@@ -42,7 +42,7 @@ abstract class Engine {
 	 * @param string $cid Content-Id
 	 * @return Embedding
 	 */
-	function embedding($content, $ctype, $cid)
+	static function embedding($content, $ctype, $cid)
 	{
 		return new Embedding($content, $ctype, $cid);
 	}

@@ -4,7 +4,7 @@ namespace Nettools\Mailing\FluentEngine\Tests;
 
 
 use \Nettools\Mailing\MailSenders\Virtual;
-use \Nettools\Mailing\FluentEngine\Engine;
+use \Nettools\Mailing\FluentEngine\ComposeEngine;
 use \Nettools\Mailing\Mailer;
 use \org\bovigo\vfs\vfsStream;
 
@@ -30,7 +30,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testSimple()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -54,7 +54,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testWhenTrue()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -79,7 +79,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testWhenFalse()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -104,7 +104,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testRecipients()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -130,7 +130,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testNoAltPart()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -153,7 +153,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testFileAttachment()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -181,7 +181,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testAttachments()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -215,7 +215,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testAttachments2()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -246,7 +246,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testEmbeddings()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -278,7 +278,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testEmbeddings2()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')
@@ -312,7 +312,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testAttachmentEmbedding()
     {
 		$ml = new Mailer(new Virtual());
-		$e = new Engine($ml);
+		$e = new ComposeEngine($ml);
 		
 		$e->compose()
 			->text('This is **me** !')

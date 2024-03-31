@@ -61,13 +61,6 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 				'to' => 'recipient@domain.name'
 			]);
 		
-		$e->compose()
-			->text('This is **me** !')
-			->about('Here is the subject line')
-			->from('sender@at.home')
-			->to('recipient@domain.name')
-			->send();
-		
 		
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		

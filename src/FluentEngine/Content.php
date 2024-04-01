@@ -148,12 +148,26 @@ class Content {
 	/**
 	 * Attach several attachments already created with fluent interface
 	 *
-     * @param Attachments[] $content Array of Attachments objects
+     * @param Attachment[] $content Array of Attachments objects
 	 * @return Content Return $this for chaining calls
 	 */	
 	function attachSome(array $content)
 	{
 		$this->_attachments = array_merge($this->_attachments, $content);
+		return $this;
+	}
+	
+	
+	
+	/**
+	 * Attach several attachments already created with fluent interface ; discard any existing attachments
+	 *
+     * @param Attachment[] $content Array of Attachments objects
+	 * @return Content Return $this for chaining calls
+	 */	
+	function setAttachments(array $content)
+	{
+		$this->_attachments = $content;
 		return $this;
 	}
 	
@@ -176,12 +190,26 @@ class Content {
 	/**
 	 * Attach several embeddings already created with fluent interface
 	 *
-     * @param Embeddings[] $content Array of Embeddings objects
+     * @param Embedding[] $content Array of Embeddings objects
 	 * @return Content Return $this for chaining calls
 	 */	
 	function embedSome(array $content)
 	{
 		$this->_embeddings = array_merge($this->_embeddings, $content);
+		return $this;
+	}
+	
+	
+	
+	/**
+	 * Embed several embeddings already created with fluent interface ; discard any existing embeddings
+	 *
+     * @param Embedding[] $content Array of Attachments objects
+	 * @return Content Return $this for chaining calls
+	 */	
+	function setEmbeddings(array $content)
+	{
+		$this->_embeddings = $content;
 		return $this;
 	}
 	

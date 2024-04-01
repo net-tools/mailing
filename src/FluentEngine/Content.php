@@ -188,6 +188,18 @@ class Content {
 	
 	
 	/**
+	 * Get underlyine engine object
+	 *
+	 * @return Engine
+	 */
+	function getEngine()
+	{
+		return $this->_engine;
+	}
+	
+	
+	
+	/**
 	 * Update content string before creating Nettools\Mailing\MailBuilder\Content object
 	 *
 	 * @return string

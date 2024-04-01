@@ -13,12 +13,6 @@ namespace Nettools\Mailing\FluentEngine;
 
 
 
-// clauses use
-use \Nettools\Mailing\Mailer;
-
-
-
-
 
 
 /**

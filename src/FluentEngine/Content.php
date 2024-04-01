@@ -148,7 +148,7 @@ class Content {
 	/**
 	 * Attach several attachments already created with fluent interface
 	 *
-     * @param Attachment[] $content Array of Attachments objects
+     * @param Attachment[] $content Array of Attachment objects
 	 * @return Content Return $this for chaining calls
 	 */	
 	function attachSome(array $content)
@@ -162,7 +162,7 @@ class Content {
 	/**
 	 * Attach several attachments already created with fluent interface ; discard any existing attachments
 	 *
-     * @param Attachment[] $content Array of Attachments objects
+     * @param Attachment[] $content Array of Attachment objects
 	 * @return Content Return $this for chaining calls
 	 */	
 	function setAttachments(array $content)
@@ -190,7 +190,7 @@ class Content {
 	/**
 	 * Attach several embeddings already created with fluent interface
 	 *
-     * @param Embedding[] $content Array of Embeddings objects
+     * @param Embedding[] $content Array of Embedding objects
 	 * @return Content Return $this for chaining calls
 	 */	
 	function embedSome(array $content)
@@ -204,7 +204,7 @@ class Content {
 	/**
 	 * Embed several embeddings already created with fluent interface ; discard any existing embeddings
 	 *
-     * @param Embedding[] $content Array of Attachments objects
+     * @param Embedding[] $content Array of Embedding objects
 	 * @return Content Return $this for chaining calls
 	 */	
 	function setEmbeddings(array $content)

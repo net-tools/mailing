@@ -45,7 +45,7 @@ class Sent {
 	/**
 	 * Close connection
 	 */
-	function close()
+	function done()
 	{
 		$this->_mailer->destroy();
 	}

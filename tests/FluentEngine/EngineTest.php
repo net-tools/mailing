@@ -277,7 +277,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
-			->attach( $e->attachment('content_here_as_raw_string', 'text/plain')
+			->attach( $e->attachment('will be discarded', 'text/plain')
 						->withFileName('attach.txt')
 						->asRawContent())
 			->setAttachments( [	// previous attachment is discarded
@@ -291,7 +291,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		
 		$this->assertStringContainsString("Content-Type: multipart/mixed;\r\n boundary=\"", $sent[0]);
-		$this->assertStringNotContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
+		$this->assertStringNotContainsString(base64_encode("will be discarded"), $sent[0]);
 		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach2.txt\"", $sent[0]);
 		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
 	}
@@ -307,7 +307,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
-			->attach( $e->attachment('content_here_as_raw_string', 'text/plain')
+			->attach( $e->attachment('will be discarded', 'text/plain')
 						->withFileName('attach.txt')
 						->asRawContent())
 			->setAttachment(	// previous attachment is discarded
@@ -321,7 +321,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
 		
 		$this->assertStringContainsString("Content-Type: multipart/mixed;\r\n boundary=\"", $sent[0]);
-		$this->assertStringNotContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
+		$this->assertStringNotContainsString(base64_encode("will be discarded"), $sent[0]);
 		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach2.txt\"", $sent[0]);
 		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
 	}
@@ -403,7 +403,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
-			->embed( $e->embedding('content_here_as_raw_string', 'text/plain', 'cid_1')
+			->embed( $e->embedding('will be discarded', 'text/plain', 'cid_1')
 						->asRawContent())
 			->setEmbeddings( [	// previous embedding is discarded
 								$e->embedding('other_content_here_as_raw_string', 'text/plain', 'cid_2')
@@ -420,7 +420,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
 		
 		$this->assertStringContainsString("Content-Type: multipart/related;\r\n boundary=\"", $sent[0]);
-		$this->assertStringNotContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
+		$this->assertStringNotContainsString(base64_encode("will be discarded"), $sent[0]);
 		$this->assertStringContainsString("Content-ID: <cid_2>", $sent[0]);
 		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
 	}
@@ -436,7 +436,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
-			->embed( $e->embedding('content_here_as_raw_string', 'text/plain', 'cid_1')
+			->embed( $e->embedding('will be discarded', 'text/plain', 'cid_1')
 						->asRawContent())
 			->setEmbedding( // previous embedding is discarded
 							$e->embedding('other_content_here_as_raw_string', 'text/plain', 'cid_2')
@@ -453,7 +453,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
 		
 		$this->assertStringContainsString("Content-Type: multipart/related;\r\n boundary=\"", $sent[0]);
-		$this->assertStringNotContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
+		$this->assertStringNotContainsString(base64_encode("will be discarded"), $sent[0]);
 		$this->assertStringContainsString("Content-ID: <cid_2>", $sent[0]);
 		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
 	}

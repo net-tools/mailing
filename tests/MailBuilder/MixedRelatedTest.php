@@ -48,6 +48,7 @@ class MixedRelatedTest extends \PHPUnit\Framework\TestCase
     {
 		// store cache count now
 		$cache = Builder::getAttachmentsCache();
+		$cache->clear();
 		$c0 = $cache->getCount();
 		
 		// using cache
@@ -71,6 +72,7 @@ class MixedRelatedTest extends \PHPUnit\Framework\TestCase
     {
 		// store cache count now
 		$cache = Builder::getAttachmentsCache();
+		$cache->clear();
 		$c0 = $cache->getCount();
 		
 		// using cache

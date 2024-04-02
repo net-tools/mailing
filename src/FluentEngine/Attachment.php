@@ -57,7 +57,7 @@ class Attachment extends MixedRelated {
 		else
 			$fname = $this->_fileName ? $this->_fileName : 'no_name';
 		
-		return Builder::createAttachment($this->_content, $fname, $this->_ctype, $this->_ignoreCache, $this->_isFile);
+		return Builder::createAttachment($this->_content, $fname, $this->_ctype, $this->_noCache, $this->_isFile);
 	}
 
 }

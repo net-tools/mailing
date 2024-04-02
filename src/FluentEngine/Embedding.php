@@ -54,7 +54,7 @@ class Embedding extends MixedRelated {
 	 */
 	function create()
 	{
-		return Builder::createEmbedding($this->_content, $this->_ctype, $this->_cid, $this->_ignoreCache, $this->_isFile);
+		return Builder::createEmbedding($this->_content, $this->_ctype, $this->_cid, $this->_noCache, $this->_isFile);
 	}
 }
 ?>

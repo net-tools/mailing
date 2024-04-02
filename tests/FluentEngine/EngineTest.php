@@ -237,6 +237,54 @@ class EngineTest extends \PHPUnit\Framework\TestCase
      
 	
       
+    public function testAttachmentsCache()
+    {
+		$cache = Builder::getAttachmentsCache();
+		$cache->clear();
+		$c0 = $cache->getCount();
+
+		
+		$ml = new Mailer(new Virtual());
+		$e = new ComposeEngine($ml);
+		
+		$e->compose()
+			->text('This is **me** !')
+			->about('Here is the subject line')
+			->to('recipient@domain.name')
+			->attach( $e->attachment('content_here_as_raw_string', 'text/plain')
+						->withFileName('attach.txt')
+						->asRawContent()
+						->enableCache())
+			->attach( $e->attachment('other_content_here_as_raw_string', 'text/plain')
+						->withFileName('attach2.txt')
+						->asRawContent())
+			->attach( $e->attachment('content_here_as_raw_string', 'text/plain')
+						->withFileName('attach3.txt')
+						->asRawContent()
+						->enableCache())
+			->send();
+		
+		
+		$this->assertEquals($c0+1, $cache->getCount());	// only one attachment is cached (the first one ; the third one uses caching of first one)
+		
+		
+		$sent = $ml->getMailerEngine()->getMailSender()->getSent();
+		
+		$this->assertStringContainsString('This is **me**', $sent[0]);
+		$this->assertStringContainsString('This is <b>me</b>', $sent[0]);
+		$this->assertStringContainsString('Subject: Here is the subject line', $sent[0]);
+		$this->assertStringContainsString('To: recipient@domain.name', $sent[0]);
+		
+		$this->assertStringContainsString("Content-Type: multipart/mixed;\r\n boundary=\"", $sent[0]);
+		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach.txt\"", $sent[0]);
+		$this->assertStringContainsString(base64_encode("content_here_as_raw_string"), $sent[0]);
+		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach2.txt\"", $sent[0]);
+		$this->assertStringContainsString(base64_encode("other_content_here_as_raw_string"), $sent[0]);
+		$this->assertStringContainsString("Content-Type: text/plain;\r\n name=\"attach3.txt\"", $sent[0]);
+	}
+     
+	
+     
     public function testAttachments2()
     {
 		$ml = new Mailer(new Virtual());

@@ -24,7 +24,7 @@ abstract class MixedRelated {
 	protected $_content = null;
 	protected $_ctype = null;
 	protected $_isFile = true;
-	protected $_ignoreCache = false;
+	protected $_noCache = true;
 	
 // ----- PROTECTED -----]
 	
@@ -57,13 +57,13 @@ abstract class MixedRelated {
 	
 	
 	/** 
-	 * Disable caching content
+	 * Enable caching content
 	 *
 	 * @return MixedRelated Returns $this for chaining calls
 	 */
-	function disableCache()
+	function enableCache()
 	{
-		$this->_ignoreCache = true;
+		$this->_noCache = false;
 		return $this;
 	}
 	

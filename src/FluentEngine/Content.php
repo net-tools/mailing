@@ -257,11 +257,13 @@ class Content {
 	
 	
 	/**
-	 * Update content string before creating Nettools\Mailing\MailBuilder\Content object
+	 * Get content string before creating Nettools\Mailing\MailBuilder\Content object
+	 *
+	 * Child classes may override this function to return the content string with alterations
 	 *
 	 * @return string
 	 */
-	function updateContentString()
+	function returnProcessedContentString()
 	{
 		return $this->_content;
 	}
@@ -275,7 +277,7 @@ class Content {
 	 */
 	function create()
 	{
-		$text = $this->updateContentString();
+		$text = $this->returnProcessedContentString();
 		
 		
 		// if alternative part is allowed

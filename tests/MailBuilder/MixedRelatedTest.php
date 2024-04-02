@@ -93,6 +93,7 @@ class MixedRelatedTest extends \PHPUnit\Framework\TestCase
 		
 	
 		// store cache count now
+		$cache->clear();
 		$c0 = $cache->getCount();
 		
 		// using cache

@@ -29,6 +29,90 @@ class MixedRelatedTest extends \PHPUnit\Framework\TestCase
 	}
 	
 	
+    public function testNoCacheByDefault()
+    {
+		$matt = new Attachment(self::$_fatt, 'attach.txt', 'text/plain');
+		$this->assertTrue($matt->getNoCache());
+
+		$matt = new Attachment(self::$_fatt, 'attach.txt', 'text/plain', true);
+		$this->assertTrue($matt->getNoCache());
+
+		$matt = new Attachment(self::$_fatt, 'attach.txt', 'text/plain', false);
+		$this->assertFalse($matt->getNoCache());
+	}
+	
+	
+	
+    public function testCacheFile()
+    {
+		// store cache count now
+		$cache = Builder::getAttachmentsCache();
+		$c0 = $cache->getCount();
+		
+		// using cache
+		$matt = new Attachment(self::$_fatt, 'attach.txt', 'text/plain', false);
+		$str = $matt->getContent();
+		
+		// one more entry in cache		
+		$this->assertEquals($c0+1, $cache->getCount());
+		
+		$matt2 = new Attachment(self::$_fatt, 'attach.txt', 'text/plain', false);
+		$str2 = $matt2->getContent();
+		$this->assertEquals($str, $str2);
+		
+		// still one more entry in cache, because cacheid is the same
+		$this->assertEquals($c0+1, $cache->getCount());
+	}
+	
+	
+	
+    public function testCacheData()
+    {
+		// store cache count now
+		$cache = Builder::getAttachmentsCache();
+		$c0 = $cache->getCount();
+		
+		// using cache
+		$matt = new Attachment(self::$_fatt_content, 'attach.txt', 'text/plain', false /* nocache */, false /* isfile */);
+		$str = $matt->getContent();
+		
+		// one more entry in cache		
+		$this->assertEquals($c0+1, $cache->getCount());
+		
+		$matt2 = new Attachment(self::$_fatt_content, 'attach.txt', 'text/plain', false, false);
+		$str2 = $matt2->getContent();
+		$this->assertEquals($str, $str2);
+		
+		// still one more entry in cache, because cacheid is the same (sha256 computation)
+		$this->assertEquals($c0+1, $cache->getCount());
+
+		
+		
+	
+		// store cache count now
+		$c0 = $cache->getCount();
+		
+		// using cache
+		$matt = new Attachment(self::$_fatt_content, 'attach.txt', 'text/plain', false /* nocache */, false /* isfile */);
+		$matt->setCacheId('idatt');
+		$str = $matt->getContent();
+		
+		// one more entry in cache		
+		$this->assertEquals($c0+1, $cache->getCount());
+		
+		$matt2 = new Attachment(self::$_fatt_content, 'attach.txt', 'text/plain', false, false);
+		$str2 = $matt2->getContent();
+		$this->assertEquals($str, $str2);
+		
+		// two more entries in cache, because cacheid is different (user set in first attachment test above)
+		$this->assertEquals($c0+2, $cache->getCount());
+		
+		
+		$this->assertEquals(trim(chunk_split(base64_encode(self::$_fatt_content))), $matt2->getContent());
+	}
+	
+	
+	
     public function testMailMixedRelated()
     {
 		// getContent
@@ -36,25 +120,25 @@ class MixedRelatedTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(self::$_fatt_content_b64, $matt->getContent());
 
 
-        // getFile
-		$this->assertEquals($matt->getFile(), self::$_fatt);
+        // getData
+		$this->assertEquals($matt->getData(), self::$_fatt);
 
 
-        // setFile
-		$matt->setFile('other.txt');
-		$this->assertEquals($matt->getFile(), 'other.txt');
+        // setData
+		$matt->setData('other.txt');
+		$this->assertEquals($matt->getData(), 'other.txt');
 
 
-        // getIgnoreCache
-		$this->assertFalse($matt->getIgnoreCache());
+        // getNoCache
+		$this->assertFalse($matt->getNoCache());
 
 
-        // setIgnoreCache
-		$matt->setIgnoreCache(true);
-		$this->assertTrue($matt->getIgnoreCache());
+        // setNoCache
+		$matt->setNoCache(true);
+		$this->assertTrue($matt->getNoCache());
 
 
-        // getContent and ignoreCache = false
+        // getContent and noCache = false
 		$matt = new Attachment(self::$_fatt_ignorecache, 'attach.txt', 'text/plain', false);
 		$this->assertEquals(self::$_fatt_content_b64, $matt->getContent());
 		$f = fopen(self::$_fatt_ignorecache, 'w'); // update content of file 
@@ -63,8 +147,8 @@ class MixedRelatedTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals($matt->getContent(), self::$_fatt_content_b64);	// content not modified because caching is used
 
 
-        // getContent and ignoreCache = true
-		$matt->setIgnoreCache(true);
+        // getContent and noCache = true
+		$matt->setNoCache(true);
 		$this->assertEquals('', $matt->getContent()); // empty content because caching is deactivated
     }
     

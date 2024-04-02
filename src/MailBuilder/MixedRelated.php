@@ -22,15 +22,17 @@ abstract class MixedRelated extends Content {
 
 // [----- PROTECTED -----
 
-    /** @var string Path to file to attach or embed */
-	protected $_file = NULL;
+    /** @var string Path to file to attach/embed or string content (`$_file` must be set to False) */
+	protected $_data = NULL;
     
+	
+	/** @var string Cache key for content */
+	protected $_cacheId = NULL;
     
-    /** @var bool Indicates whether the cache should be used or not */
-	protected $_ignoreCache = NULL;
+    /** @var bool Indicates whether the result of `getContent` must be cached */
+	protected $_noCache = true;	
 	
-	
-	/** @var bool Indicates whether $_file is a filepath or a data string */
+	/** @var bool Indicates whether `$_file` is a filepath or a data string */
 	protected $_isFile = true;
 
 	
@@ -48,9 +50,23 @@ abstract class MixedRelated extends Content {
      * 
      * @return string Returns the cache key for this part
      */
-	protected function _getCacheID()
+	protected function _getCacheId()
 	{
-		return $this->_file;
+		// if cacheId already computed or set by user
+		if ( !is_null($this->_cacheId) )
+			return $this->_cacheId;
+		
+		
+		// if data is a file path return file path
+		if ( $this->_isFile )
+			$this->_cacheId = $this->_data;
+		
+		// if data is string content, use sha1
+		else
+			$this->_cacheId = hash('sha256', $this->_data);
+		
+		
+		return $this->_cacheId;
 	}
 	
 	
@@ -63,51 +79,67 @@ abstract class MixedRelated extends Content {
 	/**
      * Constructor
      *
-     * @param string $file Path to file to attach/embed
+     * @param string $data Path to file to attach/embed or data string content is `$isFile` = false
      * @param string $file_type Mime type of file to embed
-     * @param bool $ignoreCache Indicates whether the cache must be ignored or used 
-     * @param bool $isFile Indicates whether 'file' parameter is a file path or a data string
+     * @param bool $noCache Indicates whether the cache must be ignored or used 
+     * @param bool $isFile Indicates whether `$content` parameter is a file path or a data string
      */
-	public function __construct($file, $file_type, $ignoreCache = false, $isFile = true)
+	public function __construct($data, $file_type, $noCache = true, $isFile = true)
 	{
 		parent::__construct($file_type);
 	
-		$this->_file = $file;
-		$this->_ignoreCache = $ignoreCache;
+		$this->_data = $data;
+		$this->_noCache = $noCache;
 		$this->_isFile = $isFile;
 	}
 	
 	
 	/**
-     * Get File accessor
+     * Get data accessor
      * 
-     * @return string Path to file
+     * @return string Path to file or string content
      */
-	public function getFile() { return $this->_file; }
+	public function getData() { return $this->_data; }
 
     
 	/**
-     * Set File accessor
+     * Set data accessor
      * 
-     * @param string $f Path to file
+     * @param string $f Path to file or string content
      */
-    public function setFile($f) { $this->_file = $f; }
+    public function setData($f) { $this->_data = $f; }
 
     
 	/**
-     * Get IgnoreCache accessor
+     * Get NoCache accessor
      * 
      * @return bool True if the cache must not be used, false otherwise
      */
-    public function getIgnoreCache() { return $this->_ignoreCache; }
+    public function getNoCache() { return $this->_noCache; }
 	
     
     /**
-     * Set IgnoreCache accessor
+     * Set NoCache accessor
      * 
      * @param bool $i Set this parameter to TRUE to ignore the cache
      */
-	public function setIgnoreCache($i) { $this->_ignoreCache = $i; }
+	public function setNoCache($i) { $this->_noCache = $i; }
+
+    
+	/**
+     * Get CacheId accessor
+     * 
+     * @return string Returns $_cacheId value (cache key used for content)
+     */
+    public function getCacheId() { return $this->_cacheId; }
+	
+    
+    /**
+     * Set CacheId accessor
+     * 
+     * @param string $id Set $_cacheId value to define a key for content caching
+     */
+	public function setCacheId($id) { $this->_cacheId = $id; }
 
     
 	/**
@@ -135,16 +167,16 @@ abstract class MixedRelated extends Content {
     public function getContent()
 	{
 		// see if the content is already cached (if we send many emails with the same attachment, this is the case !)
-		if ( !$this->_ignoreCache && ($content = $this->_getCache()->get($this->_getCacheID())) )
+		if ( !$this->_noCache && ($content = $this->_getCache()->get($this->_getCacheId())) )
 			return $content;
 
 
-		// if not, read the file, base64encode it, and store it in the cache (unless instructed not to do so)
-		$content = trim(chunk_split(base64_encode($this->_isFile?file_get_contents($this->_file):$this->_file))) /*. "\r\n\r\n"*/;
+		// if not, read the file (or use data string), base64encode it
+		$content = trim(chunk_split(base64_encode($this->_isFile?file_get_contents($this->_data):$this->_data)));
 			
-		
-		if( !$this->_ignoreCache )
-			$this->_getCache()->register($this->_getCacheID(), $content);
+		// store encoded data in the cache unless cache is disabled
+		if( !$this->_noCache )
+			$this->_getCache()->register($this->_getCacheId(), $content);
 			
 		return $content;					
 	}

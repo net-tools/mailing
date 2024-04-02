@@ -46,15 +46,15 @@ class Attachment extends MixedRelated {
 	/**
      * Constructor
      *
-     * @param string $file Path to file
+     * @param string $data Path to file or data string content
      * @param string $filename Name of file (used to display a filename for the attachement in the client mail application)
      * @param string $file_type Mime type of file
-     * @param bool $ignoreCache Indicates whether the attachments cache must be ignored or used 
+     * @param bool $noCache Indicates whether the attachments cache must be ignored or used 
      * @param bool $isFile Indicates whether 'file' parameter is a file path or a data string
 	 */
-	public function __construct($file, $filename, $file_type, $ignoreCache = false, $isFile = true)
+	public function __construct($data, $filename, $file_type, $noCache = true, $isFile = true)
 	{
-		parent::__construct($file, $file_type, $ignoreCache, $isFile);
+		parent::__construct($data, $file_type, $noCache, $isFile);
 		$this->_filename = $filename;
 	}
 	

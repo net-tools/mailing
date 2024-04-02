@@ -48,16 +48,16 @@ class Embedding extends MixedRelated {
 	/**
      * Constructor
      * 
-     * @param string $file Path to file to embed
+     * @param string $data Path to file to embed or data string content
      * @param string $file_type Mime type of file to embed
      * @param string $cid Content-ID to associate with the embedding
-     * @param bool $ignoreCache Indicates whether the embeddings cache must be ignored or used 
+     * @param bool $noCache Indicates whether the embeddings cache must be ignored or used 
      * @param bool $isFile Indicates whether 'file' parameter is a file path or a data string
 	 */
-     public function __construct($file, $file_type, $cid, $ignoreCache = false, $isFile = true)
+     public function __construct($data, $file_type, $cid, $noCache = true, $isFile = true)
 	{
 		// if file_type not provided, guess it from the filename
-		parent::__construct($file, $file_type, $ignoreCache, $isFile);
+		parent::__construct($data, $file_type, $noCache, $isFile);
 		$this->_cid = $cid;
 	}
 	

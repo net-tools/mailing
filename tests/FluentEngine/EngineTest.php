@@ -5,6 +5,7 @@ namespace Nettools\Mailing\FluentEngine\Tests;
 
 use \Nettools\Mailing\MailSenders\Virtual;
 use \Nettools\Mailing\FluentEngine\ComposeEngine;
+use \Nettools\Mailing\MailBuilder\Builder;
 use \Nettools\Mailing\Mailer;
 use \org\bovigo\vfs\vfsStream;
 

@@ -5,6 +5,7 @@ namespace Nettools\Mailing\MailBuilder\Tests;
 
 
 
+use \Nettools\Mailing\MailBuilder\Builder;
 use \Nettools\Mailing\MailBuilder\Attachment;
 use \Nettools\Mailing\MailBuilder\Embedding;
 use \org\bovigo\vfs\vfsStream;

@@ -215,10 +215,6 @@ final class Mailer {
 
 		if ( $destruct )
 			$this->destroy();
-
-		// return FALSE if ok, a string if an error occured
-		/*if ( count($st) )
-			throw new \Nettools\Mailing\Exception("Errors occured when sending to recipients '" . implode(",", $to) . "' : " . implode("\n", $st));*/
 	}
 
 // ----- PUBLIC -----]

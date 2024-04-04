@@ -147,9 +147,18 @@ class Compose extends Content {
 	 * Send mail to recipients
 	 *
 	 * @return Sent Returns a `Sent` object to deal with data connection after mail sent ; if no other emails are to be sent, closing connection is preferred
+	 * @throws Nettools\Mailing\Exception
 	 */
 	function send()
 	{
+		if ( !$this->_from )
+			throw new \Nettools\Mailing\Exception('`From` header missing in FluentEngine');
+		if ( !$this->_to )
+			throw new \Nettools\Mailing\Exception('`To` header missing in FluentEngine');
+		if ( !$this->_subject )
+			throw new \Nettools\Mailing\Exception('`Subject` header missing in FluentEngine');
+		
+		
 		$this->_engine->getMailer()->sendmail($this->create(), $this->_from, $this->_to, $this->_subject, false);
 		return new Sent($this->_engine->getMailer());
 	}

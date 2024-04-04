@@ -52,6 +52,57 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     
 	
       
+    public function testException1()
+    {
+		$ml = new Mailer(new Virtual());
+		$e = new ComposeEngine($ml);
+		
+		$this->expectExceptionMessage('`From` header missing');
+		
+		$e->compose()
+			->text('This is **me** !')
+			->about('Here is the subject line')
+/*			->from('sender@at.home') */
+			->to('recipient@domain.name')
+			->send();
+	}
+    
+	
+      
+    public function testException2()
+    {
+		$ml = new Mailer(new Virtual());
+		$e = new ComposeEngine($ml);
+		
+		$this->expectExceptionMessage('`To` header missing');
+		
+		$e->compose()
+			->text('This is **me** !')
+			->about('Here is the subject line')
+			->from('sender@at.home')
+/*			->to('recipient@domain.name')*/
+			->send();
+	}
+    
+	
+      
+    public function testException3()
+    {
+		$ml = new Mailer(new Virtual());
+		$e = new ComposeEngine($ml);
+		
+		$this->expectExceptionMessage('`Subject` header missing');
+		
+		$e->compose()
+			->text('This is **me** !')
+/*			->about('Here is the subject line')*/
+			->from('sender@at.home')
+			->to('recipient@domain.name')
+			->send();
+	}
+    
+	
+      
     public function testSimpleNoFluent()
     {
 		$ml = new Mailer(new Virtual());

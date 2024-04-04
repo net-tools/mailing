@@ -186,6 +186,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$e->compose()
 			->text('This is **me** !')
 			->about('Here is the subject line')
+			->from('sender@at.home')
 			->replyTo('reply-to@domain.name')
 			->to('recipient@domain.name')
 			->ccTo('cc@domain.name')
@@ -211,6 +212,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$e->compose()
 			->text('This is **me** !')
+			->from('sender@at.home')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
 			->noAlternatePart()
@@ -234,6 +236,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$e->compose()
 			->text('This is **me** !')
+			->from('sender@at.home')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
 			->attach( $e->attachment(self::$_file, 'text/plain') )
@@ -262,6 +265,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$e->compose()
 			->text('This is **me** !')
+			->from('sender@at.home')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
 			->attach( $e->attachment('content_here_as_raw_string', 'text/plain')
@@ -301,6 +305,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$e->compose()
 			->text('This is **me** !')
+			->from('sender@at.home')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
 			->attach( $e->attachment('content_here_as_raw_string', 'text/plain')
@@ -344,6 +349,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$e->compose()
 			->text('This is **me** !')
+			->from('sender@at.home')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
 			->attachSome( [ $e->attachment('content_here_as_raw_string', 'text/plain')
@@ -375,6 +381,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$e->compose()
 			->text('This is **me** !')
+			->from('sender@at.home')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
 			->attach( $e->attachment('will be discarded', 'text/plain')
@@ -406,6 +413,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		$e->compose()
 			->text('This is **me** !')
 			->about('Here is the subject line')
+			->from('sender@at.home')
 			->to('recipient@domain.name')
 			->attach( $e->attachment('will be discarded', 'text/plain')
 						->withFileName('attach.txt')
@@ -435,6 +443,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$e->compose()
 			->text('This is **me** !')
+			->from('sender@at.home')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
 			->embed( $e->embedding('content_here_as_raw_string', 'text/plain', 'cid_1')
@@ -469,6 +478,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
+			->from('sender@at.home')
 			->embedSome( [ $e->embedding('content_here_as_raw_string', 'text/plain', 'cid_1')
 								->asRawContent(),
 						  
@@ -503,6 +513,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
+			->from('sender@at.home')
 			->embed( $e->embedding('will be discarded', 'text/plain', 'cid_1')
 						->asRawContent())
 			->setEmbeddings( [	// previous embedding is discarded
@@ -536,6 +547,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 			->text('This is **me** !')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
+			->from('sender@at.home')
 			->embed( $e->embedding('will be discarded', 'text/plain', 'cid_1')
 						->asRawContent())
 			->setEmbedding( // previous embedding is discarded
@@ -567,6 +579,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 		
 		$e->compose()
 			->text('This is **me** !')
+			->from('sender@at.home')
 			->about('Here is the subject line')
 			->to('recipient@domain.name')
 			->attach( $e->attachment('content_here_as_raw_string', 'text/plain')

@@ -296,7 +296,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
       
     public function testAttachmentsCache()
     {
-		$cache = MixedRelated::getAttachmentsCache();
+		$cache = MixedRelated::getCache();
 		$cache->clear();
 		$c0 = $cache->getCount();
 

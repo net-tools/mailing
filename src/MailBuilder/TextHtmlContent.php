@@ -86,7 +86,8 @@ class TextHtmlContent extends Content {
      */
 	public function getContent()
 	{
-		return trim(str_replace("=0A", "\n", str_replace("=0D", "\r", imap_8bit($this->_html)))) /*. "\r\n\r\n"*/;
+		return trim(quoted_printable_encode($this->_html));
+		//return trim(str_replace("=0A", "\n", str_replace("=0D", "\r", imap_8bit($this->_html)))) /*. "\r\n\r\n"*/;
 	}
 }
 

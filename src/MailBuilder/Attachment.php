@@ -25,18 +25,6 @@ class Attachment extends MixedRelated {
     /** @var string Filename to display (not to be misunderstood with the path to the file attached) */
 	protected $_filename = NULL;
 
-
-	/**
-     * Get attachments cache
-     *
-     * @see \Nettools\Mailing\MailBuilder\Builder::getAttachmentsCache
-     * @return \Nettools\Core\Containers\Cache Cache used for attachments
-     */
-	protected function _getCache()
-	{
-		return Builder::getAttachmentsCache();
-	}
-
 // ----- PROTECTED -----]
 
 

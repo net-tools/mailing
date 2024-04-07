@@ -23,8 +23,7 @@ abstract class MixedRelated extends Content {
 // [----- PROTECTED -----
 
     /** @var string Path to file to attach/embed or string content (`$_file` must be set to False) */
-	protected $_data = NULL;
-    
+	protected $_data = NULL;    
 	
 	/** @var string Cache key for content */
 	protected $_cacheId = NULL;
@@ -34,16 +33,11 @@ abstract class MixedRelated extends Content {
 	
 	/** @var bool Indicates whether `$_file` is a filepath or a data string */
 	protected $_isFile = true;
+	
+	/** @var Nettools\Core\Containers\Cache Cache for embeddings and attachments */
+	static $_cache = NULL;
 
 	
-    
-	/** 
-     * Abstract method to get the cache object to query
-     *
-     * @return \Nettools\Core\Containers\Cache Returns a Cache instance
-     */
-	abstract protected function _getCache();
-
     
 	/**
      * Get the key for this item in the cache
@@ -68,8 +62,7 @@ abstract class MixedRelated extends Content {
 		
 		return $this->_cacheId;
 	}
-	
-	
+		
 // ----- PROTECTED -----]
 
 
@@ -94,6 +87,22 @@ abstract class MixedRelated extends Content {
 	}
 	
 	
+	
+	/** 
+     * Get the singleton cache object
+     *
+     * @return \Nettools\Core\Containers\Cache Returns a Cache instance
+     */
+	static function getCache()
+	{
+		if ( !self::$_cache )
+			self::$_cache = new \Nettools\Core\Containers\Cache();
+		
+		return self::$_cache;
+	}
+
+	
+    
 	/**
      * Get data accessor
      * 
@@ -101,6 +110,7 @@ abstract class MixedRelated extends Content {
      */
 	public function getData() { return $this->_data; }
 
+	
     
 	/**
      * Set data accessor
@@ -110,6 +120,7 @@ abstract class MixedRelated extends Content {
     public function setData($f) { $this->_data = $f; }
 
     
+	
 	/**
      * Get NoCache accessor
      * 
@@ -118,6 +129,7 @@ abstract class MixedRelated extends Content {
     public function getNoCache() { return $this->_noCache; }
 	
     
+	
     /**
      * Set NoCache accessor
      * 
@@ -126,6 +138,7 @@ abstract class MixedRelated extends Content {
 	public function setNoCache($i) { $this->_noCache = $i; }
 
     
+	
 	/**
      * Get CacheId accessor
      * 
@@ -134,6 +147,7 @@ abstract class MixedRelated extends Content {
     public function getCacheId() { return $this->_cacheId; }
 	
     
+	
     /**
      * Set CacheId accessor
      * 
@@ -142,6 +156,7 @@ abstract class MixedRelated extends Content {
 	public function setCacheId($id) { $this->_cacheId = $id; }
 
     
+	
 	/**
      * Get IsFile accessor
      * 
@@ -150,6 +165,7 @@ abstract class MixedRelated extends Content {
     public function getIsFile() { return $this->_isFile; }
 	
     
+	
     /**
      * Set IsFile accessor
      * 
@@ -167,7 +183,7 @@ abstract class MixedRelated extends Content {
     public function getContent()
 	{
 		// see if the content is already cached (if we send many emails with the same attachment, this is the case !)
-		if ( !$this->_noCache && ($content = $this->_getCache()->get($this->_getCacheId())) )
+		if ( !$this->_noCache && ($content = $this->getCache()->get($this->_getCacheId())) )
 			return $content;
 
 
@@ -176,7 +192,7 @@ abstract class MixedRelated extends Content {
 			
 		// store encoded data in the cache unless cache is disabled
 		if( !$this->_noCache )
-			$this->_getCache()->register($this->_getCacheId(), $content);
+			$this->getCache()->register($this->_getCacheId(), $content);
 			
 		return $content;					
 	}

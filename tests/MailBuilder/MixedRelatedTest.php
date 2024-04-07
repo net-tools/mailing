@@ -6,6 +6,7 @@ namespace Nettools\Mailing\MailBuilder\Tests;
 
 
 use \Nettools\Mailing\MailBuilder\Builder;
+use \Nettools\Mailing\MailBuilder\MixedRelated;
 use \Nettools\Mailing\MailBuilder\Attachment;
 use \Nettools\Mailing\MailBuilder\Embedding;
 use \org\bovigo\vfs\vfsStream;
@@ -47,7 +48,7 @@ class MixedRelatedTest extends \PHPUnit\Framework\TestCase
     public function testCacheFile()
     {
 		// store cache count now
-		$cache = Builder::getAttachmentsCache();
+		$cache = MixedRelated::getCache();
 		$cache->clear();
 		$c0 = $cache->getCount();
 		
@@ -71,7 +72,7 @@ class MixedRelatedTest extends \PHPUnit\Framework\TestCase
     public function testCacheData()
     {
 		// store cache count now
-		$cache = Builder::getAttachmentsCache();
+		$cache = MixedRelated::getCache();
 		$cache->clear();
 		$c0 = $cache->getCount();
 		

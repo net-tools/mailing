@@ -27,18 +27,6 @@ class Embedding extends MixedRelated {
     /** @var string Content-ID for this embedding part */
 	protected $_cid = NULL;
 
-
-	/** 
-     * Get embeddings cache
-     *
-     * @see Builder::getEmbeddingsCache
-     * @return \Nettools\Core\Containers\Cache The cache used for embeddings
-     */ 
-	protected function _getCache()
-	{
-		return Builder::getEmbeddingsCache();
-	}
-
 // ----- PROTECTED -----]
 
 

@@ -33,14 +33,6 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
 	
     public function testMethods()
     {
-		// getAttachmentsCache
-		$this->assertInstanceOf('Nettools\Core\Containers\Cache', Builder::getAttachmentsCache());
-
-
-		// getEmbeddingsCache
-		$this->assertInstanceOf('Nettools\Core\Containers\Cache', Builder::getEmbeddingsCache());
-        
-        
         // htmlMinify
 		$this->assertEquals('ab cd ef gh ij', Builder::htmlMinify("ab\r\ncd   ef\tgh\nij"));
 		

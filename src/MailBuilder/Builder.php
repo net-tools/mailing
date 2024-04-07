@@ -24,47 +24,10 @@ use \Nettools\Core\Helpers\EncodingHelper;
  */
 final class Builder {
 
-	/** @var \Nettools\Core\Containers\Cache Cache for attachments */
-	protected static $cacheAttachments = NULL;
-
-	/** @var \Nettools\Core\Containers\Cache Cache for embeddings */
-	protected static $cacheEmbeddings = NULL;
-	
-
 	/* Default html template */
 	const TEMPLATE_PLACEHOLDER = '%content%';
 	const DEFAULT_TEMPLATE = self::TEMPLATE_PLACEHOLDER;
 	
-	
-	
-	
-	/**
-	 * Get cache for attachments
-	 *
-	 * @return \Nettools\Core\Containers\Cache Cache for attachments 
-	 */
-	public static function getAttachmentsCache()
-	{
-		if ( is_null(self::$cacheAttachments) )
-			self::$cacheAttachments = new \Nettools\Core\Containers\Cache();
-			
-		return self::$cacheAttachments;
-	}
-	
-	
-	
-	/**
-	 * Get cache for embeddings
-	 *
-	 * @return \Nettools\Core\Containers\Cache Cache for embeddings 
-	 */
-	public static function getEmbeddingsCache()
-	{
-		if ( is_null(self::$cacheEmbeddings) )
-			self::$cacheEmbeddings = new \Nettools\Core\Containers\Cache();
-			
-		return self::$cacheEmbeddings;
-	}
 	
 	
 	

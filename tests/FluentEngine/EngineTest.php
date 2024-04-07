@@ -5,6 +5,7 @@ namespace Nettools\Mailing\FluentEngine\Tests;
 
 use \Nettools\Mailing\MailSenders\Virtual;
 use \Nettools\Mailing\FluentEngine\ComposeEngine;
+use \Nettools\Mailing\MailBuilder\MixedRelated;
 use \Nettools\Mailing\MailBuilder\Builder;
 use \Nettools\Mailing\Mailer;
 use \org\bovigo\vfs\vfsStream;
@@ -295,7 +296,7 @@ class EngineTest extends \PHPUnit\Framework\TestCase
       
     public function testAttachmentsCache()
     {
-		$cache = Builder::getAttachmentsCache();
+		$cache = MixedRelated::getAttachmentsCache();
 		$cache->clear();
 		$c0 = $cache->getCount();
 

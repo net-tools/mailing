@@ -25,6 +25,17 @@ abstract class MixedRelated {
 	protected $_ctype = null;
 	protected $_isFile = true;
 	protected $_noCache = true;
+	protected $_cacheId = NULL;
+
+	
+	
+	/** 
+	 * Abstract function to define to create the Nettools\Mailing\MailBuilder\Attachment or Nettools\Mailing\MailBuilder\Embedding object
+	 *
+	 * @return Nettools\Mailing\MailBuilder\MixedRelated
+	 */
+	abstract protected function doCreate();	
+	
 	
 // ----- PROTECTED -----]
 	
@@ -69,11 +80,35 @@ abstract class MixedRelated {
 	
 	
 	
+	/**
+	 * Set cacheId
+	 *
+	 * @param string $id
+	 * @return MixedRelated Returns $this for chaining calls
+	 */
+	function withCacheId($id)
+	{
+		$this->_cacheId = $id;
+		return $this;
+	}
+	
+	
+	
 	/** 
 	 * Create the Nettools\Mailing\MailBuilder\Attachment or Nettools\Mailing\MailBuilder\Embedding object
 	 *
 	 * @return Nettools\Mailing\MailBuilder\MixedRelated
 	 */
-	abstract function create();
+	function create()
+	{
+		// creating the object
+		$o = $this->doCreate();
+		
+		// setting properties
+		if ( $this->_cacheId )
+			$o->setCacheId($this->_cacheId);
+		
+		return $o;
+	}
 }
 ?>

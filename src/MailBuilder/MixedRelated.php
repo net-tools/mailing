@@ -149,9 +149,9 @@ abstract class MixedRelated extends Content {
     
 	
     /**
-     * Set CacheId accessor
+     * Set CacheId accessor ; may be used to set a user-defined key instead of computing one from content (can be time-consuming if sha256 is used with raw data content)
      * 
-     * @param string $id Set $_cacheId value to define a key for content caching
+     * @param string $id Set $_cacheId Value to define a key for content caching
      */
 	public function setCacheId($id) { $this->_cacheId = $id; }
 

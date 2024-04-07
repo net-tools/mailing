@@ -28,6 +28,23 @@ class Attachment extends MixedRelated {
 
 	protected $_fileName = null;
 	
+	
+	
+	/** 
+	 * Create the Nettools\Mailing\MailBuilder\Attachment object
+	 *
+	 * @return Nettools\Mailing\MailBuilder\Attachment
+	 */
+	protected function doCreate()
+	{
+		if ( $this->_isFile )
+			$fname = $this->_fileName ? $this->_fileName : substr(strrchr($this->_content, '/'), 1);
+		else
+			$fname = $this->_fileName ? $this->_fileName : 'no_name';
+		
+		return Builder::createAttachment($this->_content, $fname, $this->_ctype, $this->_noCache, $this->_isFile);
+	}
+	
 // ----- PROTECTED -----]
 	
 	
@@ -41,23 +58,6 @@ class Attachment extends MixedRelated {
 	{
 		$this->_fileName = $txt;
 		return $this;
-	}
-
-	
-	
-	/** 
-	 * Create the Nettools\Mailing\MailBuilder\Attachment object
-	 *
-	 * @return Nettools\Mailing\MailBuilder\Attachment
-	 */
-	function create()
-	{
-		if ( $this->_isFile )
-			$fname = $this->_fileName ? $this->_fileName : substr(strrchr($this->_content, '/'), 1);
-		else
-			$fname = $this->_fileName ? $this->_fileName : 'no_name';
-		
-		return Builder::createAttachment($this->_content, $fname, $this->_ctype, $this->_noCache, $this->_isFile);
 	}
 
 }

@@ -29,6 +29,18 @@ class Embedding extends MixedRelated {
 
 	protected $_cid = null;
 	
+	
+	
+	/** 
+	 * Create the Nettools\Mailing\MailBuilder\Embedding object
+	 *
+	 * @return Nettools\Mailing\MailBuilder\Embedding
+	 */
+	function doCreate()
+	{
+		return Builder::createEmbedding($this->_content, $this->_ctype, $this->_cid, $this->_noCache, $this->_isFile);
+	}
+	
 // ----- PROTECTED -----]
 	
 	
@@ -43,18 +55,6 @@ class Embedding extends MixedRelated {
 	{
 		parent::__construct($content, $ctype);
 		$this->_cid = $cid;
-	}
-	
-	
-	
-	/** 
-	 * Create the Nettools\Mailing\MailBuilder\Embedding object
-	 *
-	 * @return Nettools\Mailing\MailBuilder\Embedding
-	 */
-	function create()
-	{
-		return Builder::createEmbedding($this->_content, $this->_ctype, $this->_cid, $this->_noCache, $this->_isFile);
 	}
 }
 ?>

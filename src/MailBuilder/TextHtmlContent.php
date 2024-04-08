@@ -30,6 +30,10 @@ class TextHtmlContent extends Content {
 
     /** @var string HTML raw data */
 	protected $_html;
+    
+    /** @var string Cached HTML data */
+    protected $_cachedHtml = NULL;
+    
 
 // ----- PROTECTED -----]
 
@@ -62,7 +66,7 @@ class TextHtmlContent extends Content {
      * 
      * @param string $html Raw HTML data
      */
-    public function setHtml($html) { $this->_html = $html; }
+    public function setHtml($html) { $this->_html = $html; $this->_cachedHtml = NULL; }
 	
 	
 	/** 
@@ -86,7 +90,11 @@ class TextHtmlContent extends Content {
      */
 	public function getContent()
 	{
-		return trim(quoted_printable_encode($this->_html));
+        if ( !is_null($this->_cachedHtml) )
+            return $this->_cachedHtml;
+        
+		$this->_cachedHtml = trim(quoted_printable_encode($this->_html));
+        return $this->_cachedHtml;
 		//return trim(str_replace("=0A", "\n", str_replace("=0D", "\r", imap_8bit($this->_html)))) /*. "\r\n\r\n"*/;
 	}
 }

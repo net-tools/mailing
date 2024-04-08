@@ -29,6 +29,9 @@ class TextPlainContent extends Content {
 
     /** @var string Raw text data */
 	protected $_text;
+    
+    /** @var string Encoded/cached text data */
+    protected $_cachedText = NULL;
 
 // ----- PROTECTED -----]
 
@@ -61,7 +64,7 @@ class TextPlainContent extends Content {
      *
      * @param string $t Text data
      */
-    public function setText($t) { $this->_text = $t; }
+    public function setText($t) { $this->_text = $t; $this->_cachedText = NULL; }
 	
 	
 	/** 
@@ -85,7 +88,11 @@ class TextPlainContent extends Content {
      */
 	public function getContent()
 	{
-		return trim(quoted_printable_encode($this->_text));
+        if ( !is_null($this->_cachedText) )
+            return $this->_cachedText;
+        
+        $this->_cachedText = trim(quoted_printable_encode($this->_text));
+        return $this->_cachedText;
 		//return trim(str_replace("=0A", "\n", str_replace("=0D", "\r", imap_8bit($this->_text)))) /*. "\r\n\r\n"*/;
 	}
 }

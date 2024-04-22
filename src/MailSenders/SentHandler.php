@@ -19,9 +19,9 @@ use \Nettools\Mailing\MailerEngine\Headers;
 
 
 /** 
- * Class to define an event handler for `sent` event (makes it possible to compute quotas if event called at each mail sent event)
+ * Interface to define an event handler for `sent` event (makes it possible to compute quotas if event called at each mail sent event)
  */
-abstract class SentHandler 
+interface SentHandler 
 {
 	/** 
 	 * Notify about `sent` event
@@ -30,7 +30,7 @@ abstract class SentHandler
      * @param string $subject Subject
      * @param Nettools\Mailing\MailerEngine\Headers $headers Email headers
 	 */
-	abstract function notify($to, $subject, Headers $headers);
+	function notify($to, $subject, Headers $headers);
 }
 
 

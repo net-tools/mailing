@@ -19,7 +19,7 @@ use \Nettools\Mailing\MailerEngine\Headers;
 /**
  * Event handler for `sent` event of a MailSender strategy
  */
-class SentHandler extends \Nettools\Mailing\MailSenders\SentHandler
+class SentHandler implements \Nettools\Mailing\MailSenders\SentHandler
 {
 	protected $qi;
 	protected $name;

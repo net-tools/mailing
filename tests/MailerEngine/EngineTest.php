@@ -11,7 +11,7 @@ use \Nettools\Mailing\MailerEngine\Engine;
 
 
 
-class DummyHandler extends \Nettools\Mailing\MailSenders\SentHandler
+class DummyHandler implements \Nettools\Mailing\MailSenders\SentHandler
 {
 	public $count = 0;
 	
